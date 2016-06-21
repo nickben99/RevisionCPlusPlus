@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;h;hpp;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="CPlusPlusAndMath">
+      <UniqueIdentifier>{cbee850e-b9b9-4509-929f-3219ef1a974b}</UniqueIdentifier>
+      <Extensions>*.cpp;*.h</Extensions>
+    </Filter>
+    <Filter Include="Algorithms">
+      <UniqueIdentifier>{b5f88c30-9889-4557-b2e5-8be0ac1a2ed0}</UniqueIdentifier>
+      <Extensions>*.cpp;*.h</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Revision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CMatrix.cpp">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClCompile>
+    <ClCompile Include="CQuaternion.cpp">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClCompile>
+    <ClCompile Include="CVector.cpp">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClCompile>
+    <ClCompile Include="DavidByttowAlgorithms.cpp">
+      <Filter>Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportantAlgorithms.cpp">
+      <Filter>Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgrammingInterviewsBook.cpp">
+      <Filter>Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="STLTests.cpp">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClCompile>
+    <ClCompile Include="CrackingTheCodingInterviewAlgorithms.cpp">
+      <Filter>Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="CrackingTheCodingInterviewQuestions.cpp">
+      <Filter>Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="ZyngaQuestions.cpp">
+      <Filter>Algorithms</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CMatrix.h">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClInclude>
+    <ClInclude Include="CQuaternion.h">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClInclude>
+    <ClInclude Include="CVector.h">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClInclude>
+    <ClInclude Include="MyVector.h">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClInclude>
+    <ClInclude Include="DavidByttowAlgorithms.h">
+      <Filter>Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportantAlgorithms.h">
+      <Filter>Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgrammingInterviewsBook.h">
+      <Filter>Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="STLTests.h">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClInclude>
+    <ClInclude Include="CrackingTheCodingInterviewAlgorithms.h">
+      <Filter>Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="CrackingTheCodingInterviewQuestions.h">
+      <Filter>Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="CrackingTheCodingInterviewCPlusPlus.h">
+      <Filter>CPlusPlusAndMath</Filter>
+    </ClInclude>
+    <ClInclude Include="ZyngaQuestions.h">
+      <Filter>Algorithms</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

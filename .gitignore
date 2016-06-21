@@ -1,0 +1,11 @@
+.vs/
+archive/
+Debug/
+Release/
+RevisionVS2015/Debug/
+RevisionVS2015/sub/
+
+*.sdf
+*.suo
+*.db
+*.user
