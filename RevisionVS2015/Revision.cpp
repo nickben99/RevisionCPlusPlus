@@ -756,6 +756,8 @@ void Print(Element* pCurr)
 	}
 }
 
+extern void Unflatten_LinkedListBetter(ElementFlatten** head, ElementFlatten** end);
+
 void ProgrammingInterviewsBook()
 {
 // chapter 4 - linked lists --------------------------------------------------------------------------------------------
@@ -791,12 +793,13 @@ void ProgrammingInterviewsBook()
 
 	ElementFlatten *pStart, *pEnd;
 	CreateUnflatennedLinkedList(pStart, pEnd);
-	std::cout << std::endl << "Original List";
+	std::cout << std::endl << std::endl << "Original List";
 	PrintLinkedList(pStart);
 	Flatten_LinkedList(&pStart, &pEnd);
 	std::cout << std::endl << std::endl << "Flatenned List";
 	PrintLinkedList(pStart);
 	Unflatten_LinkedList(&pStart, &pEnd);
+	//Unflatten_LinkedListBetter(&pStart, &pEnd);
 	std::cout << std::endl << std::endl << "Unflatenned List";
 	PrintLinkedList(pStart);
 

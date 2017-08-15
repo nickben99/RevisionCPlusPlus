@@ -16,7 +16,7 @@ void CreateStackLinkedList( Element** stackHead )
 
 void DeleteStackLinkedList( Element** stackHead )
 {
-	while ( *stackHead )
+	while (*stackHead)
 	{
 		Element* pNext = (*stackHead)->next;
 		delete *stackHead;
@@ -65,16 +65,16 @@ void RemoveAllMatchingData(Element** head, Element** end, void* data)
 	Element* iter = *head;
 	while (iter)
 	{
-		Element* temp = iter->next;
+		Element* next = iter->next;
 		if (data == iter->data)
 		{
 			if (prev)
 			{
-				prev->next = temp;
+				prev->next = next;
 			}
 			else // no previous, so this must be the head
 			{
-				*head = temp;
+				*head = next;
 			}
 			////////////////// NOTE!!!: if just removing one element, handle the *end here, and return after the delete iter
 			delete iter;
@@ -83,14 +83,14 @@ void RemoveAllMatchingData(Element** head, Element** end, void* data)
 		{
 			prev = iter;
 		}
-		iter = temp;
+		iter = next;
 	}
 	*end = prev;
 }
 
-bool InsertAfter_LinkedList(Element* after, void* data, Element** stackHead, Element** stackEnd)
+bool InsertAfter_LinkedList(Element* after, void* data, Element** head, Element** end)
 {
-	if (!stackHead || !stackEnd)
+	if (!head || !end)
 	{
 		return false;
 	}
@@ -102,31 +102,31 @@ bool InsertAfter_LinkedList(Element* after, void* data, Element** stackHead, Ele
 	}
 	newElem->data = data;
 
-	if (nullptr == after) // could also check if (nullptr == *stackHead), but if the stack is empty, after must be null
+	if (nullptr == after) // this also covers the list empty case, as then after has to be null
 	{
-		newElem->next = *stackHead;
-		*stackHead = newElem;
-		if (nullptr == *stackEnd) // this would mean the list was previously empty
+		newElem->next = *head;
+		*head = newElem;
+		if (nullptr == *end) // this would mean the list was previously empty
 		{
-			*stackEnd = *stackHead;
+			*end = *head;
 		}
 		return true;
 	}
 	
-	Element* iter = *stackHead;
+	Element* iter = *head;
 
 	// IMPORTANT!!! the only reason for the while loop is to check that 'after' is in the linked list. if we assume it is in the 
 	// linked list we do not need the while loop to find the element, as we already have it
 	while (iter) 
 	{
-		if ( iter == after ) // only the porion inside this 'if' would be required if we assume 'after' is in the linked list
+		if ( iter == after ) // only the portion inside this 'if' would be required if we assume 'after' is in the linked list
 		{
 			newElem->next = after->next;
 			after->next = newElem;
 
-			if (after == *stackEnd)
+			if (after == *end)
 			{
-				*stackEnd = after->next;
+				*end = after->next;
 			}
 			return true;
 		}
@@ -136,27 +136,27 @@ bool InsertAfter_LinkedList(Element* after, void* data, Element** stackHead, Ele
 	return false;
 }
 
-bool RemoveHead_LinkedList(Element** stackHead)
+bool RemoveHead_LinkedList(Element** head)
 {
-	if (!stackHead || !*stackHead)
+	if (!head || !*head)
 	{
 		return false;
 	}
 
-	Element* temp = *stackHead;
-	*stackHead = (*stackHead)->next;
+	Element* temp = *head;
+	*head = (*head)->next;
 	delete temp;
 	return true;
 }
 
-bool GetNthToLastElement_LinkedList(Element** out, Element** stackHead, int N)
+bool GetNthToLastElement_LinkedList(Element** out, Element** head, int n)
 {
-	if (!stackHead || !*stackHead)
+	if (!head || !*head)
 	{
 		return false;
 	}
-	Element* curr = *stackHead;
-	for (int index = 0; index < N; ++index)
+	Element* curr = *head;
+	for (int index = 0; index < n; ++index)
 	{
 		curr = curr->next;
 		if (!curr)
@@ -165,32 +165,57 @@ bool GetNthToLastElement_LinkedList(Element** out, Element** stackHead, int N)
 		}
 	}
 
-	*out = *stackHead;
+	*out = *head;
 	while (curr->next)
 	{
 		curr = curr->next;
 		*out = (*out)->next;
 	}
 	return true;
+/* INFO!!! alternative implementation using just one loop (but total number iterations is unchanged)
+	if (!head || !*head)
+	{
+		return false;
+	}
+	Element* curr = *head;
+	*out = *head;
+	int index = 0;
+	while (curr)
+	{
+		if (curr->next) 
+		{
+			if (index >= n) 
+			{
+				*out = (*out)->next;
+			} 
+			else 
+			{
+				++index;
+			}
+		}
+		curr = curr->next;
+	}
+	return index >= n;
+*/
 }
 
-void Flatten_LinkedList(ElementFlatten** stackHead, ElementFlatten** stackEnd)
+void Flatten_LinkedList(ElementFlatten** head, ElementFlatten** end)
 {
-	if (!stackHead || !stackEnd || !*stackHead || !*stackEnd)
+	if (!head || !end || !*head || !*end)
 	{
 		return;
 	}
 
-	ElementFlatten* curr = *stackHead;
+	ElementFlatten* curr = *head;
 	while (curr)
 	{
 		if (curr->child)
 		{
-			(*stackEnd)->next = curr->child;
-			curr->child->prev = (*stackEnd);
-			while ((*stackEnd)->next)
+			(*end)->next = curr->child;
+			curr->child->prev = (*end);
+			while ((*end)->next)
 			{
-				*stackEnd = (*stackEnd)->next;
+				*end = (*end)->next;
 			}
 			// curr->child = NULL; // we DON'T do this so that we can Unflatten the linked list if required
 		}
@@ -218,7 +243,7 @@ void Unflatten_LinkedListInternal(ElementFlatten* element)
 }
 
 // this is the method presented in the book, but it seems very bad, sections will be traversed multiple times
-// see Unflatten_LinkedList1 for better implementation
+// see Unflatten_LinkedListBetter for better implementation
 void Unflatten_LinkedList(ElementFlatten** stackHead, ElementFlatten** stackEnd)
 {
 	if (!stackHead || !stackEnd || !*stackHead || !*stackEnd)
@@ -236,7 +261,7 @@ void Unflatten_LinkedList(ElementFlatten** stackHead, ElementFlatten** stackEnd)
 }
 
 // alt method - this is not the method presented in the book, but this seems to work as far as I can tell, and is far better
-void Unflatten_LinkedList1(ElementFlatten** head, ElementFlatten** end)
+void Unflatten_LinkedListBetter(ElementFlatten** head, ElementFlatten** end)
 {
 	if (!head || !end || !*head || !*end)
 	{
@@ -382,15 +407,15 @@ BinaryTreeNode* BinaryTreePostOrderSearchIterative(BinaryTreeNode* root, int val
 			BinaryTreeNode* pNode = nodesToSearch.top();
 
 			bool childrenSearched = true;
-			if (pNode->left && searched.end() == searched.find(pNode->left))
-			{
-				nodesToSearch.push(pNode->left);
-				childrenSearched = false;
-			}
-			
 			if (pNode->right && searched.end() == searched.find(pNode->right))
 			{
 				nodesToSearch.push(pNode->right);
+				childrenSearched = false;
+			}
+
+			if (pNode->left && searched.end() == searched.find(pNode->left))
+			{
+				nodesToSearch.push(pNode->left);
 				childrenSearched = false;
 			}
 

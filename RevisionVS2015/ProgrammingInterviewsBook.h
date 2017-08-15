@@ -1,6 +1,8 @@
 #ifndef _ProgrammingInterviewsBook_h_
 #define _ProgrammingInterviewsBook_h_
 
+// Programmming Interviews Exposed (see book in my Kindle library)
+
 #include <string>
 
 // chapter 4 - linked lists --------------------------------------------------------------------------------------------
@@ -14,16 +16,16 @@ bool PopStackLinkedList( Element** stackHead, void** data ); // write the pop fu
 
 void RemoveAllMatchingData(Element** head, Element** end, void* data); // remove all from the linked list which have the matching data
 bool InsertAfter_LinkedList(Element* after, void* data, Element** stackHead, Element** stackEnd);
-bool RemoveHead_LinkedList(Element** stackHead);
-bool GetNthToLastElement_LinkedList(Element** out, Element** stackHead, int N);
+bool RemoveHead_LinkedList(Element** head);
+bool GetNthToLastElement_LinkedList(Element** out, Element** head, int n);
 
+// see chapter 4, figure 4-3, location 1125 (approx)
 struct ElementFlatten
 {
 	ElementFlatten(int val) : next(0), prev(0), child(0), value(val) {}
 	ElementFlatten* Add(int val)
 	{
-		ElementFlatten* pCurr = this; 
-		
+		ElementFlatten* pCurr = this;		
 		while (pCurr->next)
 		{ 
 			pCurr = pCurr->next; 
@@ -31,16 +33,21 @@ struct ElementFlatten
 
 		pCurr->next = new ElementFlatten(val); 
 		pCurr->next->prev = pCurr;
-
 		return pCurr->next;
 	}
-	ElementFlatten* CreateChild(int val) { child = new ElementFlatten(val); return child; }
+
+	ElementFlatten* CreateChild(int val) 
+	{ 
+		child = new ElementFlatten(val); 
+		return child; 
+	}
+
 	ElementFlatten *next, *prev, *child; 
 	int value;
 };
 
-void Flatten_LinkedList(ElementFlatten** stackHead, ElementFlatten** stackEnd);
-void Unflatten_LinkedList(ElementFlatten** stackHead, ElementFlatten** stackTail);
+void Flatten_LinkedList(ElementFlatten** head, ElementFlatten** end);
+void Unflatten_LinkedList(ElementFlatten** head, ElementFlatten** end);
 
 bool IsCyclic_LinkedList(Element* pHead);
 
@@ -63,6 +70,7 @@ BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicates(Binar
 char FindFirstNonRepeatedCharacter(const char* pString);
 void removeChars(std::string& str, const std::string& remove);
 void ReverseString(char* pString);
+///////////////// UPTO HERE 8/14
 void ReverseWords(char* pString);
 int StringToInt(const char* string); // in reality in C++ std::stoi() would be used for this:http://www.cplusplus.com/reference/string/stoi/
 std::string IntToString(int val);
