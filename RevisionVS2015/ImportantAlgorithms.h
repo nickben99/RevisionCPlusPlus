@@ -51,7 +51,7 @@ template<class T, int N> struct LinkedListNoMemAlloc2KInterview
 		mNextFree = mNextFree->mpNext;
 		newElement->mpNext = newElement->mpPrev = nullptr;
 
-		if (!addAfter || !mHead) // add at front
+		if (!addAfter || !mHead) // add at front (if !mHead then addAfter should be null)
 		{
 			newElement->mpNext = mHead;
 			mHead = newElement;
