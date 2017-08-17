@@ -125,6 +125,7 @@
     <ClCompile Include="ZyngaQuestions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="2KSports.h" />
     <ClInclude Include="CMatrix.h" />
     <ClInclude Include="CQuaternion.h" />
     <ClInclude Include="CrackingTheCodingInterviewAlgorithms.h" />

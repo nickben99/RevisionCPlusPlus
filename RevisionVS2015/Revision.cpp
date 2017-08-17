@@ -25,6 +25,7 @@
 #include "CrackingTheCodingInterviewQuestions.h"
 #include "CrackingTheCodingInterviewAlgorithms.h"
 #include "CrackingTheCodingInterviewCPlusPlus.h"
+#include "2KSports.h"
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <list>
@@ -947,29 +948,6 @@ void ImportantAlgorithms()
 		int* p = (int*)pDoubleCurr->data; std::cout << *p;		
 	}
 
-	// ---------------------- 2KSports interview -------------------------------------------------
-
-	LinkedListStackNoMemAlloc2KInterview<Element2KInterview, 5> linkedListStackNoMem;
-	int zero = 0;
-	int one = 1;
-	int two = 2;
-	int three = 3;
-	linkedListStackNoMem.Push((void*)(&zero));
-	linkedListStackNoMem.Push((void*)(&one));
-	linkedListStackNoMem.Push((void*)(&two));
-	linkedListStackNoMem.Push((void*)(&three));
-
-	void* zeroPointer = NULL;
-	void* onePointer = NULL;
-	void* twoPointer = NULL;
-	void* threePointer = NULL;
-	linkedListStackNoMem.Pop(threePointer);
-	linkedListStackNoMem.Pop(twoPointer);
-	linkedListStackNoMem.Pop(onePointer);
-	linkedListStackNoMem.Pop(zeroPointer);
-			
-	std::cout << std::endl << *(int*)zeroPointer << " " << *(int*)onePointer << " " << *(int*)twoPointer << " " << *(int*)threePointer;
-
 	// ---------------- sorting ------------------------------------------------------------------
 
 	int deck[52];
@@ -1626,6 +1604,29 @@ void CrackingTheCodingInterviewCPlusPlus()
 	PrintEndOfInputFile("input.txt", 9);
 }
 
+void TwoKSports() {
+	LinkedListStackNoMemAlloc2KInterview<Element2KInterview, 5> linkedListStackNoMem;
+	int zero = 0;
+	int one = 1;
+	int two = 2;
+	int three = 3;
+	linkedListStackNoMem.Push((void*)(&zero));
+	linkedListStackNoMem.Push((void*)(&one));
+	linkedListStackNoMem.Push((void*)(&two));
+	linkedListStackNoMem.Push((void*)(&three));
+
+	void* zeroPointer = NULL;
+	void* onePointer = NULL;
+	void* twoPointer = NULL;
+	void* threePointer = NULL;
+	linkedListStackNoMem.Pop(threePointer);
+	linkedListStackNoMem.Pop(twoPointer);
+	linkedListStackNoMem.Pop(onePointer);
+	linkedListStackNoMem.Pop(zeroPointer);
+
+	std::cout << std::endl << *(int*)zeroPointer << " " << *(int*)onePointer << " " << *(int*)twoPointer << " " << *(int*)threePointer;
+}
+
 //int _tmain(int argc, _TCHAR* argv[])
 int main(int, char*)
 {
@@ -1643,6 +1644,7 @@ int main(int, char*)
 	MathTesting();
 	vectorTests();
 	CrackingTheCodingInterviewCPlusPlus();
+	TwoKSports();
 
 	std::cout << std::endl << "Press Enter To End..."<< std::endl;	
 

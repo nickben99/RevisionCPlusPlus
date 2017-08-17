@@ -8,6 +8,7 @@
 #include <stack>
 #include <list>
 #include "ImportantAlgorithms.h"
+#include "2KSports.h"
 
 class CVector4;
 

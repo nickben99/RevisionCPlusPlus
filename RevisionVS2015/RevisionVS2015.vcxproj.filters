@@ -90,5 +90,8 @@
     <ClInclude Include="ZyngaQuestions.h">
       <Filter>Algorithms</Filter>
     </ClInclude>
+    <ClInclude Include="2KSports.h">
+      <Filter>Algorithms</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
