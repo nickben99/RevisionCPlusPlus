@@ -26,13 +26,14 @@ bool LinkedListAddToEnd( LinkedListElement** head, void* data )
 		return false;
 	}
 	pNewElement->data = data;
+	pNewElement->next = nullptr;
 
 	LinkedListElement** pCurr = head;
 	while (*pCurr)
 	{
 		pCurr = &(*pCurr)->next;
 	}
-	(*pCurr) = pNewElement;
+	*pCurr = pNewElement;
 	return true;
 }
 
@@ -46,10 +47,10 @@ void LinkedListReverse(LinkedListElement** head)
 	LinkedListElement* prev = nullptr;
 	while (*head)
 	{
-		LinkedListElement* temp = (*head)->next;
+		LinkedListElement* next = (*head)->next;
 		(*head)->next = prev;
 		prev = *head;
-		*head = temp;
+		*head = next;
 	}
 	*head = prev;
 }
@@ -120,8 +121,6 @@ bool LinkedListStackPop(DoubleLinkedListElement** head, DoubleLinkedListElement*
 	}
 	return true;
 }
-
-// --------------------------- 2KSports interview ---------------------
 
 // NOTE: this only supports positive ints. to make it support negative ints:
 // 1. at the top record whether the signs were different, then make both numbers positive

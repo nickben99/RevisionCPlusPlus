@@ -70,7 +70,6 @@ BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicates(Binar
 char FindFirstNonRepeatedCharacter(const char* pString);
 void removeChars(std::string& str, const std::string& remove);
 void ReverseString(char* pString);
-///////////////// UPTO HERE 8/14
 void ReverseWords(char* pString);
 int StringToInt(const char* string); // in reality in C++ std::stoi() would be used for this:http://www.cplusplus.com/reference/string/stoi/
 std::string IntToString(int val);

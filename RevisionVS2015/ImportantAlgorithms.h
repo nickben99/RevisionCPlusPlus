@@ -94,8 +94,6 @@ void RemoveDuplicatesFromArrayPreserveFirst(int* array, int& arrayLength);
 void RemoveDuplicatesFromArrayPreserveLast(int* array, int& arrayLength);
 void RemoveDuplicatesFromArrayPreserveNth(int array[], int& len, int N);
 
-// ==================================== upto here 4/17/2016
-
 template <class T> void RemoveCommonElementsFromArrays(T* pArrayOne, int& arrayOneLen, T* pArrayTwo, int& arrayTwoLen);
 bool GetNthElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo);
 bool GetNthElementFromUnionOfSortedArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo); // could be duplicates

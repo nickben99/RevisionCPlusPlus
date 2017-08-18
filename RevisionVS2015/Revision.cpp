@@ -842,10 +842,15 @@ void ProgrammingInterviewsBook()
 	int val = StringToInt("-1233");
 	std::cout << std::endl << std::endl << IntToString(val);
 
+	val = StringToInt("1233");
+	std::cout << std::endl << std::endl << IntToString(val);
+
 // chapter 7 recursion --------------------------------------------------------------------------------------------------
 	char array[] = {0, 1, 2, 3, 4, 5, 6, 7};
-	binarySearchRecursive(array, 0, 6, 7);
-	binarySearchIterative(array, 0, 6, 7);
+	std::cout << std::endl << binarySearchRecursive(array, 0, 6, 7);
+	std::cout << std::endl << binarySearchRecursive(array, 0, 6, 2);
+	std::cout << std::endl << binarySearchIterative(array, 0, 6, 7);
+	std::cout << std::endl << binarySearchIterative(array, 0, 6, 2);
 	std::cout << std::endl;
 	PrintAllStringPermutations("abcd");
 	std::cout << std::endl << "PrintAllStringCombinations(\"1234\")" << std::endl;
@@ -866,7 +871,7 @@ void ProgrammingInterviewsBook()
 	drawEighthOfCircle(100);
 	RectangleOverlap(Rectangle(), Rectangle());
 	IsMachineLittleEndian();
-	std::cout << std::endl << std::endl << "CountOnesInInt(-13) " << CountOnesInInt((char)-13); // need the cast to make the function link
+	std::cout << std::endl << std::endl << "CountOnesInInt(-13) " << CountOnesInInt<char>(-13); // need the cast to make the function link
 	std::cout << std::endl << "CountOnesInCharBig01Amortized(-13) " << CountOnesInCharBig01Amortized(-13);
 	std::cout << std::endl << "CountOnesInCharBig01Amortized(-1) " << CountOnesInCharBig01Amortized(-1);
 }

@@ -551,16 +551,14 @@ void ReverseWords(char* pString)
 	int len = strlen(pString);
 	ReverseStringInternal(pString, pString + (len-1));
 	
+	char* wordStart = pString;
 	for (int i = 0; i < len; ++i)
 	{
-		if (pString[i] != ' ')
+		if (pString[i] == ' ' || i == len - 1)
 		{
-			int startIndex = i;
-			while (i < len && pString[i] != ' ')
-			{
-				++i;
-			}
-			ReverseStringInternal(pString + startIndex, pString + i-1);
+			char* wordEnd = pString[i] == ' ' ? pString + i - 1 : pString + i; // handles space character vs last character in string
+			ReverseStringInternal(wordStart, wordEnd);
+			wordStart = pString + i + 1;
 		}	
 	}
 }
@@ -605,7 +603,7 @@ std::string IntToString(int val)
 	bool wasLessThanZero = false;
 	if ( val < 0 )
 	{
-		val *= -1;
+		val *= -1; // this is so that val%10 (in do loop below) always returns a positive number, a negative number would cause a bug when doing char('0' + figure)
 		wasLessThanZero = true;
 	}
 
@@ -643,14 +641,6 @@ int binarySearchRecursive(char* arrayOfValues, int lowerIndex, int upperIndex, c
 	{
 		return -1;
 	}
-	if (arrayOfValues[lowerIndex] > arrayOfValues[upperIndex])
-	{
-		return -1;
-	}
-	if (lowerIndex == upperIndex && arrayOfValues[lowerIndex] != targetValue)
-	{
-		return -1;
-	}
 
 	int centralIndex = lowerIndex + (upperIndex-lowerIndex)/2;
 	char centralVal = arrayOfValues[centralIndex];
@@ -668,13 +658,8 @@ int binarySearchRecursive(char* arrayOfValues, int lowerIndex, int upperIndex, c
 
 int binarySearchIterative(char* arrayOfValues, int lowerIndex, int upperIndex, char targetValue)
 {
-	while (lowerIndex <= upperIndex && arrayOfValues[lowerIndex] <= arrayOfValues[upperIndex])
+	while (lowerIndex <= upperIndex)
 	{
-		if (lowerIndex == upperIndex && arrayOfValues[lowerIndex] != targetValue)
-		{
-			return -1;
-		}
-
 		int centralIndex = lowerIndex + (upperIndex - lowerIndex)/2;
 		int centralVal = arrayOfValues[centralIndex];
 		if ( centralVal == targetValue)
@@ -693,7 +678,7 @@ int binarySearchIterative(char* arrayOfValues, int lowerIndex, int upperIndex, c
 	return -1;		
 }
 
-void PrintAllStringPermutations(const char* pOriginalString, int len, char* pCurrentString, int position, bool* pUsed)
+void PrintAllStringPermutationsInternal(const char* pOriginalString, int len, char* pCurrentString, int position, bool* pUsed)
 {
 	for (int index = 0; index < len; ++index)
 	{
@@ -705,7 +690,7 @@ void PrintAllStringPermutations(const char* pOriginalString, int len, char* pCur
 		pUsed[index] = true; // if pOriginalString was none const, we could do without pUsed, and null out spots in pOriginalString here temporarilly
 		if (position+1 < len)
 		{
-			PrintAllStringPermutations(pOriginalString, len, pCurrentString, position+1, pUsed);
+			PrintAllStringPermutationsInternal(pOriginalString, len, pCurrentString, position+1, pUsed);
 		}
 		else
 		{
@@ -723,10 +708,10 @@ void PrintAllStringPermutations(const char* pString)
 	memset(pUsed, 0, sizeof(bool)*len); 
 	char* pCurrentString = new char[len+1]; // NOTE: +1 to add '\0' t end of char array
 	memset(pCurrentString, 0, len+1); 
-	PrintAllStringPermutations(pString, len, pCurrentString, 0, pUsed);
+	PrintAllStringPermutationsInternal(pString, len, pCurrentString, 0, pUsed);
 }
 
-void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 32 characters long
+void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 32 characters long, but is big O(numCombos*len)
 {
 	int len = strlen(pString);
 	if (len >= 0)
@@ -747,7 +732,7 @@ void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm wil
 }
 
 void PrintAllStringCombinationsAltInternal(const char*, char*, int, int, int, int&);
-void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this algorithm will work regarldless of character length
+void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this algorithm will work regarldless of character length, but is big O(2^len)
 {
 	int len = strlen(pOriginalString);
 	char* currentString = new char[len + 1];
@@ -763,7 +748,6 @@ void PrintAllStringCombinationsAltInternal(const char* pOriginalString, char* cu
 	{		
 		PrintAllStringCombinationsAltInternal(pOriginalString, currentString, position + 1, insertionPoint + 1, length, count);
 		PrintAllStringCombinationsAltInternal(pOriginalString, currentString, position + 1, insertionPoint, length, count);
-		currentString[insertionPoint] = '\0';
 	}
 	else
 	{	
@@ -776,7 +760,7 @@ void PrintAllStringCombinationsAltInternal(const char* pOriginalString, char* cu
 
 char getChar( int telephoneKey, int place )
 {
-	static const char character[10][3] = 
+	static const char character[][3] = // alt decleration: static const char character[10][3] = 
 	{
 		{'0', '0', '0'},
 		{'1', '1', '1'},
@@ -792,7 +776,7 @@ char getChar( int telephoneKey, int place )
 	return character[telephoneKey][place];
 }
 
-void GenerateTelephoneWords(const char* pNum, int numLen, int pos, char* pCurrString, int& count)
+void GenerateTelephoneWordsInternal(const char* pNum, int numLen, int pos, char* pCurrString, int& count)
 {
 	if (pos >= numLen)
 	{
@@ -803,7 +787,7 @@ void GenerateTelephoneWords(const char* pNum, int numLen, int pos, char* pCurrSt
 	if ('0' == character || '1' == character || '-' == character)
 	{
 		pCurrString[pos] = character;
-		GenerateTelephoneWords(pNum, numLen, pos+1, pCurrString, count);
+		GenerateTelephoneWordsInternal(pNum, numLen, pos+1, pCurrString, count);
 	}
 	else
 	{
@@ -811,7 +795,7 @@ void GenerateTelephoneWords(const char* pNum, int numLen, int pos, char* pCurrSt
 		for (int index = 0; index < kNumCharsPerButton; ++index)
 		{
 			pCurrString[pos] = getChar( character-'0', index );
-			GenerateTelephoneWords(pNum, numLen, pos+1, pCurrString, count);
+			GenerateTelephoneWordsInternal(pNum, numLen, pos+1, pCurrString, count);
 		}
 	}
 }
@@ -822,7 +806,7 @@ void GenerateTelephoneWords(const char* pNum)
 	char* pCurrString = new char[len+1];
 	memset(pCurrString, 0, len+1);
 	int count = 0;
-	GenerateTelephoneWords(pNum, len, 0, pCurrString, count);
+	GenerateTelephoneWordsInternal(pNum, len, 0, pCurrString, count);
 }
 
 void GenerateTelephoneWordsNonRecurse(const char* pPhoneNum)
