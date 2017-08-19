@@ -1330,6 +1330,12 @@ void CrackingTheCodingInterviewQuestions()
 
 	SmartPointer<char> sPtr3(new char(2));
 	sPtr3 = sPtr2;
+
+	SmartPointer<CCINode> sNodePtr(new CCINode());
+	sNodePtr->left = nullptr;
+
+	void* allocated = AlignedMalloc(20, 43);
+	AlignedFree(allocated);
 }
 
 void CrackingTheCodingInterviewAlgorithms()
@@ -1607,6 +1613,21 @@ void CrackingTheCodingInterviewCPlusPlus()
 	PrintEndOfInputFile("input.txt", 7);
 	std::cout << std::endl;
 	PrintEndOfInputFile("input.txt", 9);
+
+	CCINode* node = new CCINode();
+	node->left = new CCINode();
+	node->right = new CCINode();
+	node->right->left = node;
+
+	CCINode* theCopy = CopyCCINode(node);
+
+	delete node->left;
+	delete node->right;
+	delete node;
+
+	delete theCopy->left;
+	delete theCopy->right;
+	delete theCopy;
 }
 
 void TwoKSports() {
