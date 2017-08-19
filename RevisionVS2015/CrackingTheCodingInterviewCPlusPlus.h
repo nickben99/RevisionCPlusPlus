@@ -147,20 +147,24 @@ private:
 };
 
 // Question 12.10
-void* AlignedMalloc(int size, int alignment)
+void* AlignedMalloc(int size, unsigned int alignment)
 {
-	int beginPointerSize = sizeof(void*);
-	int padding = alignment - 1; // worst case scenario, is allocation being 1 byte passed alignment boundary, so pad with (alignment - 1)
+	unsigned int beginPointerSize = sizeof(void*);
+	unsigned int padding = alignment - 1; // worst case scenario, is allocation being 1 byte passed alignment boundary, so pad with (alignment - 1)
 	char* allocated = (char*)malloc(size + beginPointerSize + padding);
 	if (!allocated) {
 		return nullptr;
 	}
-	char* aligned = allocated + beginPointerSize;
 
+	char* aligned = allocated + beginPointerSize;
 	unsigned int remainder = (unsigned int)aligned % alignment;
 	if (remainder != 0) {
 		aligned += (alignment - remainder);
 	}
+	// if aligned was always a power of 2, the following two lines could be used in place of the above five lines to calculate aligned
+	//unsigned int possibleAligned = (unsigned int)(allocated + beginPointerSize + padding);
+	//char* aligned = (char*)(possibleAligned & ~padding); // results in all bits less significant being removed
+
 	((void**)aligned)[-1] = allocated;
 	return (void*)aligned;
 }
