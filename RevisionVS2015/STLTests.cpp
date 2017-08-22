@@ -63,7 +63,10 @@ void STLListTests()
 	ints.push_back(9);
 	std::cout << std::endl << "After ints.push_back(9): " << ints.size();
 
-	ints.insert(++ints.begin(), 10);        
+	ints.push_front(3);
+	std::cout << std::endl << "After ints.push_front(3): " << ints.size();
+
+	ints.insert(++ints.begin(), 10);
 	std::cout << std::endl << "after ints.insert(++ints.begin(), 10); : " << std::endl;
 	for (int i : ints)
 	{
@@ -153,12 +156,15 @@ void STLBitSetTests()
 	std::bitset<20> preAllocated20;
 	std::cout << std::endl << "std::bitset<20> preAllocated20 " << preAllocated20;
 	std::cout << std::endl << "preAllocated20.count() " << preAllocated20.count();
+	std::cout << std::endl << "preAllocated20.to_ulong() " << preAllocated20.to_ulong();
 	preAllocated20[6] = true;
 	std::cout << std::endl << "after preAllocated20[6] = true : " << preAllocated20.count();
 	std::cout << std::endl << "after preAllocated20[6] = true : " << preAllocated20;
+	std::cout << std::endl << "preAllocated20.to_ulong() " << preAllocated20.to_ulong();
 	preAllocated20.flip();
 	std::cout << std::endl << "after preAllocated20.flip() : " << preAllocated20.count();
 	std::cout << std::endl << "after preAllocated20.flip() : " << preAllocated20;
+
 	std::cout << std::endl << "STLMapTests() - End";
 }
 

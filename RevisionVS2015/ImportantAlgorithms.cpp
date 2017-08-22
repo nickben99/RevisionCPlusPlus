@@ -282,15 +282,21 @@ void BubbleSort(int* array, int length)
 {
 	for (int iterateTo = length-1; iterateTo > 0; --iterateTo)
 	{
+		//bool swaps = false; // NOTE: this is an optimized bubble sort so that if the array is sorted, we can exit, meaning a best case big O(n)
 		for (int index = 0; index < iterateTo; ++index)
 		{
 			if (array[index] > array[index + 1]) // this will end with low values at low indecis
 			{
+				//swaps = true;
 				int temp = array[index];
 				array[index] = array[index + 1];
 				array[index + 1] = temp;
 			}
 		}
+
+		//if (!swaps) {
+		//	return;
+		//}
 	}
 }
 
@@ -300,7 +306,7 @@ void Shuffle(int* arrayToShuffle, int len)
 	{
 		for (int index = 0; index < len; ++index)
 		{
-			int randomSwapPos = rand() % len; // a while loop would make sure randomSwapPos != index to ensure a better shuffle (NOTE: but then not O(n))
+			int randomSwapPos = rand() % len; // a while loop would make sure randomSwapPos != index to ensure a better shuffle
 			int temp = arrayToShuffle[index]; // would use std::swap() in reality
 			arrayToShuffle[index] = arrayToShuffle[randomSwapPos];
 			arrayToShuffle[randomSwapPos] = temp;
@@ -797,16 +803,16 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 
 // ----------------------- general
 
-
+// first prime numbers: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107
 bool IsPrime(int number)
 {
 	if (number < 2)
 	{
 		return false; // 0, 1 not prime
 	}
-	if (number < 4)
+	if (number == 2)
 	{
-		return true; // 2, 3 prime
+		return true; // 2 prime
 	}
 	if (number%2 == 0)
 	{

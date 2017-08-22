@@ -35,7 +35,7 @@ void MinHeapBubbleDown(struct MinHeap* pHeap, int index);
 void MinHeapBubbleUp(struct MinHeap* pHeap, int index);
 void MinHeapAddTo(struct MinHeap* pHeap, int node);
 void MinHeapPop(struct MinHeap* pHeap, int& outNode);
-int MinHeapFind(struct MinHeap* pHeap, int node);
+int MinHeapFind(struct MinHeap* pHeap, int node); // find the index containing the node value
 void MinHeapChangeNodeWeight(struct MinHeap* pHeap, int index, int newWeight);
 
 // --------------- sorting
@@ -85,8 +85,8 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 // ----------------- general
 
 bool IsPrime(int number);
-// index:				0, 1, 2, 3, 4, 5, 6, 7,		8,		9		10
-// Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13,	21,		34,		55
+// index:			   0, 1, 2, 3, 4, 5, 6, 7,	8,	9	10
+// Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13,	21,	34,	55
 int FibonacciIterative(int FibonacciNumberAtIndex);
 int FibonacciRecursive(int FibonacciNumberAtIndex);
 void RemoveDuplicatesFromSortedArray(int* array, int& arrayLength);
