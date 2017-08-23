@@ -328,6 +328,25 @@ void InsertionSort(int array[], int length)
 	}
 }
 
+void MaxHeapBubbleUp(int* /* array */, int /* indexToBubble */, int /* numElements */) {}; // do a max heap bubble up
+int MaxHeapPopHead(int* /* array */, int& /* numElements */) { return 0; }; // pop max heap head (max element)
+void HeapSort(int* array, int len) 
+{
+	if (array && len > 1) 
+	{
+		for (int i = 1; i < len; ++i) 
+		{
+			MaxHeapBubbleUp(array, i, i + 1);
+		}
+
+		for (int i = len; i > 1; --i)
+		{
+			int lenAfterPop = len;
+			array[len - 1] = MaxHeapPopHead(array, lenAfterPop);
+		}
+	}
+}
+
 // ------------------ string functions
 
 int StringLen(const char* pStr)

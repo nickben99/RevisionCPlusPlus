@@ -1003,6 +1003,19 @@ void ImportantAlgorithms()
 	std::cout << std::endl << "BinaryTreeMaxDepth(maxDepth) : " << BinaryTreeMaxDepth(maxDepth);
 
 	//--------------------- general -------------------
+
+	std::cout << std::endl << std::endl << "Prime";
+	std::vector<int> primes = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107 };
+	for (int prime : primes) {
+		std::cout << std::endl << "IsPrime: " << prime << " " << (IsPrime(prime) ? "true" : "false");
+	}
+
+	std::cout << std::endl << std::endl << "Not Prime";
+	std::vector<int> notPrimes = { 0, 1, 9, 15, 21, 25, 33, 49, 69, 81 };
+	for (int prime : notPrimes) {
+		std::cout << std::endl << "IsPrime: " << prime << " " << (IsPrime(prime) ? "true" : "false");
+	}
+
 	std::cout << std::endl << "FibonacciRecursive(0): " << FibonacciRecursive(0);
 	std::cout << std::endl << "FibonacciRecursive(1): " << FibonacciRecursive(1);
 	std::cout << std::endl << "FibonacciRecursive(2): " << FibonacciRecursive(2);
