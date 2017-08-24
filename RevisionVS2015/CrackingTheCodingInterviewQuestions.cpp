@@ -89,7 +89,7 @@ bool AreAllCharactersUniqueNoExtraDataStructures(char* string)
 	{
 		++endIter;
 	}
-	int stringEndIndex = std::max((endIter-string)-1, 0);
+	int stringEndIndex = std::max((int)(endIter-string)-1, 0);
 	quicksort::QuickSort(string, 0, stringEndIndex);
 
 	while (string)
@@ -681,7 +681,7 @@ std::unordered_set<std::string> GenerateParens(int numParanthesis)
 		std::unordered_set<std::string> tempStrings = GenerateParens(numParanthesis - 1);
 		for (std::string temp : tempStrings)
 		{
-			int startInsertionPoint = temp.size() / 2;
+			int startInsertionPoint = (int)temp.size() / 2;
 			std::string centerCopy = temp;
 			centerCopy.insert(startInsertionPoint, "()");
 			returnStrings.insert(centerCopy);
@@ -803,7 +803,7 @@ int SearchInSparseArray(const std::vector<std::string>& strings, std::string sea
 	{
 		return -1;
 	}
-	return SearchInSparseArrayInternal(strings, searchFor, 0, strings.size() - 1);
+	return SearchInSparseArrayInternal(strings, searchFor, 0, (int)strings.size() - 1);
 }
 
 void RankFromStream::Track(int x)

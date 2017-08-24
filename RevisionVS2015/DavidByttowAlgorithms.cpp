@@ -214,37 +214,37 @@ void FloydWarshallSearch(GraphData& graph)
 
 namespace quicksort
 {
-	template <class T> int partition(T array[], int start, int end)
-	{
-		int pivot = array[end];
-		int partitionIndex = start;
+	template<class T> int Partition(T arr[], int left, int right) {
+		int pivot = arr[(left + right) / 2]; // Pick a pivot point. Can be an element		
 
-		for (int i = start; i < end; i++)
-		{
-			if (array[i] <= pivot)
-			{
-				if (partitionIndex != i)
-				{
-					std::swap(array[i], array[partitionIndex]);
-				}
-				++partitionIndex;
+		while (left <= right) { // Until we've gone through the whole array
+								// Find element on left that should be on right
+			while (arr[left] < pivot) {
+				left++;
+			}
+
+			// Find element on right that should be on left
+			while (arr[right] > pivot) {
+				right--;
+			}
+
+			// Swap elements, and move left and right indices
+			if (left <= right) {
+				std::swap(arr[left], arr[right]);
+				left++;
+				right--;
 			}
 		}
-		if (partitionIndex != end)
-		{
-			std::swap(array[partitionIndex], array[end]);
-		}
-		return partitionIndex;
+		return left;
 	}
 
-	template<class T> void QuickSort(T array[], int start, int end)
-	{
-		if (start < end)
-		{
-			int pivotIndex = partition(array, start, end);
-			//after each call one number(the PIVOT) will be at its final position
-			QuickSort(array, start, pivotIndex - 1); // lower half
-			QuickSort(array, pivotIndex + 1, end); // higher half
+	template<class T> void QuickSort(T arr[], int left, int right) {
+		int index = Partition(arr, left, right);
+		if (left < index - 1) { // Sort left half
+			QuickSort(arr, left, index - 1);
+		}
+		if (index < right) { // Sort right half
+			QuickSort(arr, index, right);
 		}
 	}
 

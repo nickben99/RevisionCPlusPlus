@@ -2,7 +2,7 @@
 #define _ImportantAlgorithms_h_
 
 #include <string>
-#include <set>
+#include <unordered_set>
 #include <vector>
 #include "ProgrammingInterviewsBook.h"
 
@@ -96,21 +96,27 @@ void RemoveDuplicatesFromArrayPreserveLast(int* array, int& arrayLength);
 void RemoveDuplicatesFromArrayPreserveNth(int array[], int& len, int N);
 
 template <class T> void RemoveCommonElementsFromArrays(T* pArrayOne, int& arrayOneLen, T* pArrayTwo, int& arrayTwoLen);
-bool GetNthElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo);
-bool GetNthElementFromUnionOfSortedArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo); // could be duplicates
+bool GetNthSmallestElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo);
+bool GetNthSmallestElementFromUnionOfSortedArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo); // could be duplicates
 void RemoveCommonElementsFromSortedArrays(int* arrOne, int& lenOne, int* arrTwo, int& lenTwo);
-void RemoveCommonIntegers(int* intNumbers, const char** stringNumbers, int& numIntNumbers, int& numStringNumbers);
+void RemoveCommonIntegers(int* intNumbers, const char** stringNumbers, int& numIntNumbers, int& numStringNumbers); // arrays not sorted
 namespace boggle
 {
-	void Boggle(const std::set<std::string>& dictionary, const char* dice, int dimension, std::set<std::string>& found);
+	/* Boggle Rules
+	Players have three minutes(shown by the countdown timer) to find as many words as they can in the grid, according to the following rules :
+		-The letters must be adjoining in a 'chain'. (Letter cubes in the chain may be adjacent horizontally, vertically, or diagonally.)
+		- Words must contain at least three letters.
+		- No letter cube may be used more than once within a single word.
+		- all letter cube sides contain a single character accept for 'Qu' 
+	*/
+	void Boggle(const std::unordered_set<std::string>& dictionary, const char* dice, int dimension, std::unordered_set<std::string>& found);
 }
 namespace findLargestEncompassingRectangle
 {
 	// for explanation: http://stackoverflow.com/questions/7770945/largest-rectangular-sub-matrix-with-the-same-number?lq=1
 	int FindLargestEncompassingRectangleOfZeros(char* array, int rows, int cols);
 }
-BinaryTreeNode* BinaryTreeInOrderSearchNoRecursion(BinaryTreeNode* root, int val); // <<== tricky to implement
-BinaryTreeNode* BinaryTreePostOrderSearchNoRecursion(BinaryTreeNode* root, int val); // <<== tricky to implement
+
 std::string IntToBinaryString(int val);
 std::string UnsignedIntToBinaryString(unsigned int val);
 int BinaryStringToUnsignedInt(const char* string);

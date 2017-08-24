@@ -1067,7 +1067,7 @@ void ImportantAlgorithms()
 		int numsN[] = { 0, 1, 4, 5, 7, 8, 9 };
 		int nums2N[] = { 5, 6, 7 };
 		int NthSmallestElement = 0;
-		bool result = GetNthElementFromUnionOfSortedNoDuplicatesArrays(NthSmallestElement, 5, numsN, sizeof(numsN)/sizeof(numsN[0]), nums2N, sizeof(nums2N) / sizeof(nums2N[0]));
+		bool result = GetNthSmallestElementFromUnionOfSortedNoDuplicatesArrays(NthSmallestElement, 5, numsN, sizeof(numsN)/sizeof(numsN[0]), nums2N, sizeof(nums2N) / sizeof(nums2N[0]));
 		std::cout << std::endl << "GetNthElementFromUnionOfSortedNoDuplicatesArrays() : " << result << " : " << NthSmallestElement;
 	}
 
@@ -1075,7 +1075,7 @@ void ImportantAlgorithms()
 		int numsN[] = { 0, 1, 4, 4, 4, 8, 9 };
 		int nums2N[] = { 4, 6, 7 };
 		int NthSmallestElement = 0;
-		bool result = GetNthElementFromUnionOfSortedArrays(NthSmallestElement, 3, numsN, sizeof(numsN) / sizeof(numsN[0]), nums2N, sizeof(nums2N) / sizeof(nums2N[0]));
+		bool result = GetNthSmallestElementFromUnionOfSortedArrays(NthSmallestElement, 3, numsN, sizeof(numsN) / sizeof(numsN[0]), nums2N, sizeof(nums2N) / sizeof(nums2N[0]));
 		std::cout << std::endl << "GetNthElementFromUnionOfSortedArrays() : " << result << " : " << NthSmallestElement;
 	}
 
@@ -1096,11 +1096,11 @@ void ImportantAlgorithms()
 	int stringNumbersLength = 8;
 	RemoveCommonIntegers(numbers, stringNumbers, numbersLength, stringNumbersLength);
 
-	std::set<std::string> dictionary = { "GEEKS", "FOR", "QUIZ", "SEE", "GO" };
+	std::unordered_set<std::string> dictionary = { "GEEKS", "FOR", "QUIZ", "SEE", "GO" };
 	char boggle[] = {	'G','I','Z',
 						'U','E','K',
 						'Q','S','E' };
-	std::set<std::string> found;
+	std::unordered_set<std::string> found;
 	boggle::Boggle(dictionary, boggle, 3, found);
 	
 	char matrix[] = {	0, 0, 0, 0, 1, 0, 1,

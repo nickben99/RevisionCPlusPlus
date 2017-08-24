@@ -53,10 +53,10 @@ private:
 }
 
 // quick sort https://www.youtube.com/watch?v=aQiWF4E8flQ
-// http://stackoverflow.com/questions/22504837/how-to-implement-quick-sort-algorithm-in-c
+// from cracking the coding interview page 148
 namespace quicksort
 {
-	template<class T> void QuickSort(T array[], int start, int end);
+	template<class T> void QuickSort(T array[], int left, int right);
 }
 
 namespace mergesort

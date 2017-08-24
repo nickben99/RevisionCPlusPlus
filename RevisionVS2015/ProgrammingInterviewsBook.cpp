@@ -529,7 +529,7 @@ void removeChars(std::string& str, const std::string& remove)
 void ReverseStringInternal(char* pStringStart, char* pStringEnd); // prototype
 void ReverseString(char* pString)
 {
-	char* pLastStringChar = pString + std::max<int>(0, strlen(pString) - 1);
+	char* pLastStringChar = pString + std::max<int>(0, (const int)strlen(pString) - 1);
 	ReverseStringInternal(pString, pLastStringChar);
 }
 
@@ -548,7 +548,7 @@ void ReverseStringInternal(char* pStringStart, char* pStringEnd)
 
 void ReverseWords(char* pString)
 {
-	int len = strlen(pString);
+	int len = (int)strlen(pString);
 	ReverseStringInternal(pString, pString + (len-1));
 	
 	char* wordStart = pString;
@@ -621,7 +621,7 @@ std::string IntToString(int val)
 	}
 	
 	// reversing the string here. // NOTE: could've avoided this string reverse if insert(0, "0") was done previosuly in this function
-	int start = 0, end = numString.length()-1;
+	int start = 0, end = (int)numString.length()-1;
 	while (end > start)
 	{
 		char temp = numString[start];
@@ -703,7 +703,7 @@ void PrintAllStringPermutationsInternal(const char* pOriginalString, int len, ch
 
 void PrintAllStringPermutations(const char* pString)
 {
-	int len = strlen(pString); // alternately without using api functions: const char* pIter = pString; while ('\0' != *pIter) { ++pIter;}; len = pIter-pString;
+	int len = (int)strlen(pString); // alternately without using api functions: const char* pIter = pString; while ('\0' != *pIter) { ++pIter;}; len = pIter-pString;
 	bool* pUsed = new bool[len]; // could do without this if pString was none const (could just temporarilly null out chars which are being used)
 	memset(pUsed, 0, sizeof(bool)*len); 
 	char* pCurrentString = new char[len+1]; // NOTE: +1 to add '\0' t end of char array
@@ -713,7 +713,7 @@ void PrintAllStringPermutations(const char* pString)
 
 void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 32 characters long, but is big O(numCombos*len)
 {
-	int len = strlen(pString);
+	int len = (int)strlen(pString);
 	if (len >= 0)
 	{
 		unsigned int numCombos = 1 << len;
@@ -734,7 +734,7 @@ void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm wil
 void PrintAllStringCombinationsAltInternal(const char*, char*, int, int, int, int&);
 void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this algorithm will work regarldless of character length, but is big O(2^len)
 {
-	int len = strlen(pOriginalString);
+	int len = (int)strlen(pOriginalString);
 	char* currentString = new char[len + 1];
 	memset(currentString, 0, sizeof(char) * (len + 1));
 	int count = 0;
@@ -802,7 +802,7 @@ void GenerateTelephoneWordsInternal(const char* pNum, int numLen, int pos, char*
 
 void GenerateTelephoneWords(const char* pNum)
 {
-	int len = strlen(pNum);
+	int len = (int)strlen(pNum);
 	char* pCurrString = new char[len+1];
 	memset(pCurrString, 0, len+1);
 	int count = 0;
@@ -811,7 +811,7 @@ void GenerateTelephoneWords(const char* pNum)
 
 void GenerateTelephoneWordsNonRecurse(const char* pPhoneNum)
 {
-	int len = strlen(pPhoneNum);
+	int len = (int)strlen(pPhoneNum);
 	char* pCurrString = new char[len+1];
 	memset(pCurrString, 0, sizeof(char)*(len+1));
 

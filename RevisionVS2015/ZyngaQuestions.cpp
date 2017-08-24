@@ -123,7 +123,7 @@ int CalculateHammingDistanceHeuristic(const char* from, const char* to, int leng
 
 bool FindNumChangesBetweenWordsAStar(const std::string& from, const std::string& to, int& numChanges)
 {	
-	unsigned int wordLength = from.length();
+	unsigned int wordLength = (unsigned int)from.length();
 	if (wordLength != to.length())
 	{
 		return false; // words must be the same length

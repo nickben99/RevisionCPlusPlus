@@ -357,7 +357,7 @@ int StringLen(const char* pStr)
 	}
 	const char* pStart = pStr;
 	for (; *pStr != '\0'; ++pStr) { }
-	return (pStr - pStart);
+	return (int)(pStr - pStart);
 }
 
 void ReverseStringRecursiveInternal(char* pStringStart, char* pStringEnd)
@@ -410,8 +410,8 @@ unsigned int BinaryNumberToUnsignedInt(const char* pBinaryNumString)
 
 std::string SumBinaryNumbers(const std::string& binaryNumOne, const std::string& binaryNumTwo)
 {
-	int lengthOneIterator = binaryNumOne.size() - 1;
-	int lengthTwoIterator = binaryNumTwo.size() - 1;
+	int lengthOneIterator = (int)binaryNumOne.size() - 1;
+	int lengthTwoIterator = (int)binaryNumTwo.size() - 1;
 
 	std::string result;
 	int carry = 0;
@@ -769,7 +769,7 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 	{
 		PathCell parentCell = PopElementWithSmallestDistancePlusHeuristic(openList); // get smallest element and remove from list 
 		closedList.push_back(parentCell); // add element to explored closedList 
-		int closedListIndex = closedList.size() - 1;
+		int closedListIndex = (int)closedList.size() - 1;
 
 		if ( end == parentCell.cell ) // end cell added to closed list
 		{	
@@ -785,7 +785,7 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 
 		std::vector<GridCell>& adjacentCells = parentCell.cell.adjacentTraversableGridCells;
 
-		int numAdjacentCells = adjacentCells.size();
+		int numAdjacentCells = (int)adjacentCells.size();
 		for (int adjacent = 0; adjacent < numAdjacentCells; ++adjacent)
 		{
 			if ( GetItemIndex(closedList, adjacentCells[ adjacent ]) >= 0 ) // NOTE: depending on set-up, may want to also check parentCell.cell != adjacentCells[adjacent]
@@ -1031,7 +1031,7 @@ void MakeRemoveCommonElementsFromArraysLink()
 }
 
 // will return nth smallest element if the input arrays are sorted
-bool GetNthElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo)
+bool GetNthSmallestElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo)
 {
 	if (!arrOne)
 	{
@@ -1074,7 +1074,7 @@ bool GetNthElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestElement, i
 	return true;
 }
 
-bool GetNthElementFromUnionOfSortedArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo)
+bool GetNthSmallestElementFromUnionOfSortedArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo)
 {
 	if (!arrOne)
 	{
@@ -1242,13 +1242,13 @@ int ToIndex(int row, int col, int columns)
 	return row * columns + col;
 }
 
-bool IsInDictionary(const std::set<std::string>& dictionary, const char* word)
+bool IsInDictionary(const std::unordered_set<std::string>& dictionary, const char* word)
 {
 	return dictionary.end() != dictionary.find(std::string(word));
 }
 
-void FindWords(int dimension, const std::set<std::string>& dictionary, int parentDice, int currentSequencePosition,
-				bool* usedDice, const char* dice, char* currentSequence, std::set<std::string>& found)
+void FindWords(int dimension, const std::unordered_set<std::string>& dictionary, int parentDice, int currentSequencePosition,
+				bool* usedDice, const char* dice, char* currentSequence, std::unordered_set<std::string>& found)
 {
 	usedDice[parentDice] = true;
 	currentSequence[currentSequencePosition] = dice[parentDice];
@@ -1292,7 +1292,11 @@ void FindWords(int dimension, const std::set<std::string>& dictionary, int paren
 	usedDice[parentDice] = false;
 }
 
-void Boggle(const std::set<std::string>& dictionary, const char* dice, int dimension, std::set<std::string>& found)
+// IMPROVEMENTS/SIMPLIFICATIONS
+// make dice std::vector<std::vector<char>> where 4*4 is assumed
+// remove dimension, assument literal 4 everywhere
+// remove usedDice array, instead set members of dice to '\0' when they have been used (this works ok when dice is std::vector<std::vector<char>>)
+void Boggle(const std::unordered_set<std::string>& dictionary, const char* dice, int dimension, std::unordered_set<std::string>& found)
 {
 	int diceLength = dimension*dimension;
 	bool* usedDice = new bool[diceLength];
@@ -1402,15 +1406,6 @@ int FindLargestEncompassingRectangleOfZeros(char* array, int numRows, int numCol
 
 } // findLargestEncompassingRectangle
 
-BinaryTreeNode* BinaryTreeInOrderSearchNoRecursion(BinaryTreeNode* , int )
-{
-	return nullptr;
-}
-
-BinaryTreeNode* BinaryTreePostOrderSearchNoRecursion(BinaryTreeNode* , int )
-{
-	return nullptr;
-}
 
 std::string IntToBinaryString(int input)
 {
@@ -1438,7 +1433,9 @@ std::string IntToBinaryString(int input)
 
 std::string UnsignedIntToBinaryString(unsigned int val)
 {
-	std::string numString; // if you want to use a char array, then below loop must be done twice, first time just to get char array length
+	// if you want to use a char array, then below loop must be done twice, first time just to get char array length
+	// alternately, 1 + (base 2 log of number) will get the length
+	std::string numString;
 	do
 	{
 		int figure = val % 2;

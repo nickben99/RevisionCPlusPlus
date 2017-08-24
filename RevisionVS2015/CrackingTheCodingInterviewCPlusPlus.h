@@ -157,7 +157,7 @@ void* AlignedMalloc(int size, unsigned int alignment)
 	}
 
 	char* aligned = allocated + beginPointerSize;
-	unsigned int remainder = (unsigned int)aligned % alignment;
+	unsigned int remainder = (unsigned long long)aligned % alignment;
 	if (remainder != 0) {
 		aligned += (alignment - remainder);
 	}
