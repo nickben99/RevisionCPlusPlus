@@ -26,6 +26,10 @@ void DeleteStackLinkedList( Element** stackHead )
 
 bool PushStackLinkedList( Element** stackHead, void* data )
 {
+	if (!stackHead) {
+		return false;
+	}
+
 	Element* pNewElem = new Element();
 	if (!pNewElem)
 	{
@@ -224,7 +228,7 @@ void Flatten_LinkedList(ElementFlatten** head, ElementFlatten** end)
 }
 
 // this is the method presented in the book, but it seems very bad, sections will be traversed multiple times
-// see Unflatten_LinkedList1 for better implementation
+// see Unflatten_LinkedListBetter for better implementation
 void Unflatten_LinkedListInternal(ElementFlatten* element)
 {
 	while (element)
@@ -306,7 +310,7 @@ bool IsCyclic_LinkedList(Element* head)
 // pre order is check order: current node, left node, right node
 // in order is check order: leftnode, current node, right node
 // post order is check order: leftnode, right node, current node
-BinaryTreeNode* BinaryTreePreOrderSearch(BinaryTreeNode* root, int val)
+BinaryTreeNode* BinaryTreePreOrderSearchRecursive(BinaryTreeNode* root, int val)
 {
 	if (root)
 	{
@@ -315,13 +319,13 @@ BinaryTreeNode* BinaryTreePreOrderSearch(BinaryTreeNode* root, int val)
 			return root;
 		}
 
-		BinaryTreeNode* left = BinaryTreePreOrderSearch(root->left, val);
+		BinaryTreeNode* left = BinaryTreePreOrderSearchRecursive(root->left, val);
 		if (left)
 		{
 			return left;
 		}
 
-		return BinaryTreePreOrderSearch(root->right, val);
+		return BinaryTreePreOrderSearchRecursive(root->right, val);
 	}
 	return nullptr;
 }
@@ -451,7 +455,7 @@ BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicatesRecurs
 	return root;
 }
 
-BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicates(BinaryTreeNode* root, int valOne, int valTwo)
+BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicatesIterative(BinaryTreeNode* root, int valOne, int valTwo)
 {
 	while (root)
 	{
@@ -476,8 +480,7 @@ BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicates(Binar
 char FindFirstNonRepeatedCharacter(const char* pString)
 {
 	std::unordered_map<char, int> amountUsed; // could also use int amountUsed[CHAR_MAX + 1]; memset(amountUsed, 0, sizeof(int)*(CHAR_MAX + 1));
-	const char* pIter = pString;
-	while (*pIter)
+	for (const char* pIter = pString; '\0' != *pIter; ++pIter)
 	{	
 		auto amountUsedIter = amountUsed.find(*pIter); // would not be required with int amountUsed[CHAR_MAX + 1];
 		if (amountUsed.end() == amountUsedIter) // doesn't exist
@@ -488,17 +491,14 @@ char FindFirstNonRepeatedCharacter(const char* pString)
 		{
 			++amountUsedIter->second;
 		}
-		++pIter;
 	}
 
-	pIter = pString;
-	while (*pIter)
+	for (const char* pIter = pString; '\0' != *pIter; ++pIter)
 	{
 		if (amountUsed[*pIter] < 2)
 		{
 			return *pIter;
 		}
-		++pIter;
 	}
 	return '\0';
 }
@@ -535,14 +535,11 @@ void ReverseString(char* pString)
 
 void ReverseStringInternal(char* pStringStart, char* pStringEnd)
 {
-	while (pStringEnd > pStringStart)
+	for (; pStringEnd > pStringStart; --pStringEnd, ++pStringStart)
 	{
 		char temp = *pStringStart;
 		*pStringStart = *pStringEnd;
-		*pStringEnd = temp;
-
-		--pStringEnd;
-		++pStringStart;
+		*pStringEnd = temp;		
 	}
 }
 
@@ -590,12 +587,7 @@ int StringToInt(const char* string)
 			return 0;
 		}		
 	}
-
-	if (!wasPositive)
-	{
-		returnNumber = -returnNumber;
-	}
-	return returnNumber;
+	return wasPositive ? returnNumber : -returnNumber;
 }
 
 std::string IntToString(int val)
@@ -743,18 +735,15 @@ void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this al
 
 void PrintAllStringCombinationsAltInternal(const char* pOriginalString, char* currentString, int position, int insertionPoint, int length, int& count)
 {
-	currentString[insertionPoint] = pOriginalString[position];
-	if (position + 1 < length)
-	{		
-		PrintAllStringCombinationsAltInternal(pOriginalString, currentString, position + 1, insertionPoint + 1, length, count);
-		PrintAllStringCombinationsAltInternal(pOriginalString, currentString, position + 1, insertionPoint, length, count);
+	if (position >= length) {
+		std::cout << std::endl << count++ << ". " << currentString;
 	}
 	else
-	{	
-		currentString[insertionPoint + 1] = '\0';
-		std::cout << std::endl << count++ << ". " << currentString;
+	{
+		PrintAllStringCombinationsAltInternal(pOriginalString, currentString, position + 1, insertionPoint, length, count);
+		currentString[insertionPoint] = pOriginalString[position];
+		PrintAllStringCombinationsAltInternal(pOriginalString, currentString, position + 1, insertionPoint + 1, length, count);
 		currentString[insertionPoint] = '\0';
-		std::cout << std::endl << count++ << ". " << currentString;
 	}
 }
 

@@ -6,6 +6,7 @@
 
 // trie https://en.wikipedia.org/wiki/Trie
 // https://www.topcoder.com/community/data-science/data-science-tutorials/using-tries/
+// constructor, destructor, FindWords()
 class Trie
 {
 public:
@@ -25,7 +26,9 @@ private:
 	std::string prefix;
 };
 
-// nodeDependancies->right depends on nodeDependancies->left
+// page 632 Topological Sort
+// sort the allInputNodes so each appears in the outputNodes after the nodes it depends on
+// nodeDependancies->right depends on nodeDependancies->left, meaning left has an edge pointing to right
 bool TopologicalSort(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes);
 
 #endif

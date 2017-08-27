@@ -19,11 +19,11 @@ bool InsertAfter_LinkedList(Element* after, void* data, Element** stackHead, Ele
 bool RemoveHead_LinkedList(Element** head);
 bool GetNthToLastElement_LinkedList(Element** out, Element** head, int n);
 
-// see chapter 4, figure 4-3, location 1125 (approx)
+// see chapter 4, figure 4-3, kindle location 1125 (approx)
 struct ElementFlatten
 {
-	ElementFlatten(int val) : next(0), prev(0), child(0), value(val) {}
-	ElementFlatten* Add(int val)
+	ElementFlatten(int val) : next(nullptr), prev(nullptr), child(nullptr), value(val) {}
+	ElementFlatten* Add(int val) // NOTE: this function is just used to construct the data structure (not involved in questions below)
 	{
 		ElementFlatten* pCurr = this;		
 		while (pCurr->next)
@@ -36,13 +36,15 @@ struct ElementFlatten
 		return pCurr->next;
 	}
 
-	ElementFlatten* CreateChild(int val) 
+	ElementFlatten* CreateChild(int val) // NOTE: this function is just used to construct the data structure (not involved in questions below)
 	{ 
 		child = new ElementFlatten(val); 
 		return child; 
 	}
 
-	ElementFlatten *next, *prev, *child; 
+	ElementFlatten* next; 
+	ElementFlatten* prev;
+	ElementFlatten* child;
 	int value;
 };
 
@@ -58,12 +60,12 @@ struct BinaryTreeNode
 	int val; BinaryTreeNode* left = nullptr; BinaryTreeNode* right = nullptr;
 };
 
-BinaryTreeNode* BinaryTreePreOrderSearch(BinaryTreeNode* root, int val); // do pre order search of nodes (not a binary search tree)
+BinaryTreeNode* BinaryTreePreOrderSearchRecursive(BinaryTreeNode* root, int val); // do pre order search of nodes (not a binary search tree)
 BinaryTreeNode* BinaryTreePreOrderSearchIterative(BinaryTreeNode* root, int val); // do pre order search of nodes (not a binary search tree)
 BinaryTreeNode* BinaryTreeInOrderSearchIterative(BinaryTreeNode* root, int val); // do in order search of nodes (not a binary search tree)
 BinaryTreeNode* BinaryTreePostOrderSearchIterative(BinaryTreeNode* root, int val); // do post order search of nodes (not a binary search tree)
 BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicatesRecurse(BinaryTreeNode* root, int valOne, int valTwo);
-BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicates(BinaryTreeNode* root, int valOne, int valTwo);
+BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicatesIterative(BinaryTreeNode* root, int valOne, int valTwo);
 
 // chapter 6 - arrays and strings -------------------------------------------------------------------------------------------
 
@@ -89,7 +91,7 @@ void drawEighthOfCircle(int radius);
 struct Rectangle {int xLeft, yTop, xRight, yBottom;};
 bool RectangleOverlap(const Rectangle& rectOne, const Rectangle& rectTwo);
 bool IsMachineLittleEndian();
-template<class T> int CountOnesInInt(T input); // templatized on type of int
+template<class T> int CountOnesInInt(T input); // templatized on type of int, count the 1's in the binary representation
 int CountOnesInCharBig01Amortized(char input);
 
 #endif

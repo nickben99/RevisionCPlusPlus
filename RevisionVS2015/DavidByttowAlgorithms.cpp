@@ -328,7 +328,9 @@ namespace bucketsort
 			allBuckets[bucketIndex].push_back(inputArray[i]);
 		}
 
-		// 3) Sort individual buckets
+		// 3) Sort individual buckets 
+		// (NOTE: some implementations do step 4 now, then after that do a sort on the inputArray. This could work well using insertion 
+		// sort on a nearly sorted array)
 		for (int i = 0; i < numBuckets; i++)
 		{
 			std::sort(allBuckets[i].begin(), allBuckets[i].end()); // use insertion sort or any sort here

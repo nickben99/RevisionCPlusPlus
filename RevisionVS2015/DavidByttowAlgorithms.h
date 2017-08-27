@@ -72,6 +72,8 @@ namespace bucketsort
 	template<class T> void BucketSort(T inputArray[], int length, const T& minInput, const T& maxInput, int numBuckets);
 }
 
+// HashTable - key -> value
+// constructor, destructor, Add(), Remove(), Find()
 template<class Identifier, class Data, int NumBuckets> class Hashtable
 {
 public:

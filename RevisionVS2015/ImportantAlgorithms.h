@@ -57,7 +57,7 @@ void RemoveCommonElementsFromStrings(char* pStringOne, char* pStringTwo);
 // --------------- tree functions
 
 BinaryTreeNode* BinaryTreeBreadthFirstSearch(BinaryTreeNode* pRoot, int val);
-BinaryTreeNode* BinarySearchTreeFindNonRecurse(BinaryTreeNode* pRoot, int val); // tree where left node is less than parent, right node is higher
+BinaryTreeNode* BinarySearchTreeFindIterative(BinaryTreeNode* pRoot, int val); // tree where left node is less than parent, right node is higher
 BinaryTreeNode* BinarySearchTreeFindRecurse(BinaryTreeNode* pRoot, int val); // tree where left node is less than parent, right node is higher
 bool BinarySearchTreeAddNoDuplicatesNonRecurse(BinaryTreeNode** pRoot, int val); // tree where left node is less than parent, right node is higher
 bool BinarySearchTreeAddNoDuplicatesRecurse(BinaryTreeNode** pRoot, int val); // tree where left node is less than parent, right node is higher

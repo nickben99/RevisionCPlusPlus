@@ -113,29 +113,33 @@ void MyVectorTestMyPtr()
 
 void MyVectorTestMy()
 {
-	MyVectorImplementation1<MyBasicClass> basics;
+	{
+		MyVectorImplementation1<MyBasicClass> basics;
 
-	MyBasicClass bas;
-	basics.push_back(bas);
-	basics.push_back(bas);
-	basics.push_back(bas);
-	basics.push_back(bas);
-	basics.push_back(bas);
-	basics.push_back(bas);
-	basics.push_back(bas);
-	basics.push_back(bas);
-	basics.push_back(bas);
+		MyBasicClass bas;
+		basics.push_back(bas);
+		basics.push_back(bas);
+		basics.push_back(bas);
+		basics.push_back(bas);
+		basics.push_back(bas);
+		basics.push_back(bas);
+		basics.push_back(bas);
+		basics.push_back(bas);
+		basics.push_back(bas);
+	}
 
-	MyVectorImplementation2<MyBasicClass> myVectorOfSimpleClass;
-	myVectorOfSimpleClass.push_back(MyBasicClass(0));
-	myVectorOfSimpleClass.push_back(MyBasicClass(1));
-	myVectorOfSimpleClass.push_back(MyBasicClass(2));
-	myVectorOfSimpleClass.push_back(MyBasicClass(3));
-	myVectorOfSimpleClass.push_back(MyBasicClass(4));
+	{
+		MyVectorImplementation2<MyBasicClass> myVectorOfSimpleClass;
+		myVectorOfSimpleClass.push_back(MyBasicClass(0));
+		myVectorOfSimpleClass.push_back(MyBasicClass(1));
+		myVectorOfSimpleClass.push_back(MyBasicClass(2));
+		myVectorOfSimpleClass.push_back(MyBasicClass(3));
+		myVectorOfSimpleClass.push_back(MyBasicClass(4));
 
-	myVectorOfSimpleClass.remove(1);
-	MyBasicClass bas5(5);
-	myVectorOfSimpleClass.push_back(bas5);
+		myVectorOfSimpleClass.remove(1);
+		MyBasicClass bas5(5);
+		myVectorOfSimpleClass.push_back(bas5);
+	}
 }
 
 void vectorTests()
@@ -809,10 +813,10 @@ void ProgrammingInterviewsBook()
 // chapter 5 - trees and graphs -------------------------------------------------------------------------------------------
 
 	BinaryTreeNode* root = 0;
-	BinaryTreePreOrderSearch(root, 0);
+	BinaryTreePreOrderSearchRecursive(root, 0);
 	BinaryTreePreOrderSearchIterative(root, 0);
 	BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicatesRecurse(root, 2, 7);
-	BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicates(root, 2, 7);
+	BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicatesIterative(root, 2, 7);
 
 // chapter 6 arrays and strings ------------------------------------------------------------------------------------------
 
@@ -1109,7 +1113,7 @@ void ImportantAlgorithms()
 						1, 0, 0, 0, 0, 0, 1,
 						0, 0, 0, 0, 0, 1, 1,
 						0, 0, 1, 0, 0, 0, 1};
-	std::cout << "FindLargestEncompassingRectangleOfZeros(); " << findLargestEncompassingRectangle::FindLargestEncompassingRectangleOfZeros(matrix, 6, 7);
+	std::cout << std::endl << std::endl << "FindLargestEncompassingRectangleOfZeros(); " << findLargestEncompassingRectangle::FindLargestEncompassingRectangleOfZeros(matrix, 6, 7);
 
 	int minusOne = -1;
 	std::cout << std::endl << "IntToBinaryString(minusOne) : (length: " << IntToBinaryString(minusOne).size() << ") : " << IntToBinaryString(minusOne);

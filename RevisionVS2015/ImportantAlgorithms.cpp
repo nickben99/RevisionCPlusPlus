@@ -507,7 +507,7 @@ BinaryTreeNode* BinaryTreeBreadthFirstSearch(BinaryTreeNode* pRoot, int val)
 	return nullptr;
 }
 
-BinaryTreeNode* BinarySearchTreeFindNonRecurse(BinaryTreeNode* pRoot, int val)
+BinaryTreeNode* BinarySearchTreeFindIterative(BinaryTreeNode* pRoot, int val)
 {
 	while (pRoot)
 	{
@@ -1316,6 +1316,79 @@ void Boggle(const std::unordered_set<std::string>& dictionary, const char* dice,
 
 namespace findLargestEncompassingRectangle
 {
+// ALTERNATE IMPLEMENTATION OF findLargestEncompassingRectangle
+
+//struct Rectangle {
+//	int startRow;
+//	int numRows;
+//	int numCols;
+//};
+//
+//void AddToNext(Rectangle currentRect, std::vector<Rectangle>* current, std::vector<Rectangle>* next, int& largestArea)
+//{
+//	int currentEndRow = currentRect.startRow + currentRect.numRows - 1;
+//	for (Rectangle compareTo : *current)
+//	{			
+//		int compareEndRow = compareTo.startRow + compareTo.numRows - 1;
+//		if (currentRect.startRow >= compareTo.startRow && currentEndRow <= compareEndRow) {
+//			next->push_back(Rectangle{ currentRect.startRow, currentRect.numRows, compareTo.numCols + 1 });
+//			largestArea = std::max(largestArea, compareTo.numRows * compareTo.numCols);
+//			return;
+//		}
+//		else if (currentEndRow >= compareTo.startRow && currentRect.startRow <= compareEndRow)
+//		{
+//			int start = std::max(currentRect.startRow, compareTo.startRow);
+//			int end = std::min(currentEndRow, compareEndRow);
+//			next->push_back(Rectangle{ start, end - start + 1, compareTo.numCols + 1 });
+//			largestArea = std::max(largestArea, (end - start + 1) * (compareTo.numCols + 1));
+//		}
+//	}
+//	next->push_back(currentRect);
+//	largestArea = std::max(largestArea, currentRect.numRows * currentRect.numCols);
+//}
+//
+//void UpdateLargest(int col, char* array, int rows, int cols, std::vector<Rectangle>* current, std::vector<Rectangle>* next, int& largestArea) 
+//{
+//	Rectangle currentRect{ -1, -1, 1 };
+//
+//	for (int row = 0; row < rows; ++row)
+//	{
+//		int val = array[row * cols + col];
+//		if (0 == val)
+//		{
+//			if (-1 == currentRect.startRow) {
+//				currentRect.startRow = row;
+//				currentRect.numRows = 1;
+//			}
+//			else {
+//				++currentRect.numRows;
+//			}
+//		}
+//
+//		if ((currentRect.startRow != -1) && (1 == val || row + 1 == rows))
+//		{
+//			AddToNext(currentRect, current, next, largestArea);
+//			currentRect.startRow = -1;
+//		}
+//	}
+//}
+//
+//int FindLargestEncompassingRectangleOfZeros(char* array, int rows, int cols) 
+//{
+//	int largestArea = 0;
+//	std::vector<Rectangle>* current = new std::vector<Rectangle>();
+//	std::vector<Rectangle>* next = new std::vector<Rectangle>();
+//
+//	for (int col = 0; col < cols; ++col)
+//	{
+//		UpdateLargest(col, array, rows, cols, current, next, largestArea);
+//		std::swap(current, next);
+//		next->clear();
+//	}
+//	delete current;
+//	delete next;
+//	return largestArea;
+//}
 
 int AddRectangleColumn(std::vector<std::pair<int, int>>& activeRectangles, int newHeight, int largestRectangleArea)
 {
@@ -1358,7 +1431,7 @@ int AddRectangleColumn(std::vector<std::pair<int, int>>& activeRectangles, int n
 
 int FindLargestEncompassingRectangleOfZeros(char* array, int numRows, int numColumns)
 {
-	int* freeColumnHeights = new int[numRows*numColumns];
+	int* freeColumnHeights = new int[numRows*numColumns]; // NOTE: instead of allocating this, we could overwrite array (if clobbering array is ok)
 
 	// go over columns recording height of 0's at each slot
 	for (int col = 0; col < numColumns; ++col)

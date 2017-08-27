@@ -21,10 +21,10 @@ Trie::~Trie()
 int Trie::FindWords(const char* prefix, Trie* root, int numRequired, std::vector<std::string>& outWords)
 {
 	Trie* node = FindNode(prefix, root);
+	int outWordsSize = 0;
 	if (node)
 	{
-		std::queue<Trie*> breadthFirstSearchQueue;
-		int outWordsSize = 0;
+		std::queue<Trie*> breadthFirstSearchQueue;		
 		for (std::pair<const char, Trie*> child : node->children)
 		{
 			breadthFirstSearchQueue.push(child.second);
@@ -50,7 +50,7 @@ int Trie::FindWords(const char* prefix, Trie* root, int numRequired, std::vector
 			}
 		}
 	}
-	return 0;
+	return outWordsSize;
 }
 
 Trie* Trie::Create()
@@ -131,7 +131,6 @@ struct TopologicalSortNode
 
 bool TopologicalSort(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes)
 {
-	std::queue<TopologicalSortNode*> processNext;
 	std::unordered_map<char, TopologicalSortNode*> graph;
 
 	for (auto inputNode : allInputNodes)
@@ -145,6 +144,7 @@ bool TopologicalSort(const std::vector<char>& allInputNodes, const std::vector<s
 		graph[link.first]->outboundEdges.push_back(graph[link.second]);
 	}
 
+	std::queue<TopologicalSortNode*> processNext;
 	for (auto node : graph)
 	{
 		if (0 == node.second->numInboundEdges)
