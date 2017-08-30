@@ -74,6 +74,7 @@ struct GraphNode
 
 const GraphNode* GraphDepthFirstSearch(const GraphNode& graph, int val);
 const GraphNode* GraphBreadthFirstSearch(const GraphNode& graph, int val);
+const GraphNode* GraphDepthFirstSearchIterative(const GraphNode& graph, int val);
 
 namespace AStarSearch
 {

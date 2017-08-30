@@ -3,6 +3,7 @@
 #include <stdlib.h> // for malloc
 #include <string.h>
 #include <queue>
+#include <stack>
 #include <vector>
 #include <map>
 #include <unordered_map>
@@ -384,7 +385,7 @@ void RemoveCharFromString(char* pString, char toRemove)
 		*pTarget = *pString;
 		if (*pString != toRemove)
 		{
-			++pTarget;
+			++pTarget; // NOTE: if not doing this in place, we would populate our target buffer here, like targetStdString.push_back(*pTarget)
 		}
 		++pString;
 	}
@@ -716,6 +717,39 @@ const GraphNode* GraphBreadthFirstSearch(const GraphNode& graph, int val)
 	return nullptr;
 }
 
+// NOTE: very similar to GraphBreadthFirstSearch (differences marked)
+const GraphNode* GraphDepthFirstSearchIterative(const GraphNode& graph, int val)
+{
+	std::unordered_set<const GraphNode*> searched; // NOTE: alternate to a searched list is flaging each searched node (std::queue CANNOT be searched, but would be O(n) anyway)
+	std::stack<const GraphNode*> nodes; // NOTE: different to bfs, Stack is used
+	nodes.push(&graph);
+	while (!nodes.empty())
+	{
+		const GraphNode* frontNode = nodes.top();
+		nodes.pop();
+
+		if (searched.end() != searched.find(frontNode)) { // already searched
+			continue;
+		}
+
+		if (frontNode->val == val)
+		{
+			return frontNode;
+		}
+		searched.insert(frontNode); // NOTE: different to bfs, for iterative depth first search, this is the correct place to mark visited
+		
+		for (auto childNode = frontNode->children.rbegin(); childNode != frontNode->children.rend(); ++childNode)
+		{
+			if (*childNode && searched.end() == searched.find(*childNode)) // O(1) for set.find() (assuming no hashing collisions)
+			{
+				// NOTE: different to bfs, NOT added to search here
+				nodes.push(*childNode);
+			}
+		}		
+	}
+	return nullptr;
+}
+
 namespace AStarSearch
 {
 
@@ -976,7 +1010,7 @@ void RemoveDuplicatesFromArrayPreserveNth(int array[], int& len, int N)
 				++target;
 			}
 		}
-		else // this entry is a one off
+		else // this entry is unique
 		{
 			++target;
 		}

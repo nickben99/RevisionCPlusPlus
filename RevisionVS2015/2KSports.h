@@ -8,16 +8,15 @@ struct Element2KInterview
 	void* mpData;
 };
 
+// constructor(), insert(), remove(), GetHead()
 template<class T, int N> struct LinkedListNoMemAlloc2KInterview
 {
 	LinkedListNoMemAlloc2KInterview()
-		: mHead(nullptr)
-		, mNextFree(mElements)
 	{
 		for (int i = 0; i < N; ++i)
 		{
 			mElements[i].mpPrev = (0 == i) ? nullptr : &(mElements[i - 1]);
-			mElements[i].mpNext = (N - 1 == i) ? nullptr : mElements + i + 1; // using differnet method of getting pointer, just for illustration
+			mElements[i].mpNext = (N - 1 == i) ? nullptr : mElements + i + 1; // using different method of getting pointer, just for illustration
 		}
 	}
 
@@ -97,8 +96,8 @@ template<class T, int N> struct LinkedListNoMemAlloc2KInterview
 	}
 
 	T mElements[N];
-	T* mHead;
-	T* mNextFree;
+	T* mHead = nullptr;
+	T* mNextFree = mElements;
 };
 
 template<typename T, int N> struct LinkedListStackNoMemAlloc2KInterview : private LinkedListNoMemAlloc2KInterview<T, N>

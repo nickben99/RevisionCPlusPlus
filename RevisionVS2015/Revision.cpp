@@ -302,6 +302,14 @@ public:
     Foo mFoo;
 };
 
+//static Tin<int> a_tin;
+//
+//void TinFooBarTest()
+//{	
+//	static Foo a_foo;
+//	Tin<char> b_tin;	
+//}
+
 //struct A {A(){std::cout << "A Constructor\n";}; ~A(){std::cout << "A Destructor\n"; }};
 //struct B : A {~B(){std::cout << "B Destructor\n"; }};
 //struct C : B {~C(){std::cout << "C Destructor\n"; }};
@@ -1669,6 +1677,36 @@ void TwoKSports() {
 
 	std::cout << std::endl << *(int*)zeroPointer << " " << *(int*)onePointer << " " << *(int*)twoPointer << " " << *(int*)threePointer;
 }
+
+// comment these functions in to override new, new[], delete, delete[] project wide
+// to override these operators globally, these override functions just need to be placed in a single translation unit (TU) 
+// see https://stackoverflow.com/questions/8186018/how-to-properly-replace-global-new-delete-operators
+// NOTE: overriding new/delete here just overrides the memory allocation/deletion part of the new/delete 
+// expression, constructors/destructors still get called as that part of the new/delete expression hasn't been effected
+// see https://stackoverflow.com/questions/31106449/why-overloaded-new-operator-is-calling-constructor-even-i-am-using-malloc-inside
+//void* operator new(size_t num)
+//{
+//	std::cout << std::endl << "new" << std::endl;
+//	return malloc(num);
+//}
+//
+//void* operator new[](size_t num)
+//{
+//	std::cout << std::endl << "new[]" << std::endl;
+//	return malloc(num);
+//}
+//
+//void operator delete(void *ptr)
+//{
+//	std::cout << std::endl << "delete" << std::endl;
+//	free(ptr);
+//}
+//
+//void operator delete[](void *ptr)
+//{
+//	std::cout << std::endl << "delete[]" << std::endl;
+//	free(ptr);
+//}
 
 //int _tmain(int argc, _TCHAR* argv[])
 int main(int, char*)
