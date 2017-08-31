@@ -59,7 +59,7 @@ void RemoveCommonElementsFromStrings(char* pStringOne, char* pStringTwo);
 BinaryTreeNode* BinaryTreeBreadthFirstSearch(BinaryTreeNode* pRoot, int val);
 BinaryTreeNode* BinarySearchTreeFindIterative(BinaryTreeNode* pRoot, int val); // tree where left node is less than parent, right node is higher
 BinaryTreeNode* BinarySearchTreeFindRecurse(BinaryTreeNode* pRoot, int val); // tree where left node is less than parent, right node is higher
-bool BinarySearchTreeAddNoDuplicatesNonRecurse(BinaryTreeNode** pRoot, int val); // tree where left node is less than parent, right node is higher
+bool BinarySearchTreeAddNoDuplicatesIterative(BinaryTreeNode** pRoot, int val); // tree where left node is less than parent, right node is higher
 bool BinarySearchTreeAddNoDuplicatesRecurse(BinaryTreeNode** pRoot, int val); // tree where left node is less than parent, right node is higher
 bool BinarySearchTreeRemove(BinaryTreeNode** pRoot, int val);
 int BinaryTreeMaxDepth(BinaryTreeNode* pRoot);
@@ -81,8 +81,12 @@ namespace AStarSearch
 struct AStarPath;
 struct Grid;
 struct GridCell;
+// use this when there are traversal costs between nodes (when there are no traversal costs a bidirectional breadth first search can be used)
 bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const GridCell& end);
 }
+
+// use this when you have a start and end, but no traversal costs between nodes
+std::vector<const GraphNode*> GraphBidirectionalBreadthFirstSearch(const GraphNode& from, const GraphNode& to);
 
 // ----------------- general
 

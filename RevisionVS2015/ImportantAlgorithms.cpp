@@ -545,7 +545,7 @@ BinaryTreeNode* BinarySearchTreeFindRecurse(BinaryTreeNode* pRoot, int val)
 	return BinarySearchTreeFindRecurse(pRoot->left, val);
 }
 
-bool BinarySearchTreeAddNoDuplicatesNonRecurse(BinaryTreeNode** pRoot, int val)
+bool BinarySearchTreeAddNoDuplicatesIterative(BinaryTreeNode** pRoot, int val)
 {
 	if (!pRoot)
 	{
@@ -722,7 +722,7 @@ const GraphNode* GraphDepthFirstSearchIterative(const GraphNode& graph, int val)
 {
 	std::unordered_set<const GraphNode*> searched; // NOTE: alternate to a searched list is flaging each searched node (std::queue CANNOT be searched, but would be O(n) anyway)
 	std::stack<const GraphNode*> nodes; // NOTE: different to bfs, Stack is used
-	nodes.push(&graph);
+	nodes.push(&graph); // NOTE: different to bfs, not added to searched at this point
 	while (!nodes.empty())
 	{
 		const GraphNode* frontNode = nodes.top();
@@ -853,6 +853,57 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 }
 
 } // AStarSearch AStarSearch AStarSearch AStarSearch AStarSearch AStarSearch
+
+typedef std::unordered_map<const GraphNode*, const GraphNode*> BidirectionalVisited;
+std::vector<const GraphNode*> MakePath(const GraphNode* intersection, BidirectionalVisited& visitedOne, BidirectionalVisited& visitedTwo)
+{
+	std::vector<const GraphNode*> result;
+	const GraphNode* iter = intersection;
+	while (iter) { // get the nodes from the start node to the intersection node
+		result.insert(result.begin(), iter);
+		iter = visitedOne.find(iter)->second; // get parent
+	}
+
+	iter = visitedTwo.find(iter)->second;
+	while (iter) { // get the nodes after the intersection node to the end node
+		result.push_back(iter);
+		iter = visitedTwo.find(iter)->second;
+	}
+	return result;
+}
+
+std::vector<const GraphNode*> GraphBidirectionalBreadthFirstSearch(const GraphNode& start, const GraphNode& to)
+{
+	enum {fromStart = 0, fromEnd, MaxDirections};
+	BidirectionalVisited visited[MaxDirections]; // two visited one coming from start, one from end
+	std::queue<const GraphNode*> toSearch[MaxDirections]; // two toSearch queues one coming from start, one from end
+	visited[fromStart].insert(std::make_pair(&start, nullptr));
+	toSearch[fromStart].push(&start);
+
+	visited[fromEnd].insert(std::make_pair(&to, nullptr));
+	toSearch[fromEnd].push(&to);
+
+	while (!toSearch[fromStart].empty() && !toSearch[fromEnd].empty())
+	{
+		for (int i = 0; i < MaxDirections; ++i) {
+			const GraphNode* curr = toSearch[i].front();
+			toSearch[i].pop();
+
+			BidirectionalVisited otherVisitedList = visited[(i + 1) % MaxDirections];
+			if (otherVisitedList.end() != otherVisitedList.find(curr)) { // if it's in the other visited list
+				return MakePath(curr, visited[fromStart], visited[fromEnd]);
+			}
+
+			for (GraphNode* child : curr->children) {
+				if (visited[i].end() == visited[i].find(child)) { // not in visited
+					visited[i].insert(std::make_pair(const_cast<const GraphNode*>(child), curr));
+					toSearch[i].push(child);
+				}
+			}
+		}
+	}
+	return std::vector<const GraphNode*>();
+}
 
 // ----------------------- general
 
