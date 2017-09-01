@@ -95,7 +95,7 @@ bool IsPrime(int number);
 // Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13,	21,	34,	55
 int FibonacciIterative(int FibonacciNumberAtIndex);
 int FibonacciRecursive(int FibonacciNumberAtIndex);
-void RemoveDuplicatesFromSortedArray(int* array, int& arrayLength);
+void RemoveDuplicatesFromSortedArray(int* array, int& arrayLength); // {a,b,b,c} becomes {a,b,c}
 void RemoveDuplicatesFromArrayPreserveFirst(int* array, int& arrayLength);
 void RemoveDuplicatesFromArrayPreserveLast(int* array, int& arrayLength);
 void RemoveDuplicatesFromArrayPreserveNth(int array[], int& len, int N);

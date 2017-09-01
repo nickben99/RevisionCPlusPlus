@@ -766,7 +766,9 @@ struct PathCell
 	{
 		return heuristic + distance < rhs.heuristic + rhs.distance;
 	}
-	int parent; GridCell cell; int heuristic, distance; 
+	const GridCell* parent; // used to index into the closed list
+	const GridCell* cell; 
+	int heuristic, distance;
 };
 struct Grid { 
 	int CalculateHeuristic(const GridCell& from, const GridCell& to) const { from; to; return 1; };
@@ -790,11 +792,11 @@ int GetItemIndex(const std::vector<PathCell>& aVector, const GridCell& cell) { a
 bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const GridCell& end)
 {
 	std::vector<PathCell> openList; // would usually be a minheap
-	std::vector<PathCell> closedList; // vector could be used but, should reserve it first to avoid mem frag
+	std::unordered_map<const GridCell*, PathCell> closedList; // NOTE: could also pre-allocate pathnodes which are marked as unexplored/open/closed
 		
 	PathCell startCell;
-	startCell.cell = start;
-	startCell.parent = -1; // no parent 
+	startCell.cell = &start;
+	startCell.parent = nullptr; // no parent 
 	startCell.distance = 0;
 	startCell.heuristic = grid.CalculateHeuristic(start, end); // estimate of how far to end
 	AddToMinHeap(openList, startCell);
@@ -802,27 +804,25 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 	while( !openList.empty() )
 	{
 		PathCell parentCell = PopElementWithSmallestDistancePlusHeuristic(openList); // get smallest element and remove from list 
-		closedList.push_back(parentCell); // add element to explored closedList 
-		int closedListIndex = (int)closedList.size() - 1;
+		closedList.insert(std::make_pair(parentCell.cell, parentCell)); // add element to explored closedList 
 
-		if ( end == parentCell.cell ) // end cell added to closed list
+		if ( end == *parentCell.cell ) // end cell added to closed list
 		{	
-			PathCell cell = parentCell;
-			while (cell.cell != start)
+			PathCell* cell = &parentCell;
+			while (nullptr != cell)
 			{
-				outPath.AddToFront(cell.cell);
-				cell = closedList[cell.parent]; // closedlist structure has to guarentee index stays good
+				outPath.AddToFront(*cell->cell);
+				cell = (nullptr != cell->parent) ? &closedList[cell->parent] : nullptr;
 			}
-			outPath.AddToFront(cell.cell);
 			return true;
 		}
 
-		std::vector<GridCell>& adjacentCells = parentCell.cell.adjacentTraversableGridCells;
+		const std::vector<GridCell>& adjacentCells = parentCell.cell->adjacentTraversableGridCells;
 
 		int numAdjacentCells = (int)adjacentCells.size();
 		for (int adjacent = 0; adjacent < numAdjacentCells; ++adjacent)
 		{
-			if ( GetItemIndex(closedList, adjacentCells[ adjacent ]) >= 0 ) // NOTE: depending on set-up, may want to also check parentCell.cell != adjacentCells[adjacent]
+			if ( closedList.end() != closedList.find(&adjacentCells[ adjacent ]) )
 			{
 				continue; // grid cell has already been explored and put onto the closed list, don't re-explore
 			}
@@ -830,10 +830,10 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 			int openListIndex = GetItemIndex(openList, adjacentCells[ adjacent ]);
 			if (openListIndex >= 0) // it's on the open list
 			{
-				int newDistToHere = parentCell.distance + grid.CalculateCost(parentCell.cell, adjacentCells[ adjacent ]);
+				int newDistToHere = parentCell.distance + grid.CalculateCost(*parentCell.cell, adjacentCells[ adjacent ]);
 				if (newDistToHere < openList[ openListIndex ].distance)
 				{
-					openList[ openListIndex ].parent = closedListIndex;
+					openList[openListIndex].parent = parentCell.cell;
 					openList[ openListIndex ].distance = newDistToHere;
 					MinHeapReSort(openListIndex); // resort the index which has changed in the minheap
 				}
@@ -841,10 +841,10 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 			else
 			{
 				PathCell newCell;
-				newCell.cell = adjacentCells[ adjacent ];
-				newCell.parent = closedListIndex;
-				newCell.distance = parentCell.distance + grid.CalculateCost(parentCell.cell, newCell.cell);
-				newCell.heuristic = grid.CalculateHeuristic(newCell.cell, end); // estimate of how far to end
+				newCell.cell = &adjacentCells[ adjacent ];
+				newCell.parent = parentCell.cell;
+				newCell.distance = parentCell.distance + grid.CalculateCost(*parentCell.cell, *newCell.cell);
+				newCell.heuristic = grid.CalculateHeuristic(*newCell.cell, end); // estimate of how far to end
 				AddToMinHeap(openList, newCell);
 			}
 		}
@@ -854,20 +854,20 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 
 } // AStarSearch AStarSearch AStarSearch AStarSearch AStarSearch AStarSearch
 
-typedef std::unordered_map<const GraphNode*, const GraphNode*> BidirectionalVisited;
+typedef std::unordered_map<const GraphNode*, const GraphNode*> BidirectionalVisited; // node to parent node
 std::vector<const GraphNode*> MakePath(const GraphNode* intersection, BidirectionalVisited& visitedOne, BidirectionalVisited& visitedTwo)
 {
 	std::vector<const GraphNode*> result;
 	const GraphNode* iter = intersection;
 	while (iter) { // get the nodes from the start node to the intersection node
 		result.insert(result.begin(), iter);
-		iter = visitedOne.find(iter)->second; // get parent
+		iter = visitedOne[iter]; // get parent
 	}
 
-	iter = visitedTwo.find(iter)->second;
+	iter = visitedTwo[intersection];
 	while (iter) { // get the nodes after the intersection node to the end node
 		result.push_back(iter);
-		iter = visitedTwo.find(iter)->second;
+		iter = visitedTwo[iter];
 	}
 	return result;
 }
@@ -875,8 +875,8 @@ std::vector<const GraphNode*> MakePath(const GraphNode* intersection, Bidirectio
 std::vector<const GraphNode*> GraphBidirectionalBreadthFirstSearch(const GraphNode& start, const GraphNode& to)
 {
 	enum {fromStart = 0, fromEnd, MaxDirections};
-	BidirectionalVisited visited[MaxDirections]; // two visited one coming from start, one from end
-	std::queue<const GraphNode*> toSearch[MaxDirections]; // two toSearch queues one coming from start, one from end
+	BidirectionalVisited visited[MaxDirections]; // two visited, one coming from start, one from end
+	std::queue<const GraphNode*> toSearch[MaxDirections]; // two toSearch queues, one coming from start, one from end
 	visited[fromStart].insert(std::make_pair(&start, nullptr));
 	toSearch[fromStart].push(&start);
 
@@ -961,7 +961,7 @@ int FibonacciRecursiveInternal(int FibonacciNumberAtIndex, int count, int recent
 
 int FibonacciRecursive(int FibonacciNumberAtIndex)
 {
-	// see http://stackoverflow.com/questions/1518726/recursive-fibonacci - don't use this alternate algo as it's very slow
+	// see http://stackoverflow.com/questions/1518726/recursive-fibonacci - alternate algo as is slow as is (but could be improved with memoization)
 	if (FibonacciNumberAtIndex < 2)
 	{
 		return FibonacciNumberAtIndex;
@@ -1032,37 +1032,32 @@ void RemoveDuplicatesFromArrayPreserveLast(int* array, int& len)
 
 void RemoveDuplicatesFromArrayPreserveNth(int array[], int& len, int N)
 {
-	std::unordered_map<int, int> dupes;
+	std::unordered_map<int, int> counts;
 	for (int source = 0; source < len; ++source)
 	{
-		auto iter = dupes.find(array[source]);
-		if (dupes.end() == iter)
+		auto iter = counts.find(array[source]);
+		if (counts.end() == iter) // doesn't exist
 		{
-			iter = dupes.insert(std::make_pair(array[source], 0)).first;
+			counts.insert(std::make_pair(array[source], -1)).first; // insert -1 for count initially, -1 means 1 instance
 		}
-		++iter->second;		
+		else
+		{
+			iter->second = 0; // don't make count higher than 0, -1 means 1 instance, and 0 means multiple instances		
+		}
 	}
 
-	std::unordered_map<int, int> counts;
 	int target = 0;
 	for (int source = 0; source < len; ++source)
 	{
 		array[target] = array[source];
-		if (dupes[array[source]] > 1) // if this entry is a dupe
+		if (counts[array[source]] >= 0) // if this entry has dupes
 		{
-			auto countsIter = counts.find(array[source]);
-			if (counts.end() == countsIter)
-			{
-				countsIter = counts.insert(std::make_pair(array[source], -1)).first;
-			}
-
-			if (++countsIter->second == N)
+			if (counts[array[source]]++ == N) // NOTE: post increment of count
 			{
 				++target;
 			}
 		}
-		else // this entry is unique
-		{
+		else { // this entry is unique (-1 for counts)
 			++target;
 		}
 	}
@@ -1243,7 +1238,7 @@ void RemoveCommonElementsFromSortedArrays(int* arrOne, int& lenOne, int* arrTwo,
 			}
 			else // both the same, don't update target counters
 			{
-				// the if checking here is only required if we are allowing duplicate entries in the array
+				// checking here is only required if we are allowing duplicate entries in the array
 				if (arrayOneSourceIndex + 1 < lenOne && arrOne[arrayOneSourceIndex] == arrOne[arrayOneSourceIndex + 1]) // next entry in one will also need deleting
 				{
 					++arrayOneSourceIndex;
@@ -1379,14 +1374,14 @@ void FindWords(int dimension, const std::unordered_set<std::string>& dictionary,
 
 // IMPROVEMENTS/SIMPLIFICATIONS
 // make dice std::vector<std::vector<char>> where 4*4 is assumed
-// remove dimension, assument literal 4 everywhere
+// remove dimension, assume literal 4 everywhere
 // remove usedDice array, instead set members of dice to '\0' when they have been used (this works ok when dice is std::vector<std::vector<char>>)
 void Boggle(const std::unordered_set<std::string>& dictionary, const char* dice, int dimension, std::unordered_set<std::string>& found)
 {
 	int diceLength = dimension*dimension;
 	bool* usedDice = new bool[diceLength];
 	memset(usedDice, 0, sizeof(bool) * diceLength);
-	char* currentSequence = new char[diceLength * 2 + 1];
+	char* currentSequence = new char[diceLength * 2 + 1]; // worst case scenario
 	memset(currentSequence, '\0', sizeof(char)*diceLength * 2 + 1);
 
 	for (int index = 0; index < diceLength; ++index)
@@ -1475,18 +1470,15 @@ namespace findLargestEncompassingRectangle
 //	return largestArea;
 //}
 
-int AddRectangleColumn(std::vector<std::pair<int, int>>& activeRectangles, int newHeight, int largestRectangleArea)
+// using list for activeRectangles as we delete from the middle (O(1) operation for list)
+int AddRectangleColumn(std::list<std::pair<int, int>>& activeRectangles, int newHeight, int largestRectangleArea)
 {
 	bool equalHeightFound = false; // used to see if we need to add a new rectangle
 	for (auto iter = activeRectangles.begin(); iter != activeRectangles.end();)
 	{
-		if (iter->first > newHeight) // this rectangle is larger than the height of the column added, so it's finished
+		if (iter->first >= newHeight) // if this rectangle is larger than the height of the column added, it's finished
 		{
-			iter->first = newHeight;
-		}		
-
-		if (iter->first == newHeight)
-		{
+			iter->first = newHeight; // only need to keep the portion of the rectangle which is equal to the height of the new column added
 			if (equalHeightFound) // if an earlier rectangle was found with equal height, we don't need this one
 			{
 				iter = activeRectangles.erase(iter); // this rectangle will have a smaller width than the earlier one added, so don't need this one
@@ -1496,20 +1488,14 @@ int AddRectangleColumn(std::vector<std::pair<int, int>>& activeRectangles, int n
 		}
 
 		++iter->second; // rectangle width expands by one column
-		if (iter->first*iter->second > largestRectangleArea)
-		{
-			largestRectangleArea = iter->first*iter->second;
-		}	
+		largestRectangleArea = std::max(iter->first*iter->second, largestRectangleArea);
 		++iter; // goto next rectangle
 	}
 
 	if (!equalHeightFound)
 	{
 		activeRectangles.push_back(std::make_pair(newHeight, 1));
-		if (newHeight > largestRectangleArea)
-		{
-			largestRectangleArea = newHeight;
-		}
+		largestRectangleArea = std::max(newHeight, largestRectangleArea);
 	}
 	return largestRectangleArea;
 }
@@ -1543,7 +1529,7 @@ int FindLargestEncompassingRectangleOfZeros(char* array, int numRows, int numCol
 	// go over all the rows
 	for (int row = numRows - 1; row >= 0; --row)
 	{
-		std::vector<std::pair<int, int>> activeRectangles;
+		std::list<std::pair<int, int>> activeRectangles; // using list as AddRectangleColumn() deletes from the middle (O(1) operation for list)
 		for (int col = 0; col < numColumns; ++col)
 		{
 			int freeColumnHeight = freeColumnHeights[boggle::ToIndex(row, col, numColumns)];
@@ -1660,9 +1646,7 @@ std::string UnsignedIntToHexString(unsigned int val)
 	do
 	{
 		int figure = val % 16;
-		char charArray[2] = { '\0', '\0' };
-		charArray[0] = IntToHexChar(figure);
-		numString.insert(0, charArray); // NOTE: this is doing a push onto the front each time
+		numString.insert(numString.begin(), IntToHexChar(figure)); // NOTE: this is doing a push onto the front each time
 		val /= 16;
 	} while (0 != val);
 

@@ -6,7 +6,7 @@
 
 // trie https://en.wikipedia.org/wiki/Trie
 // https://www.topcoder.com/community/data-science/data-science-tutorials/using-tries/
-// constructor, destructor, FindWords()
+// Create(), constructor, destructor, FindWords()
 class Trie
 {
 public:

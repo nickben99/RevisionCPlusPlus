@@ -25,10 +25,7 @@ int Trie::FindWords(const char* prefix, Trie* root, int numRequired, std::vector
 	if (node)
 	{
 		std::queue<Trie*> breadthFirstSearchQueue;		
-		for (std::pair<const char, Trie*> child : node->children)
-		{
-			breadthFirstSearchQueue.push(child.second);
-		}
+		breadthFirstSearchQueue.push(node);
 
 		while (!breadthFirstSearchQueue.empty())
 		{

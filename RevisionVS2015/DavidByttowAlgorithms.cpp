@@ -55,8 +55,7 @@ void DijkstraSearch(int* graph, int startNode, std::vector<int>& shortestDistanc
 
 		for (int link = 0; link < numGraphNodes; ++link)
 		{
-			if (link != lowestCostOpenNode->nodeIndex &&
-				Node::State::closed != nodes[link].state &&
+			if (Node::State::closed != nodes[link].state &&
 				graph[ToIndex(lowestCostOpenNode->nodeIndex, link, numGraphNodes)] >= 0)
 			{
 				int newCost = lowestCostOpenNode->cost + graph[ToIndex(lowestCostOpenNode->nodeIndex, link, numGraphNodes)];
@@ -102,6 +101,7 @@ void DijkstraSearch()
 	std::vector<int> shortestDistanceToNodes(numGraphNodes);
 	DijkstraSearch(graph, startNode, shortestDistanceToNodes, numGraphNodes);
 
+	std::cout << std::endl << "Dijkstra";
 	for (unsigned int dist = 0; dist < shortestDistanceToNodes.size(); ++dist)
 	{
 		if (dist != startNode)
@@ -280,7 +280,7 @@ namespace mergesort
 			}
 		}
 
-		int remaining = middle - helperLeft;
+		int remaining = middle - helperLeft; // only need to copy remaining left side (right side will already be there)
 		for (int i = 0; i <= remaining; ++i)
 		{
 			array[current + i] = helper[helperLeft + i];

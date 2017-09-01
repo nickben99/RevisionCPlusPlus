@@ -66,7 +66,7 @@ namespace mergesort
 
 namespace bucketsort
 {
-	// bucket sort can be used to distrbute sorting of each bucket on different machines
+	// bucket sort can be used to distribute sorting of each bucket on different machines
 	// bucket sort depends on the input related to whether it's efficient or not (input should be evenly spread accross range, so buckets all have approximately the same amount)
 	// you need to know the min and max of your input
 	template<class T> void BucketSort(T inputArray[], int length, const T& minInput, const T& maxInput, int numBuckets);
@@ -131,10 +131,8 @@ public:
 				delete iter;
 				return;
 			}
-			else
-			{
-				prev = iter;
-			}
+						
+			prev = iter;			
 			iter = temp;
 		}
 	}

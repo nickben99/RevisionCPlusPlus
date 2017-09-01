@@ -1407,6 +1407,8 @@ struct HashtableIdentifier
 
 void DavidByttowAlgorithms()
 {
+	dijkstra::DijkstraSearch();
+
 	bloom::BloomFilter<int, 30> myBloomFilter;
 	int a = 9;
 	myBloomFilter.Add(a);
