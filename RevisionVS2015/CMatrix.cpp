@@ -420,6 +420,7 @@ CMatrix CMatrix::GetInverseTransformMatrix()
 }
 
 // create scaling matrix
+// VECTOR, MATRIX, QUAT REVISION
 void CMatrix::creatScalingMatrix(float x, float y, float z)
 {
 	identity();
@@ -430,6 +431,7 @@ void CMatrix::creatScalingMatrix(float x, float y, float z)
 }
 
 // get inverse of scaling matrix
+// VECTOR, MATRIX, QUAT REVISION
 CMatrix CMatrix::getInverseScalingMatrix()
 {
 	CMatrix inverseMatrix;
@@ -603,11 +605,11 @@ CMatrix CMatrix::CreatePerspectiveProjection(float left, float right, float bott
 CMatrix CMatrix::LookAt(const CVector& eye, const CVector& target, const CVector& up)
 {
 	CMatrix rotationMat;
-	rotationMat.CreateMatrix(eye-target, up);
-	rotationMat = rotationMat.getInverseRotationMatrix();
+	rotationMat.CreateMatrix(eye - target, up);
+	rotationMat = rotationMat.getInverseRotationMatrix(); // step 1: get inverse rotation matrix
 
 	CMatrix translationMat;
-	translationMat.SetMatrixTranslation(CVector4(-eye, 1.0f));
+	translationMat.SetMatrixTranslation(CVector4(-eye, 1.0f)); // step 2: get inverse translation matrix
 
-	return rotationMat * translationMat;
+	return rotationMat * translationMat; // step 3: get inverse translation matrix in the local space of the inverse rotation matrix
 }

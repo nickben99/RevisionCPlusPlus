@@ -42,7 +42,7 @@ void MinHeapChangeNodeWeight(struct MinHeap* pHeap, int index, int newWeight);
 
 void BubbleSort(int* array, int length);
 void Shuffle(int* arrayToShuffle, int len);
-void InsertionSort(int* arrayToShuffle, int len);
+void InsertionSort(int* array, int len);
 void HeapSort(int* array, int len);
 
 // --------------- string functions

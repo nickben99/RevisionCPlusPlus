@@ -816,6 +816,13 @@ void ProgrammingInterviewsBook()
 	std::cout << std::endl << std::endl << "Unflatenned List";
 	PrintLinkedList(pStart);
 
+	Flatten_LinkedList(&pStart, &pEnd);
+	std::cout << std::endl << std::endl << "Flatenned List";
+	PrintLinkedList(pStart);
+	Unflatten_LinkedListBetter(&pStart, &pEnd);
+	std::cout << std::endl << std::endl << "Unflatenned (Better) List";
+	PrintLinkedList(pStart);
+
 	IsCyclic_LinkedList(head);
 
 // chapter 5 - trees and graphs -------------------------------------------------------------------------------------------
@@ -875,8 +882,8 @@ void ProgrammingInterviewsBook()
 	PrintAllStringCombinationsAlt("1");
 	std::cout << std::endl << "GenerateTelephoneWords()";
 	GenerateTelephoneWords("617-5");
-	std::cout << std::endl << std::endl << "GenerateTelephoneWordsNonRecurse()";
-	GenerateTelephoneWordsNonRecurse("617-5");
+	std::cout << std::endl << std::endl << "GenerateTelephoneWordsIterative()";
+	GenerateTelephoneWordsIterative("617-5");
 
 // chapter 11 other programming topics ---------------------------------------------------------------------------------
 	std::cout << std::endl << std::endl;

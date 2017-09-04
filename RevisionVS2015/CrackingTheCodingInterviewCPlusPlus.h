@@ -12,21 +12,17 @@ void PrintEndOfInputFile(const char* fileName, int numLinesToPrint)
 	{
 		std::ifstream ifs(fileName, std::ifstream::in);
 
-		int nextIndex = 0;
-		int size = 0;
-
+		int counter = 0;
 		while (ifs.good())
 		{
-			std::getline(ifs, lastLinesOfFile[nextIndex]);
-			nextIndex = (++nextIndex) % numLinesToPrint;
-			size = std::min(numLinesToPrint, ++size);
+			std::getline(ifs, lastLinesOfFile[counter++ % numLinesToPrint]);
 		}
 		ifs.close();
 
-		int startIndex = (size < numLinesToPrint) ? 0 : nextIndex;
-		for (int print = 0; print < size; ++print)
+		int start = std::max(0, counter - numLinesToPrint);
+		for (int printer = start; printer < counter; ++printer)
 		{
-			std::cout << std::endl << lastLinesOfFile[(startIndex + print) % size];
+			std::cout << std::endl << lastLinesOfFile[printer % numLinesToPrint];
 		}
 		delete[] lastLinesOfFile;
 	}
@@ -147,32 +143,33 @@ private:
 };
 
 // Question 12.10
-void* AlignedMalloc(int size, unsigned int alignment)
+void* AlignedMalloc(int size, size_t alignment)
 {
-	unsigned int beginPointerSize = sizeof(void*);
-	unsigned int padding = alignment - 1; // worst case scenario, is allocation being 1 byte passed alignment boundary, so pad with (alignment - 1)
-	char* allocated = (char*)malloc(size + beginPointerSize + padding);
+	size_t beginPointerSize = sizeof(void*);
+	size_t padding = alignment - 1; // worst case scenario, is allocation being 1 byte passed alignment boundary, so pad with (alignment - 1)
+	void* allocated = malloc(size + beginPointerSize + padding);
 	if (!allocated) {
 		return nullptr;
 	}
 
-	char* aligned = allocated + beginPointerSize;
-	unsigned int remainder = (unsigned long long)aligned % alignment;
+	void* alignedReturn = (char*)allocated + beginPointerSize;
+	size_t remainder = (size_t)alignedReturn % alignment;
 	if (remainder != 0) {
-		aligned += (alignment - remainder);
+		alignedReturn = (char*)alignedReturn + (alignment - remainder);
 	}
-	// if aligned was always a power of 2, the following two lines could be used in place of the above five lines to calculate aligned
-	//unsigned int possibleAligned = (unsigned int)(allocated + beginPointerSize + padding);
-	//char* aligned = (char*)(possibleAligned & ~padding); // results in all bits less significant being removed
+	// NOTE: if alignment is always a power of 2, the following two lines could be used in place of the above five lines to calculate alignedReturn
+	//size_t possibleAligned = (size_t)((size_t)allocated + beginPointerSize + padding);
+	//void* alignedReturn = (void*)(possibleAligned & ~padding); // results in all bits less significant being removed
 
-	((void**)aligned)[-1] = allocated;
-	return (void*)aligned;
+	((void**)alignedReturn)[-1] = allocated;
+	return (void*)alignedReturn;
 }
 
 void AlignedFree(void* freeMe)
 {
 	if (freeMe) {
-		free(((void**)freeMe)[-1]);
+		void* allocated = ((void**)freeMe)[-1];
+		free(allocated);
 	}
 }
 

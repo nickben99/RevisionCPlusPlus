@@ -444,7 +444,7 @@ BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicatesRecurs
 		return nullptr;
 	}
 
-	if (valOne <= root->val && valTwo <= root->val)
+	if (valOne < root->val && valTwo < root->val)
 	{
 		return BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicatesRecurse(root->left, valOne, valTwo);
 	}
@@ -459,7 +459,7 @@ BinaryTreeNode* BinarySearchTreeFindLowestCommonAncesterInTreeNoDuplicatesIterat
 {
 	while (root)
 	{
-		if (valOne <= root->val && valTwo <= root->val)
+		if (valOne < root->val && valTwo < root->val)
 		{
 			root = root->left;
 		}
@@ -701,6 +701,8 @@ void PrintAllStringPermutations(const char* pString)
 	char* pCurrentString = new char[len+1]; // NOTE: +1 to add '\0' t end of char array
 	memset(pCurrentString, 0, len+1); 
 	PrintAllStringPermutationsInternal(pString, len, pCurrentString, 0, pUsed);
+	delete[] pCurrentString;
+	delete[] pUsed;
 }
 
 void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 32 characters long, but is big O(numCombos*len)
@@ -731,6 +733,7 @@ void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this al
 	memset(currentString, 0, sizeof(char) * (len + 1));
 	int count = 0;
 	PrintAllStringCombinationsAltInternal(pOriginalString, currentString, 0, 0, len, count);
+	delete[] currentString;
 }
 
 void PrintAllStringCombinationsAltInternal(const char* pOriginalString, char* currentString, int position, int insertionPoint, int length, int& count)
@@ -796,9 +799,10 @@ void GenerateTelephoneWords(const char* pNum)
 	memset(pCurrString, 0, len+1);
 	int count = 0;
 	GenerateTelephoneWordsInternal(pNum, len, 0, pCurrString, count);
+	delete[] pCurrString;
 }
 
-void GenerateTelephoneWordsNonRecurse(const char* pPhoneNum)
+void GenerateTelephoneWordsIterative(const char* pPhoneNum)
 {
 	int len = (int)strlen(pPhoneNum);
 	char* pCurrString = new char[len+1];
@@ -844,6 +848,7 @@ void GenerateTelephoneWordsNonRecurse(const char* pPhoneNum)
 			}
 		}
 	}
+	delete[] pCurrString;
 }
 
 // chaper 11 other programming topics ----------------------------------------------------------------------------------
@@ -879,7 +884,7 @@ bool RectangleOverlap(const Rectangle& rectOne, const Rectangle& rectTwo)
 bool IsMachineLittleEndian()
 {
 	unsigned int one = 1;
-	char* pPointer = (char*)&one; // get pointer to byte at lowest memory address
+	unsigned char* pPointer = (unsigned char*)&one; // get pointer to byte at lowest memory address
 	bool isLittle = *pPointer == 1; // if little endian, then the LSB (least significant byte) will be at the lowest
 										// memory address. big endian will have LSB at highest mem address
 	return isLittle;

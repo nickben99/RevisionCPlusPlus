@@ -248,6 +248,7 @@ CVector CQuaternion::getRotationAxis()
 	float OneOverSinAng = 1.0f / (float)sqrt(sineAngSquared); // NOTE: alternately: float OneOverSinAng = 1.0f / sin(acos(n))
 
 	return( v*OneOverSinAng );
+	// Note: this entire function in one line: rotationAxis = v / sin(acos(n)) 
 }
 
 // get axis and angle of rotation

@@ -83,7 +83,7 @@ void PrintAllStringPermutations(const char* pString); // this may be badly named
 void PrintAllStringCombinations(const char* pString); // this may be badly named, we DO care about order, repeating is not allowed
 void PrintAllStringCombinationsAlt(const char* pString); // NOTE: BETTER VERSION, solves same problem as above, but this version works for any number of characters
 void GenerateTelephoneWords(const char* pPhoneNum); // generate all the different possible telephone words for the telephone number
-void GenerateTelephoneWordsNonRecurse(const char* pPhoneNum);
+void GenerateTelephoneWordsIterative(const char* pPhoneNum);
 
 // chaper 11 other programming topics ----------------------------------------------------------------------------------
 

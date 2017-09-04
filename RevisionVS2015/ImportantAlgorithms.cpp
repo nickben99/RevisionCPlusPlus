@@ -65,7 +65,7 @@ bool LinkedListAddToEnd(DoubleLinkedListElement** head, DoubleLinkedListElement*
 	}
 
 	newNode->data = data;
-	newNode->next = nullptr;
+	newNode->next = newNode->prev = nullptr;
 	if (nullptr == *head)
 	{
 		*head = *end = newNode;
