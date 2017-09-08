@@ -32,6 +32,7 @@
 #include <unordered_map>
 #include <functional>
 #include <fstream> // for std::ifstream
+#include <thread>
 
 class testt
 {
@@ -81,7 +82,13 @@ struct MyBasicClass
 
 	MyBasicClass(const MyBasicClass& rhs)
 	{
+		t = rhs.t;		
+	}
+
+	MyBasicClass& operator=(const MyBasicClass& rhs)
+	{
 		t = rhs.t;
+		return *this;
 	}
 
 	void crash()
@@ -1238,6 +1245,8 @@ void CrackingTheCodingInterviewQuestions()
 
 	float num = 0.5400f;
 	std::cout << std::endl << "PrintBinary(num) : " << PrintBinary(num);
+
+	PrintNextAndPreviousNumberWithSameAmountOfOnes(124);
 
 	int numToSwap = 0x66;
 	std::cout << std::endl << "PairwiseSwap(0x66) : ";

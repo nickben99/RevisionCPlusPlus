@@ -454,6 +454,52 @@ std::string PrintBinary(float num)
 	return binary;
 }
 
+void PrintNextAndPreviousNumberWithSameAmountOfOnes(unsigned int number) //<<== p116, 5.4
+{	
+	unsigned int numberShifted = number;
+	int numOnesToRight = 0;
+	int index = 0;
+	for (; 0 != numberShifted; numberShifted >>= 1, ++index) {
+		bool isOne = 1 & numberShifted;
+		bool nextIsZero = !(2 & numberShifted);
+
+		if (isOne) {
+			if (nextIsZero) {
+				unsigned int nextHigherNumber = ~(1 << index) & number; // change 1 to 0 at index
+				nextHigherNumber |= (1 << (index + 1)); // change 0 to 1 at index + 1
+				nextHigherNumber &= ~((1 << index) - 1); // clear bits below index
+				nextHigherNumber |= (1 << numOnesToRight) - 1; // put all the ones to the right in the lowest slots
+				std::cout << std::endl << nextHigherNumber;
+			}
+			else {
+				++numOnesToRight;
+			}
+		}
+	}
+
+	numberShifted = number;
+	numOnesToRight = 0;
+	index = 0;
+	for (; 0 != numberShifted; numberShifted >>= 1, ++index) {
+		bool isZero = !(1 & numberShifted);
+		bool nextIsOne = 2 & numberShifted;
+
+		if (isZero) {
+			if (nextIsOne) {
+				unsigned int nextLowerNumber = (1 << index); // change 0 to 1 at index
+				nextLowerNumber |= ~(1 << (index + 1)) & number; // change 1 to 0 at index + 1
+				nextLowerNumber &= ~((1 << index) - 1); // clear bits below index
+				unsigned int temp = (1 << numOnesToRight) - 1;
+				nextLowerNumber |= temp << (index = numOnesToRight); // move all ones to right to the right of the index
+				std::cout << std::endl << nextLowerNumber;
+			}
+		}
+		else {
+			++numOnesToRight;
+		}
+	}
+}
+
 int Conversion(int left, int right)
 {
 	int count = 0;

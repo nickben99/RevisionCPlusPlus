@@ -113,7 +113,7 @@ bool IsSubTreeAltMethod(BinaryTreeNode* mainTree, BinaryTreeNode* potentialSubTr
 void InsertSourceInTarget(int source, int sourceStartIndex, int sourceEndIndex, int& targetIndex); // implement, p115
 std::string PrintBinary(float num); //<<== implement p116
 int FlipBitToWin(int number); //<<== implement p116
-void GetNextAndPreviousNumberWithSameAmountOfOnes(int number, int& previous, int& next); //<<== implement p116
+void PrintNextAndPreviousNumberWithSameAmountOfOnes(unsigned int number); //<<== p116, 5.4
 int Conversion(int left, int right); // p116
 int PairwiseSwap(int number);
 void DrawLine(char screen[], int widthInBits, int x1Bit, int x2Bit, int y);

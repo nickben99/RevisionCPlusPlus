@@ -15,11 +15,14 @@ private:
 public:
 	~MyVectorImplementation2()
 	{
-		for (unsigned int dataIter = 0; dataIter < currentSize; ++dataIter)
+		if (nullptr != data)
 		{
-			myAllocator.destroy(data + dataIter);
+			for (unsigned int dataIter = 0; dataIter < currentSize; ++dataIter)
+			{
+				myAllocator.destroy(data + dataIter);
+			}
+			myAllocator.deallocate(data, capacity);
 		}
-		myAllocator.deallocate(data, capacity);
 	}
 
 	bool push_back(const T& newElement)
@@ -62,7 +65,9 @@ public:
 			myAllocator.destroy(data + index);
 			for (unsigned int moveDown = index; moveDown + 1 < currentSize; ++moveDown)
 			{
-				data[moveDown] = data[moveDown + 1];
+				// this gets the copy constructor called. Alternately doing data[moveDown] = data[moveDown + 1] gets copy operator called
+				// calling constructor seems better, as copy operator might assume data already set has meaning (so may try to dealocate something)
+				myAllocator.construct(data + moveDown, data[moveDown + 1]); 
 			}
 			--currentSize;
 			return true;

@@ -660,15 +660,15 @@ int BinaryTreeMaxDepth(BinaryTreeNode* pRoot)
 
 // graphs -------------------------------
 
-const GraphNode* GraphDepthFirstSearch(const GraphNode& graph, int val, std::unordered_set<const GraphNode*> searched);
+const GraphNode* GraphDepthFirstSearch(const GraphNode& graph, int val, std::unordered_set<const GraphNode*>& searched);
 const GraphNode* GraphDepthFirstSearch(const GraphNode& graph, int val)
 {
 	std::unordered_set<const GraphNode*> searched;
 	return GraphDepthFirstSearch(graph, val, searched);
 }
 
-// NOTE: alternate to using a unordered_set is flagging searched nodes (both methods are O(1))
-const GraphNode* GraphDepthFirstSearch(const GraphNode& graphNode, int val, std::unordered_set<const GraphNode*> searched)
+// NOTE: alternate to using an unordered_set is flagging searched nodes (both methods are O(1))
+const GraphNode* GraphDepthFirstSearch(const GraphNode& graphNode, int val, std::unordered_set<const GraphNode*>& searched)
 {
 	if (graphNode.val == val)
 	{
@@ -728,7 +728,7 @@ const GraphNode* GraphDepthFirstSearchIterative(const GraphNode& graph, int val)
 		const GraphNode* frontNode = nodes.top();
 		nodes.pop();
 
-		if (searched.end() != searched.find(frontNode)) { // already searched
+		if (searched.end() != searched.find(frontNode)) { // already searched, NOTE: different to bfs
 			continue;
 		}
 
@@ -742,7 +742,7 @@ const GraphNode* GraphDepthFirstSearchIterative(const GraphNode& graph, int val)
 		{
 			if (*childNode && searched.end() == searched.find(*childNode)) // O(1) for set.find() (assuming no hashing collisions)
 			{
-				// NOTE: different to bfs, NOT added to search here
+				// NOTE: different to bfs, NOT added to searched here
 				nodes.push(*childNode);
 			}
 		}		
@@ -758,7 +758,7 @@ struct GridCell {
 	bool operator==(const GridCell& rhs) const { return x == rhs.x && y == rhs.y; };
 	bool operator!=(const GridCell& rhs) const { return !operator==(rhs); };
 
-	std::vector<GridCell> adjacentTraversableGridCells; // grid cells next to this grid cell which can be traversed to
+	std::vector<GridCell*> adjacentTraversableGridCells; // grid cells next to this grid cell which can be traversed to
 };
 struct PathCell 
 {
@@ -792,7 +792,7 @@ int GetItemIndex(const std::vector<PathCell>& aVector, const GridCell& cell) { a
 bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const GridCell& end)
 {
 	std::vector<PathCell> openList; // would usually be a minheap
-	std::unordered_map<const GridCell*, PathCell> closedList; // NOTE: could also pre-allocate pathnodes which are marked as unexplored/open/closed
+	std::unordered_map<const GridCell*, const GridCell*> closedList; // NOTE: could also pre-allocate pathnodes which are marked as unexplored/open/closed
 		
 	PathCell startCell;
 	startCell.cell = &start;
@@ -804,33 +804,33 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 	while( !openList.empty() )
 	{
 		PathCell parentCell = PopElementWithSmallestDistancePlusHeuristic(openList); // get smallest element and remove from list 
-		closedList.insert(std::make_pair(parentCell.cell, parentCell)); // add element to explored closedList 
+		closedList.insert(std::make_pair(parentCell.cell, parentCell.parent)); // add element to explored closedList 
 
 		if ( end == *parentCell.cell ) // end cell added to closed list
 		{	
-			PathCell* cell = &parentCell;
+			const GridCell* cell = parentCell.cell;
 			while (nullptr != cell)
 			{
-				outPath.AddToFront(*cell->cell);
-				cell = (nullptr != cell->parent) ? &closedList[cell->parent] : nullptr;
+				outPath.AddToFront(*cell);
+				cell = closedList[cell];
 			}
 			return true;
 		}
 
-		const std::vector<GridCell>& adjacentCells = parentCell.cell->adjacentTraversableGridCells;
+		const std::vector<GridCell*>& adjacentCells = parentCell.cell->adjacentTraversableGridCells;
 
 		int numAdjacentCells = (int)adjacentCells.size();
 		for (int adjacent = 0; adjacent < numAdjacentCells; ++adjacent)
 		{
-			if ( closedList.end() != closedList.find(&adjacentCells[ adjacent ]) )
+			if ( closedList.end() != closedList.find(adjacentCells[ adjacent ]) )
 			{
 				continue; // grid cell has already been explored and put onto the closed list, don't re-explore
 			}
 
-			int openListIndex = GetItemIndex(openList, adjacentCells[ adjacent ]);
+			int openListIndex = GetItemIndex(openList, *adjacentCells[ adjacent ]);
 			if (openListIndex >= 0) // it's on the open list
 			{
-				int newDistToHere = parentCell.distance + grid.CalculateCost(*parentCell.cell, adjacentCells[ adjacent ]);
+				int newDistToHere = parentCell.distance + grid.CalculateCost(*parentCell.cell, *adjacentCells[ adjacent ]);
 				if (newDistToHere < openList[ openListIndex ].distance)
 				{
 					openList[openListIndex].parent = parentCell.cell;
@@ -841,7 +841,7 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 			else
 			{
 				PathCell newCell;
-				newCell.cell = &adjacentCells[ adjacent ];
+				newCell.cell = adjacentCells[ adjacent ];
 				newCell.parent = parentCell.cell;
 				newCell.distance = parentCell.distance + grid.CalculateCost(*parentCell.cell, *newCell.cell);
 				newCell.heuristic = grid.CalculateHeuristic(*newCell.cell, end); // estimate of how far to end
@@ -1113,18 +1113,15 @@ void MakeRemoveCommonElementsFromArraysLink()
 // will return nth smallest element if the input arrays are sorted
 bool GetNthSmallestElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo)
 {
-	if (!arrOne)
-	{
+	if (!arrOne) {
 		lenOne = 0;
 	}
 
-	if (!arrTwo)
-	{
+	if (!arrTwo) {
 		lenTwo = 0;
 	}
 	
-	if (N >= (lenOne + lenTwo))
-	{
+	if (N >= (lenOne + lenTwo)) {
 		return false;
 	}
 
@@ -1156,18 +1153,15 @@ bool GetNthSmallestElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestEl
 
 bool GetNthSmallestElementFromUnionOfSortedArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo)
 {
-	if (!arrOne)
-	{
+	if (!arrOne) {
 		lenOne = 0;
 	}
 
-	if (!arrTwo)
-	{
+	if (!arrTwo) {
 		lenTwo = 0;
 	}
 
-	if (N >= (lenOne + lenTwo))
-	{
+	if (N >= (lenOne + lenTwo)) {
 		return false;
 	}
 
