@@ -1128,7 +1128,12 @@ void ImportantAlgorithms()
 						'Q','S','E' };
 	std::unordered_set<std::string> found;
 	boggle::Boggle(dictionary, boggle, 3, found);
-	
+	std::cout << std::endl << "Boggle";
+	std::cout << std::endl << "found:";
+	for (auto word : found) {
+		std::cout << std::endl << word;
+	}
+
 	char matrix[] = {	0, 0, 0, 0, 1, 0, 1,
 						0, 0, 1, 0, 0, 1, 1,
 						0, 0, 0, 0, 0, 0, 1,
@@ -1139,7 +1144,7 @@ void ImportantAlgorithms()
 
 	int minusOne = -1;
 	std::cout << std::endl << "IntToBinaryString(minusOne) : (length: " << IntToBinaryString(minusOne).size() << ") : " << IntToBinaryString(minusOne);
-
+	std::cout << std::endl << "UnsignedIntToHexString(20) : " << UnsignedIntToHexString(20);
 
 	std::cout << std::endl << "HexStringToUnsignedInt(\"1a\") : " << HexStringToUnsignedInt("1a");
 }

@@ -301,8 +301,10 @@ namespace mergesort
 	template<class T> void MergeSort(T array[], int length)
 	{
 		T* helper = new T[length];
-		MergeSort(array, helper, 0, length - 1);
-		delete[] helper;
+		if (helper) {
+			MergeSort(array, helper, 0, length - 1);
+			delete[] helper;
+		}
 	}
 
 	// this is just being used so mergesort can be placed in the implementation file

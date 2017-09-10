@@ -5,12 +5,7 @@
 #include <functional>
 #include <queue>
 
-bool IsInDictionary(const std::string&) // not implemented
-{
-	return true;
-}
-
-void GetAllChildren(std::string& root, const std::function<void (const::std::string&)>& func)
+void GetAllChildren(std::string& root, const std::unordered_set<std::string>& dict, const std::function<void (const::std::string&)>& func)
 {
 	const int NumAlphabetLetters = 26;
 	char alphabetLetters[] = "abcdefghijklmnopqrstuvwxyz";
@@ -22,7 +17,7 @@ void GetAllChildren(std::string& root, const std::function<void (const::std::str
 			if (alphabetLetters[letter] != saved)
 			{
 				root[pos] = alphabetLetters[letter];
-				if (IsInDictionary(root))
+				if (dict.end() != dict.find(root))
 				{
 					func(root);
 				}				
@@ -32,47 +27,52 @@ void GetAllChildren(std::string& root, const std::function<void (const::std::str
 	}
 }
 
-bool FindNumChangesBetweenWordsBreadthFirstSearch(const std::string& from, const std::string& to, int& result)
+bool FindNumChangesBetweenWordsBidirectionalBreadthFirstSearch(const std::string& from, const std::string& to, 
+	const std::unordered_set<std::string>& dict, int& res)
 {
-	std::unordered_set<std::string> alreadyAdded;
-	std::queue<std::string> theQueue;
+	enum { fromSearch = 0, toSearch, maxSearch };
+	std::queue<std::string> search[maxSearch];
+	std::unordered_map<std::string, std::string> visited[maxSearch];
 
-	theQueue.push(from);
-	alreadyAdded.insert(from);
+	search[fromSearch].push(from);
+	visited[fromSearch].insert(std::make_pair(from, ""));
 
-	int currentLayerSize = 1;
-	int nextLayerSize = 0;
+	search[toSearch].push(to);
+	visited[toSearch].insert(std::make_pair(to, ""));
 
-	int currentLayerCounter = 0;
-	int layer = 0;
+	int currentLayerSize[maxSearch] = { 1, 1 };
+	int nextLayerSize[maxSearch] = { 0, 0 };
 
-	while (!theQueue.empty())
+	int currentLayerCounter[maxSearch] = { 0, 0 };
+	int layer[maxSearch] = { 0, 0 };
+
+	while (!search[fromSearch].empty() && !search[toSearch].empty())
 	{
-		std::string front = theQueue.front();
-		theQueue.pop();
-
-		if (front == to)
+		for (int i = 0; i < maxSearch; ++i)
 		{
-			result = layer;
-			return true;
-		}
+			std::string curr = search[i].front();
+			search[i].pop();
 
-		GetAllChildren(front, [&](const std::string& child)
-		{
-			if (alreadyAdded.end() == alreadyAdded.find(child))
-			{
-				++nextLayerSize;
-				theQueue.push(child);
-				alreadyAdded.insert(child);
+			if (visited[(i + 1) % maxSearch].end() != visited[(i + 1) % maxSearch].find(curr)) {
+				res = layer[fromSearch] + layer[toSearch];
+				return true;
 			}
-		});
 
-		if (++currentLayerCounter >= currentLayerSize)
-		{
-			currentLayerSize = nextLayerSize;
-			nextLayerSize = 0;
-			++layer;
-			currentLayerCounter = 0;
+			GetAllChildren(curr, dict, [&](const std::string& child)->void {
+				if (visited[i].end() == visited[i].find(child)) {
+					++nextLayerSize[i];
+					visited[i].insert(std::make_pair(child, curr));
+					search[i].push(child);
+				}
+			});
+
+			if (++currentLayerCounter[i] >= currentLayerSize[i])
+			{
+				currentLayerSize[i] = nextLayerSize[i];
+				nextLayerSize[i] = 0;
+				++layer[i];
+				currentLayerCounter[i] = 0;
+			}
 		}
 	}
 	return false;
@@ -121,7 +121,7 @@ int CalculateHammingDistanceHeuristic(const char* from, const char* to, int leng
 	return numChangesRequired;
 }
 
-bool FindNumChangesBetweenWordsAStar(const std::string& from, const std::string& to, int& numChanges)
+bool FindNumChangesBetweenWordsAStar(const std::string& from, const std::string& to, const std::unordered_set<std::string>& dict, int& numChanges)
 {	
 	unsigned int wordLength = (unsigned int)from.length();
 	if (wordLength != to.length())
@@ -149,7 +149,7 @@ bool FindNumChangesBetweenWordsAStar(const std::string& from, const std::string&
 			return true;
 		}
 
-		GetAllChildren(parent->word, [&](const std::string& child)
+		GetAllChildren(parent->word, dict, [&](const std::string& child)
 		{
 			if (closedList.end() == closedList.find(child))
 			{

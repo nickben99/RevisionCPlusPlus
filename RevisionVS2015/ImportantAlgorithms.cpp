@@ -1332,7 +1332,6 @@ void FindWords(int dimension, const std::unordered_set<std::string>& dictionary,
 	{
 		currentSequence[nextPosition++] = 'U';
 	}
-	currentSequence[nextPosition] = '\0';
 
 	if (nextPosition > 2 && IsInDictionary(dictionary, currentSequence)) // if we have a word in the dictionary which is at least 3 letters long
 	{
@@ -1343,15 +1342,13 @@ void FindWords(int dimension, const std::unordered_set<std::string>& dictionary,
 	int col = 0;
 	ToRowAndCol(parentDice, dimension, row, col);
 
-	for (int rowAdd = -1; rowAdd < 2; ++rowAdd)
+	for (int childRow = row-1; childRow <= row+1; ++childRow)
 	{
-		int childRow = row + rowAdd;
 		if (childRow >= 0 && childRow < dimension)
 		{
-			for (int colAdd = -1; colAdd < 2; ++colAdd)
+			for (int childCol = col-1; childCol <= col+1; ++childCol)
 			{
-				int childCol = col + colAdd;					
-				if (!(0 == childRow && 0 == childCol) && childCol >= 0 && childCol < dimension)
+				if (!(row == childRow && col == childCol) && childCol >= 0 && childCol < dimension)
 				{
 					int childIndex = ToIndex(childRow, childCol, dimension);
 					if (!usedDice[childIndex])
@@ -1362,28 +1359,34 @@ void FindWords(int dimension, const std::unordered_set<std::string>& dictionary,
 			}
 		}
 	}
-	currentSequence[currentSequencePosition] = '\0';
+	currentSequence[nextPosition - 1] = currentSequence[currentSequencePosition] = '\0';
 	usedDice[parentDice] = false;
 }
 
 // IMPROVEMENTS/SIMPLIFICATIONS
-// make dice std::vector<std::vector<char>> where 4*4 is assumed
+// make dice: char dice[][4]
+// remove usedDice array, instead set members of dice to '\0' when they have been used (this works ok when dice is char dice[][4])
 // remove dimension, assume literal 4 everywhere
-// remove usedDice array, instead set members of dice to '\0' when they have been used (this works ok when dice is std::vector<std::vector<char>>)
 void Boggle(const std::unordered_set<std::string>& dictionary, const char* dice, int dimension, std::unordered_set<std::string>& found)
 {
 	int diceLength = dimension*dimension;
 	bool* usedDice = new bool[diceLength];
-	memset(usedDice, 0, sizeof(bool) * diceLength);
-	char* currentSequence = new char[diceLength * 2 + 1]; // worst case scenario
-	memset(currentSequence, '\0', sizeof(char)*diceLength * 2 + 1);
-
-	for (int index = 0; index < diceLength; ++index)
+	if (usedDice) 
 	{
-		FindWords(dimension, dictionary, index, 0, usedDice, dice, currentSequence, found);
+		memset(usedDice, 0, sizeof(bool) * diceLength);
+		char* currentSequence = new char[diceLength * 2 + 1]; // worst case scenario
+		if (currentSequence) 
+		{
+			memset(currentSequence, '\0', sizeof(char)*(diceLength * 2 + 1));
+
+			for (int index = 0; index < diceLength; ++index)
+			{
+				FindWords(dimension, dictionary, index, 0, usedDice, dice, currentSequence, found);
+			}
+			delete[] currentSequence;
+		}
+		delete[] usedDice;
 	}
-	delete[] currentSequence;
-	delete[] usedDice;
 }
 
 } // end namespace boggle
@@ -1640,10 +1643,11 @@ std::string UnsignedIntToHexString(unsigned int val)
 	do
 	{
 		int figure = val % 16;
-		numString.insert(numString.begin(), IntToHexChar(figure)); // NOTE: this is doing a push onto the front each time
+		numString.push_back(IntToHexChar(figure));
 		val /= 16;
 	} while (0 != val);
 
+	std::reverse(numString.begin(), numString.end());
 	return numString;
 }
 

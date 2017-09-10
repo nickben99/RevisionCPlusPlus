@@ -11,16 +11,21 @@
 
 void CreateStackLinkedList( Element** stackHead )
 {
-	*stackHead = nullptr;
+	if (stackHead) {
+		*stackHead = nullptr;
+	}
 }
 
 void DeleteStackLinkedList( Element** stackHead )
 {
-	while (*stackHead)
+	if (stackHead)
 	{
-		Element* pNext = (*stackHead)->next;
-		delete *stackHead;
-		*stackHead = pNext;
+		while (*stackHead)
+		{
+			Element* pNext = (*stackHead)->next;
+			delete *stackHead;
+			*stackHead = pNext;
+		}
 	}
 }
 

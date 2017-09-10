@@ -103,7 +103,7 @@ public:
 		{
 			if (id == (*iter)->identifier) // does it already exist?
 			{
-				(*iter)->data = data; // update value
+				(*iter)->data = data; // update value, NOTE: std::unorderd_map will not update data if insert() finds the id already exists
 				return;
 			}
 		}
@@ -137,7 +137,7 @@ public:
 		}
 	}
 
-	Data* Find(const Identifier& id)
+	Data* Find(const Identifier& id) // NOTE: unordered_map returns a Data& from operator[], operator[] will add the new entry if it doesn't exist
 	{
 		LinkedListElement* iter = buckets[HashFunction(id)];
 		for (; iter; iter = iter->next)
