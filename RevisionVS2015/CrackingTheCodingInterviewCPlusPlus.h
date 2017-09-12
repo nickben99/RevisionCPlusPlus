@@ -39,9 +39,9 @@ typedef std::unordered_map<CCINode*, CCINode*> NodesVisited;
 
 void CopyCCINodeInternal(CCINode*, CCINode*&, NodesVisited&);
 CCINode* CopyCCINode(CCINode* original) {
-	NodesVisited visited;
 	CCINode* theCopy = nullptr;
 	if (original) {
+		NodesVisited visited;
 		CopyCCINodeInternal(original, theCopy, visited);
 	}
 	return theCopy;
@@ -49,6 +49,7 @@ CCINode* CopyCCINode(CCINode* original) {
 
 void CopyCCINodeInternal(CCINode* original, CCINode*& newNode, NodesVisited& visited)
 {
+	newNode = nullptr;
 	if (original)
 	{
 		auto existingCopy = visited.find(original);
@@ -62,8 +63,7 @@ void CopyCCINodeInternal(CCINode* original, CCINode*& newNode, NodesVisited& vis
 			if (newNode)
 			{
 				visited.insert(std::make_pair(original, newNode));
-				newNode->left = nullptr; //no need for this, as done in class
-				newNode->right = nullptr;
+				newNode->left = newNode->right = nullptr; //no need for this, as done in class
 				newNode->data = original->data;
 
 				CopyCCINodeInternal(original->left, newNode->left, visited);
@@ -106,6 +106,8 @@ public:
 				++*count;
 			}
 		}
+		// NOTE: could add else case here which asserts if count pointers are not also equal, 
+		// as having the same pointers but different count pointers will result in ptr eventually getting deleted while it still might be needed
 		return *this;
 	}
 
@@ -158,11 +160,11 @@ void* AlignedMalloc(int size, size_t alignment)
 		alignedReturn = (char*)alignedReturn + (alignment - remainder);
 	}
 	// NOTE: if alignment is always a power of 2, the following two lines could be used in place of the above five lines to calculate alignedReturn
-	//size_t possibleAligned = (size_t)((size_t)allocated + beginPointerSize + padding);
+	//size_t possibleAligned = (size_t)allocated + beginPointerSize + padding;
 	//void* alignedReturn = (void*)(possibleAligned & ~padding); // results in all bits less significant being removed
 
 	((void**)alignedReturn)[-1] = allocated;
-	return (void*)alignedReturn;
+	return alignedReturn;
 }
 
 void AlignedFree(void* freeMe)
@@ -177,11 +179,10 @@ void AlignedFree(void* freeMe)
 int** My2DAlloc(int rows, int cols)
 {
 	int headerSize = rows * sizeof(int*);
-	int rowSize = cols * sizeof(int);
-	int bufferSize = rows*rowSize;
+	int bufferSize = rows * cols * sizeof(int);
 	int** allocated = (int**)malloc(headerSize + bufferSize);
 
-	int* buffer = (int*)allocated + rows;
+	int* buffer = (int*)(allocated + rows);
 	for (int row = 0; row < rows; ++row) {
 		allocated[row] = buffer + row*cols;
 	}

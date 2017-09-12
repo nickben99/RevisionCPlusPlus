@@ -127,6 +127,38 @@ bool IsPermutationOf(const char* left, const char* right)
 	return (leftIter-left) == (rightIter-right); // if they're the same length
 }
 
+bool AreStringsOneEditDifferenceFromEachOther(const std::string& str1, const std::string& str2)
+{
+	size_t str1Length = str1.size();
+	size_t str2Length = str2.size();
+
+	const std::string* longStr = &str1;
+	size_t longStrLength = str1Length;
+
+	const std::string* shortStr = &str2;
+	size_t shortStrLength = str2Length;
+
+	if (shortStrLength > longStrLength)
+	{
+		std::swap(longStr, shortStr);
+		std::swap(longStrLength, shortStrLength);
+	}
+
+	int longStrIter = 0;
+	int shortStrIter = 0;
+	for (; longStrIter < longStrLength;)
+	{
+		if (shortStrIter < shortStrLength && (*longStr)[longStrIter] == (*shortStr)[shortStrIter]) {
+			++shortStrIter;
+		}
+
+		if (++longStrIter-shortStrIter > 1) {
+			return false;
+		}
+	}
+	return true;
+}
+
 void CompressString(std::string& str)
 {
 	if (0 == str.length())
@@ -179,6 +211,35 @@ void CompressString(std::string& str)
 		}
 	}
 	str = compressed;
+}
+
+// chapter 2 linked lists ---------------------------------------------------------------------------------------------------
+
+// NOTE: this function assumes the data element in LinkedListElement contains a pointer to an int
+LinkedListElement* SumListsReverse(LinkedListElement* listOne, LinkedListElement* listTwo) 
+{
+	LinkedListElement* newNumber = nullptr;
+	int carry = 0;
+	for (; nullptr != listOne || nullptr != listTwo || carry > 0; listOne = listOne->next, listTwo = listTwo->next)
+	{
+		int numOne = (nullptr != listOne) ? *(int*)listOne->data : 0;
+		int numTwo = (nullptr != listTwo) ? *(int*)listTwo->data : 0;
+
+		int sum = numOne + numTwo + carry;
+		int digit = sum % 10;
+		carry = sum / 10;
+
+		LinkedListElement* node = new LinkedListElement();
+		node->data = new int(digit);
+		node->next = newNumber;
+		newNumber = node;
+	}
+	return newNumber;
+}
+
+LinkedListElement* SumListsForward(LinkedListElement* /* listOne */, LinkedListElement* /* listTwo */)
+{
+	return nullptr; // implement
 }
 
 // chapter 4 trees and graphs -------------------------------------------------------------------

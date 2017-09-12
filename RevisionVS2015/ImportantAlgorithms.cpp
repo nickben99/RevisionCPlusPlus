@@ -238,14 +238,16 @@ void MinHeapAddTo(struct MinHeap* pHeap, int node)
 	}
 }
 
-void MinHeapPop(struct MinHeap* pHeap, int& outNode)
+bool MinHeapPop(struct MinHeap* pHeap, int& outNode)
 {
 	if (pHeap && pHeap->numElements > 0)
 	{
 		outNode = pHeap->elements[0];
 		pHeap->elements[0] = pHeap->elements[--pHeap->numElements];
 		MinHeapBubbleDown(pHeap, 0);
+		return true;
 	}
+	return false;
 }
 
 int MinHeapFind(struct MinHeap* pHeap, int node)
@@ -385,7 +387,7 @@ void RemoveCharFromString(char* pString, char toRemove)
 		*pTarget = *pString;
 		if (*pString != toRemove)
 		{
-			++pTarget; // NOTE: if not doing this in place, we would populate our target buffer here, like targetStdString.push_back(*pTarget)
+			++pTarget; // NOTE: if not doing this in place, we would populate our target buffer here, like targetStdString.push_back(*pString)
 		}
 		++pString;
 	}
@@ -416,7 +418,7 @@ std::string SumBinaryNumbers(const std::string& binaryNumOne, const std::string&
 
 	std::string result;
 	int carry = 0;
-	for (; lengthOneIterator >= 0 || lengthTwoIterator >= 0; --lengthOneIterator, --lengthTwoIterator)
+	for (; lengthOneIterator >= 0 || lengthTwoIterator >= 0 || carry > 0; --lengthOneIterator, --lengthTwoIterator)
 	{
 		int numOne = lengthOneIterator >= 0 ? (binaryNumOne[lengthOneIterator] - '0') : 0;
 		int numTwo = lengthTwoIterator >= 0 ? (binaryNumTwo[lengthTwoIterator] - '0') : 0;
@@ -424,11 +426,6 @@ std::string SumBinaryNumbers(const std::string& binaryNumOne, const std::string&
 	
 		result.insert(0, sum % 2 ? "1" : "0");
 		carry = sum / 2;
-	}
-
-	if (carry)
-	{
-		result.insert(0, "1");
 	}
 	return result;
 }

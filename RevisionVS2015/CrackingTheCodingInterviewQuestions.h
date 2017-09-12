@@ -25,7 +25,7 @@ bool IsPermutationOf(const char* jhs, const char* rhs);
 bool IsPermutationOfNoExtraDataStructures(char* jhs, char* rhs); // implement this, sort both strings, then check each index is the same
 void ReplaceSubString(char* string, int currentLength, int capacity, char remove = ' ', char* replaceWith = "%20"); // implement, p90, capacity should be big enough to update in-place
 bool IsPermutationOfAPalindrome(const char* string); // << implement, can the string be rearranged to become a palindrome
-bool AreStringsOneEditDifferenceFromEachOther(const char* source, const char* target); // <<== implement, are the two strings just one insert/remove/edit from each other
+bool AreStringsOneEditDifferenceFromEachOther(const std::string& str1, const std::string& str2); // 1.5, page 91, are the two strings just one insert/remove/edit from each other
 void CompressString(std::string& str); // convert "aaabbccccde" to "a3b2c4de", only perform the compression if the compressed string would be smaller than the original
 void RotateMatrix90Degrees(int* matrix, int dimension); // <<==implement, matrix is dimension*dimension, rotate 90 degrees
 void ZeroRowsAndColumns(int* matrix, int rows, int cols); // <<==implement, p91, when a zero is found in the matrix, set the entire row and column to zeros
@@ -37,7 +37,8 @@ void RemoveDuplicatesFromUnsortedLinkedList(LinkedListElement** head); // <<== i
 void DeleteNode(LinkedListElement* nodeToDelete); // <<== implement, p94, the passed in node is not the head, it is a node in the middle of the linked list, it cannot be the head or end
 void PartitionLinkedList(LinkedListElement** head, int partitionVal); // <== implement, everything less than partition must be put before everything greater or equal to partition
 
-int SumLists(LinkedListElement* listOne, LinkedListElement* listTwo); // <<== implement, see p95
+LinkedListElement* SumListsReverse(LinkedListElement* listOne, LinkedListElement* listTwo); // <<== 2.5, see p95
+LinkedListElement* SumListsForward(LinkedListElement* listOne, LinkedListElement* listTwo); // <<== implement, see p95
 bool IsPalindromeNoneRecursive(LinkedListElement* head); // <<== implement, p95, the linked list is a sentance, is the sentance a palindrome?
 bool IsPalindromeRecursive(LinkedListElement* head); // << implement, p95, the linked list is a sentance, is the sentance a palindrome?
 LinkedListElement* GetLinkedListIntersectionNode(LinkedListElement* listOne, LinkedListElement* listTwo); // << implement this, p95, do lists converge?

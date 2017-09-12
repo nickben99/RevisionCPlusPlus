@@ -702,12 +702,16 @@ void PrintAllStringPermutations(const char* pString)
 {
 	int len = (int)strlen(pString); // alternately without using api functions: const char* pIter = pString; while ('\0' != *pIter) { ++pIter;}; len = pIter-pString;
 	bool* pUsed = new bool[len]; // could do without this if pString was none const (could just temporarilly null out chars which are being used)
-	memset(pUsed, 0, sizeof(bool)*len); 
-	char* pCurrentString = new char[len+1]; // NOTE: +1 to add '\0' t end of char array
-	memset(pCurrentString, 0, len+1); 
-	PrintAllStringPermutationsInternal(pString, len, pCurrentString, 0, pUsed);
-	delete[] pCurrentString;
-	delete[] pUsed;
+	if (pUsed) {
+		memset(pUsed, 0, sizeof(bool)*len);
+		char* pCurrentString = new char[len + 1]; // NOTE: +1 to add '\0' to end of char array
+		if (pCurrentString) {
+			memset(pCurrentString, 0, len + 1);
+			PrintAllStringPermutationsInternal(pString, len, pCurrentString, 0, pUsed);
+			delete[] pCurrentString;
+		}
+		delete[] pUsed;
+	}
 }
 
 void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 32 characters long, but is big O(numCombos*len)
@@ -799,12 +803,16 @@ void GenerateTelephoneWordsInternal(const char* pNum, int numLen, int pos, char*
 
 void GenerateTelephoneWords(const char* pNum)
 {
-	int len = (int)strlen(pNum);
-	char* pCurrString = new char[len+1];
-	memset(pCurrString, 0, len+1);
-	int count = 0;
-	GenerateTelephoneWordsInternal(pNum, len, 0, pCurrString, count);
-	delete[] pCurrString;
+	if (pNum) {
+		int len = (int)strlen(pNum);
+		char* pCurrString = new char[len + 1];
+		if (pCurrString) {
+			memset(pCurrString, 0, len + 1);
+			int count = 0;
+			GenerateTelephoneWordsInternal(pNum, len, 0, pCurrString, count);
+			delete[] pCurrString;
+		}
+	}
 }
 
 void GenerateTelephoneWordsIterative(const char* pPhoneNum)
@@ -813,21 +821,20 @@ void GenerateTelephoneWordsIterative(const char* pPhoneNum)
 	char* pCurrString = new char[len+1];
 	memset(pCurrString, 0, sizeof(char)*(len+1));
 
-	int pos = 0;
-	for (pos = 0; pos < len; ++pos)
+	for (int iter = 0; iter < len; ++iter)
 	{
-		if (pPhoneNum[pos] == '-')
+		if (pPhoneNum[iter] == '-')
 		{
-			pCurrString[pos] = '-';
+			pCurrString[iter] = '-';
 		}
 		else
 		{
-			pCurrString[pos] = getChar(pPhoneNum[pos]-'0', 0);
+			pCurrString[iter] = getChar(pPhoneNum[iter]-'0', 0);
 		}
 	}
 
 	int count = 0;
-	pos = len-1;
+	int pos = len-1;
 	while (pos > -1)
 	{
 		std::cout << std::endl << count++ << ". " << pCurrString;
@@ -911,21 +918,22 @@ template<class T> int CountOnesInInt(T input)
 	return count;
 }
 
-// doing this function for counting a char's bits set to 1, as doing this with an int would not compile as onesInInt 
+// doing this function for counting a char's bits set to 1, as doing this with an int would not compile as onesCountCached 
 // is too big, gives error: total size of array must not exceed 0x7fffffff bytes
 int CountOnesInCharBig01Amortized(char input)
 {
-	static int onesInInt[UCHAR_MAX + 1] = { -1 };
-	if (-1 == onesInInt[0]) // not been initialized
+	static char onesCountCached[UCHAR_MAX + 1] = { -1 };	// each element is a char, as 8 will be highest value
+															// UCHAR_MAX + 1, as -128 to 127 gives 256 entries, which is (UCHAR_MAX == 255) 
+	if (-1 == onesCountCached[0]) // not been initialized
 	{
 		for (char count = CHAR_MIN; ; ++count)
 		{
-			onesInInt[count - CHAR_MIN] = CountOnesInInt(count); // the returned amount will never be greater than 8 for a char
+			onesCountCached[count - CHAR_MIN] = (char)CountOnesInInt(count); // the returned amount will never be greater than 8 for a char
 			if (CHAR_MAX == count)
 			{
 				break;
 			}
 		}
 	}
-	return onesInInt[input - CHAR_MIN];
+	return onesCountCached[input - CHAR_MIN];
 }

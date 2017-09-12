@@ -604,12 +604,17 @@ CMatrix CMatrix::CreatePerspectiveProjection(float left, float right, float bott
 // VECTOR, MATRIX, QUAT REVISION
 CMatrix CMatrix::LookAt(const CVector& eye, const CVector& target, const CVector& up)
 {
+	// STEP 1: we're getting the inverse rotation matrix
 	CMatrix rotationMat;
-	rotationMat.CreateMatrix(eye - target, up);
-	rotationMat = rotationMat.getInverseRotationMatrix(); // step 1: get inverse rotation matrix
+	rotationMat.CreateMatrix(eye - target, up); // forward will point in wrong direction - this is correct
 
-	CMatrix translationMat;
-	translationMat.SetMatrixTranslation(CVector4(-eye, 1.0f)); // step 2: get inverse translation matrix
+	CMatrix inverseRotationMat = rotationMat.Transposed(); // inverse is the same as transpose for rotation matrix
 
-	return rotationMat * translationMat; // step 3: get inverse translation matrix in the local space of the inverse rotation matrix
+	// STEP 2: get the inverse eye position in the local space of the final matrix. 
+	// by doting the negative eye with the vectors of the rotationMat we get the negative eye in the local space of the inverseRotationMat (as multiplying a vector 
+	// by the transpose of a matrix gets that vector into the local space of the matrix)
+	inverseRotationMat.rows.position[0] = rotationMat.right().v3.dotProduct(-eye);
+	inverseRotationMat.rows.position[1] = rotationMat.up().v3.dotProduct(-eye);
+	inverseRotationMat.rows.position[2] = rotationMat.forward().v3.dotProduct(-eye); // NOTE: -eye creates a temp, passing eye is better, then negating the rhs result
+	return inverseRotationMat;
 }

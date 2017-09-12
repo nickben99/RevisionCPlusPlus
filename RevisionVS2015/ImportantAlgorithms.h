@@ -34,7 +34,7 @@ void MinHeapDestroy(struct MinHeap* pHeap);
 void MinHeapBubbleDown(struct MinHeap* pHeap, int index);
 void MinHeapBubbleUp(struct MinHeap* pHeap, int index);
 void MinHeapAddTo(struct MinHeap* pHeap, int node);
-void MinHeapPop(struct MinHeap* pHeap, int& outNode);
+bool MinHeapPop(struct MinHeap* pHeap, int& outNode);
 int MinHeapFind(struct MinHeap* pHeap, int node); // find the index containing the node value
 void MinHeapChangeNodeWeight(struct MinHeap* pHeap, int index, int newWeight);
 
