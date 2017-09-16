@@ -39,7 +39,7 @@ void PartitionLinkedList(LinkedListElement** head, int partitionVal); // <== imp
 
 LinkedListElement* SumListsReverse(LinkedListElement* listOne, LinkedListElement* listTwo); // <<== 2.5, see p95
 LinkedListElement* SumListsForward(LinkedListElement* listOne, LinkedListElement* listTwo); // <<== implement, see p95
-bool IsPalindromeNoneRecursive(LinkedListElement* head); // <<== implement, p95, the linked list is a sentance, is the sentance a palindrome?
+bool IsPalindromeIterative(LinkedListElement* head); // <<== 2.6, p95, the linked list is a sentance, is the sentance a palindrome?
 bool IsPalindromeRecursive(LinkedListElement* head); // << implement, p95, the linked list is a sentance, is the sentance a palindrome?
 LinkedListElement* GetLinkedListIntersectionNode(LinkedListElement* listOne, LinkedListElement* listTwo); // << implement this, p95, do lists converge?
 LinkedListElement* GetLoopNode(LinkedListElement* head); // <<implement this, p95
@@ -83,7 +83,7 @@ class QueueWith2Stacks // <<== implement
 
 };
 
-void SortStackUsingOneTemporaryStack(std::stack<int>& toSort); //<<== implement 3.5, p99
+void SortStackUsingOneTemporaryStack(std::stack<int>& toSort); // 3.5, p99
 
 class AnimalShelter // <<== implement p99
 {
@@ -99,7 +99,7 @@ BinaryTreeNode* CreateBinarySearchTreeFromSortedArray(int array[], int arrayLeng
 void ListOfDepths(std::vector<std::list<TreeAndGraphNode*>>& result); // <<== implement p109
 struct BinaryNode { BinaryNode* left; BinaryNode* right; };
 bool CheckBalanced(BinaryNode* root); //<<== implement p110
-bool IsBinarySearchTree(BinaryTreeNode* node); // p110
+bool IsBinarySearchTree(BinaryTreeNode* node); // p110, 4.5
 struct BinaryTreeNodeWithParent { BinaryTreeNodeWithParent* left; BinaryTreeNodeWithParent* right; BinaryTreeNodeWithParent* parent; };
 BinaryTreeNodeWithParent* FindNextNodeInBinarySearchTree(BinaryTreeNodeWithParent* node); // p110
 bool SortDependancies(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes); // p110
@@ -195,7 +195,7 @@ int HowMany321StepPathsExist(int pathLength); // <<== implement , p134
 std::vector<std::pair<int, int>> GetRobotPathInGrid(int grid[], int rows, int cols); // p135
 int MagicIndex(int array[], int length); // <<== implement, p135
 void GenerateAllSubSets(const std::vector<int>& input, std::vector<std::vector<int>>& output); // p135
-unsigned int RecursiveUnsignedIntMultiply(unsigned int numberOne, unsigned int numberTwo);
+unsigned int RecursiveUnsignedIntMultiply(unsigned int numberOne, unsigned int numberTwo); //p135, 8.5
 bool TowersOfHanoi(); //<<=== implement p135
 void PrintAllPermutations(const char* string); // 135 
 std::vector<std::string> GenerateAllPermutationsNoDups(const std::string& input); // (p135) output strings have no dupes, input string may do

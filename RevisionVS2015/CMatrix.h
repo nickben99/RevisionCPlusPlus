@@ -76,7 +76,7 @@ class CMatrix
 		// get inverse of rotational part of matrix
 		CMatrix getInverseRotationMatrix();
 		// get inverse of scaling matrix
-		CMatrix getInverseScalingMatrix();
+		void createInverseScalingMatrix(float x, float y, float z);
 		// create a rotation matrix around an arbitrary axis
 		void createArbitraryAxisRotation(float angleRad, const CVector& rotationVect);
 		/*	create billboard matrix (creates the matrix required to position and 

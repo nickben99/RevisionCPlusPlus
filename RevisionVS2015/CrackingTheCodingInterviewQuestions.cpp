@@ -159,58 +159,48 @@ bool AreStringsOneEditDifferenceFromEachOther(const std::string& str1, const std
 	return true;
 }
 
+int NumFigures(int input) {
+	int figures = 0;
+	do {
+		++figures;
+		input /= 10;
+	} while (input != 0);
+	return figures;
+}
+
 void CompressString(std::string& str)
 {
-	if (0 == str.length())
-	{
-		return;
-	}
-
+	int totalCount = 0;
 	int consecutiveCount = 0;
-	char prevCharacter = '\0';
 	for (unsigned int count = 0; count < str.length(); ++count)
 	{
-		if (str[count] != prevCharacter)
-		{
-			prevCharacter = str[count];
-			consecutiveCount = 1;
-		}
-		else
-		{
-			++consecutiveCount;
-			if (consecutiveCount >= 3)
-			{
-				break;
-			}
-		}
-	}
-
-	if (consecutiveCount < 3) // won't gain anything from the compression
-	{
-		return;
-	}
-
-	std::string compressed;
-	consecutiveCount = 1;
-	for (unsigned int count = 0; count < str.length(); ++count)
-	{
+		++consecutiveCount;
 		if (count + 1 >= str.length() || str[count] != str[count + 1])
 		{
-			compressed.append(1, str[count]);
-			if (consecutiveCount > 1)
-			{
-				std::ostringstream oss;
-				oss << consecutiveCount;
-				compressed += oss.str();
-			}			
-			consecutiveCount = 1;
-		}
-		else
-		{
-			++consecutiveCount;
+			totalCount += 1;
+			totalCount += NumFigures(consecutiveCount);
+			consecutiveCount = 0;
 		}
 	}
-	str = compressed;
+
+	if (totalCount > str.length()) {
+		return;
+	}
+
+	std::ostringstream oss;
+	consecutiveCount = 0;
+	for (unsigned int count = 0; count < str.length(); ++count)
+	{
+		++consecutiveCount;
+		if (count + 1 >= str.length() || str[count] != str[count + 1])
+		{		
+			oss << str[count];
+			oss << consecutiveCount;
+						
+			consecutiveCount = 0;
+		}
+	}
+	str = oss.str();
 }
 
 // chapter 2 linked lists ---------------------------------------------------------------------------------------------------
@@ -242,38 +232,77 @@ LinkedListElement* SumListsForward(LinkedListElement* /* listOne */, LinkedListE
 	return nullptr; // implement
 }
 
+bool IsPalindromeIterative(LinkedListElement* head)
+{
+	std::stack<char> theStack;
+	LinkedListElement* slow = head;
+	LinkedListElement* fast = head;
+
+	while (fast && fast->next)
+	{
+		theStack.push(*(char*)slow->data);
+		slow = slow->next;
+		fast = fast->next->next;
+	}
+
+	if (fast != nullptr) {
+		slow = slow->next;
+	}
+
+	while (slow)
+	{
+		if (*(char*)slow->data != theStack.top()) {
+			return false;
+		}
+		theStack.pop();
+		slow = slow->next;
+	}
+	return true;
+}
+
+// chapter 3 stacks and queues ---------------------------------------------------------------
+
+// this function implements the solution using an insertion sort type algorithm
+void SortStackUsingOneTemporaryStack(std::stack<int>& toSort)
+{
+	std::stack<int> spareStack;
+	while (!toSort.empty())
+	{
+		int curr = toSort.top();
+		toSort.pop();
+		while (!spareStack.empty() && curr < spareStack.top())
+		{
+			toSort.push(spareStack.top());
+			spareStack.pop();
+		}
+		spareStack.push(curr);
+	}
+
+	while (!spareStack.empty())
+	{
+		toSort.push(spareStack.top());
+		spareStack.pop();
+	}
+}
+
 // chapter 4 trees and graphs -------------------------------------------------------------------
 
-void IsBinarySearchTree(BinaryTreeNode* node, int min, int max, bool doDecrement, bool& result)
+bool IsBinarySearchTree(BinaryTreeNode* node, BinaryTreeNode* left, BinaryTreeNode* right)
 {
-	if (node && result)
+	if (node)
 	{
-		if (node->val <= min) // NOTE: if no duplicates, this would just be '<' check
+		if ((nullptr == left || node->val > left->val) && (nullptr == right || node->val <= right->val))
 		{
-			result = false;
-			return;
+			return IsBinarySearchTree(node->left, left, node) && IsBinarySearchTree(node->right, node, right);
 		}
-
-		if (node->val > max)
-		{
-			result = false;
-			return;
-		}
-
-		// NOTE: if no duplicates, we would never decrement max
-		IsBinarySearchTree(node->right, node->val, doDecrement ? max - 1 : max, false, result);
-		if (result)
-		{
-			IsBinarySearchTree(node->left, min, node->val, true, result);
-		}
+		return false;
 	}
+	return true;
 }
 
 bool IsBinarySearchTree(BinaryTreeNode* node)
 {
-	bool result = true;
-	IsBinarySearchTree(node, INT_MAX, INT_MIN, false, result);
-	return result;
+	return IsBinarySearchTree(node, nullptr, nullptr);
 }
 
 BinaryTreeNodeWithParent* FindNextNodeInBinarySearchTree(BinaryTreeNodeWithParent* node)
@@ -297,7 +326,7 @@ BinaryTreeNodeWithParent* FindNextNodeInBinarySearchTree(BinaryTreeNodeWithParen
 	while (parent && parent->right == node)
 	{
 		node = parent;
-		parent = parent->parent;
+		parent = node->parent;
 	}
 	return parent;
 }

@@ -1154,10 +1154,19 @@ void CrackingTheCodingInterviewQuestions()
 	// technical questions --------------------------------------------------------------
 
 	// chapter 1, arrays and strings, p88
-	std::string str = "jjaaaaffdeggyyyyyyuu";
-	std::string prevString = str;
-	CompressString(str);
-	std::cout << std::endl << "CompressString(): " << prevString << " : " << str;
+	{
+		std::string str = "jjaaaaffdeggyyyyyyuu";
+		std::string prevString = str;
+		CompressString(str);
+		std::cout << std::endl << "CompressString(): " << prevString << " : " << str;
+	}
+
+	{
+		std::string str = "abcd";
+		std::string prevString = str;
+		CompressString(str);
+		std::cout << std::endl << "CompressString(): " << prevString << " : " << str;
+	}
 
 	// chapter 3 stacks and queues
 

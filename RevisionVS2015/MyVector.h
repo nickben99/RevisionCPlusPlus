@@ -39,6 +39,7 @@ public:
 					for (unsigned int dataIter = 0; dataIter < currentSize; ++dataIter)
 					{
 						myAllocator.construct(data + dataIter, oldData[dataIter]);
+						myAllocator.destroy(oldData + dataIter);
 					}
 					myAllocator.deallocate(oldData, currentSize); // currentSize will be equal to oldData capacity at this point
 				}				
@@ -68,6 +69,7 @@ public:
 				// this gets the copy constructor called. Alternately doing data[moveDown] = data[moveDown + 1] gets copy operator called
 				// calling constructor seems better, as copy operator might assume data already set has meaning (so may try to dealocate something)
 				myAllocator.construct(data + moveDown, data[moveDown + 1]); 
+				myAllocator.destroy(data + moveDown + 1);
 			}
 			--currentSize;
 			return true;

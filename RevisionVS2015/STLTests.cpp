@@ -46,13 +46,14 @@ void STLVectorTests()
 	}
 
 	presetints.insert(presetints.end(), 70);
+	//presetints.push_front(70); // doesn't compile
 	std::cout << std::endl << "Displaying all values (after presetints.insert(presetints.end(), 70)): ";
 	for (std::vector<int>::const_iterator i = presetints.begin(); i != presetints.end(); ++i)
 	{
 		std::cout << std::endl << "value " << i - presetints.begin() << ": " << *i;
 	}
 
-	//presetints.erase(presetints.end()); // would cause vector out of range error
+	//presetints.erase(presetints.end()); // will cause vector out of range error
 
 	std::vector<int> initiallySizedInts(5);
 	std::cout << std::endl << "after std::vector<int> initiallySizedInts(5): " << initiallySizedInts.size();

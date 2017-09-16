@@ -252,7 +252,7 @@ void CMatrix::createZRotationMatrix(float angle)
 	rows.x[0] = Cos; 
 	rows.x[1] = Sin;
 	rows.y[0] = -Sin;
-	rows.z[1] = Cos;	
+	rows.y[1] = Cos;	
 }
 
 /*	multiplies the rotational portion of this matrix by the row vector sent as a parameter
@@ -410,13 +410,15 @@ CVector CMatrix::multiplyVectorInverseMatrix(CVector *vect)
 // VECTOR, MATRIX, QUAT REVISION
 CMatrix CMatrix::GetInverseTransformMatrix()
 {
-	CMatrix inverseMatrix = getInverseRotationMatrix();
+	// transpose just rotation part of matrix, leaving position as 0,0,0
+	CMatrix inverseRotationMat = getInverseRotationMatrix(); // inverse is the same as transpose for rotation matrix
 
-	CVector4 inverseMatrixPosition;
-	inverseMatrixPosition.v3 = inverseMatrix.multiplyRotateVector(-getMatrixTranslation().v3); // gets the inverse of our position in the original matrix basis vectors
-	inverseMatrix.SetMatrixTranslation(inverseMatrixPosition);
-
-	return inverseMatrix;
+	// get the inverse eye position (negative eye position) in the local space of the original matrix 
+	// by doting the negativePos with each of the original matrix basis vectors
+	inverseRotationMat.rows.position[0] = right().v3.dotProduct(-getMatrixTranslation().v3);
+	inverseRotationMat.rows.position[1] = up().v3.dotProduct(-getMatrixTranslation().v3);
+	inverseRotationMat.rows.position[2] = forward().v3.dotProduct(-getMatrixTranslation().v3); // NOTE: -eye creates a temp, passing eye is better, then negating the rhs result
+	return inverseRotationMat;
 }
 
 // create scaling matrix
@@ -432,15 +434,13 @@ void CMatrix::creatScalingMatrix(float x, float y, float z)
 
 // get inverse of scaling matrix
 // VECTOR, MATRIX, QUAT REVISION
-CMatrix CMatrix::getInverseScalingMatrix()
+void CMatrix::createInverseScalingMatrix(float x, float y, float z)
 {
-	CMatrix inverseMatrix;
+	identity();
 
-	inverseMatrix.elements[0] = 1.0f/elements[0];
-	inverseMatrix.elements[5] = 1.0f/elements[5];
-	inverseMatrix.elements[10] = 1.0f/elements[10];
-
-	return(inverseMatrix);
+	elements[0] = 1.0f / x;
+	elements[5] = 1.0f / y;
+	elements[10] = 1.0f / z;
 }
 
 // create a rotation matrix around an arbitrary axis
@@ -493,7 +493,7 @@ bool CMatrix::CreateMatrix(const CVector& forward, const CVector& up)
 			rightVector.normalise();
 			CVector upVector;
 			upVector.crossProduct(normalizedForward, rightVector);
-			upVector.normalise();
+			upVector.normalise(); // normalizedForward and rightVector are orthonormalized, so normalizing this shouldn't be required but is
 
 			SetForward(CVector4(normalizedForward, 0.0f));
 			SetRight(CVector4(rightVector, 0.0f));
@@ -608,11 +608,12 @@ CMatrix CMatrix::LookAt(const CVector& eye, const CVector& target, const CVector
 	CMatrix rotationMat;
 	rotationMat.CreateMatrix(eye - target, up); // forward will point in wrong direction - this is correct
 
+	//NOTE: the rest of this method is the same as calling rotationMat.GetInverseTransformMatrix()
+
 	CMatrix inverseRotationMat = rotationMat.Transposed(); // inverse is the same as transpose for rotation matrix
 
-	// STEP 2: get the inverse eye position in the local space of the final matrix. 
-	// by doting the negative eye with the vectors of the rotationMat we get the negative eye in the local space of the inverseRotationMat (as multiplying a vector 
-	// by the transpose of a matrix gets that vector into the local space of the matrix)
+	// STEP 2: get the inverse eye position (negative eye position) in the local space of the rotationMat 
+	// by doting the negativePos with each of the original matrix basis vectors
 	inverseRotationMat.rows.position[0] = rotationMat.right().v3.dotProduct(-eye);
 	inverseRotationMat.rows.position[1] = rotationMat.up().v3.dotProduct(-eye);
 	inverseRotationMat.rows.position[2] = rotationMat.forward().v3.dotProduct(-eye); // NOTE: -eye creates a temp, passing eye is better, then negating the rhs result

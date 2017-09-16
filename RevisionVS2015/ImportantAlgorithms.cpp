@@ -1035,7 +1035,7 @@ void RemoveDuplicatesFromArrayPreserveNth(int array[], int& len, int N)
 		auto iter = counts.find(array[source]);
 		if (counts.end() == iter) // doesn't exist
 		{
-			counts.insert(std::make_pair(array[source], -1)).first; // insert -1 for count initially, -1 means 1 instance
+			counts.insert(std::make_pair(array[source], -1)); // insert -1 for count initially, -1 means 1 instance
 		}
 		else
 		{
@@ -1321,43 +1321,44 @@ bool IsInDictionary(const std::unordered_set<std::string>& dictionary, const cha
 void FindWords(int dimension, const std::unordered_set<std::string>& dictionary, int parentDice, int currentSequencePosition,
 				bool* usedDice, const char* dice, char* currentSequence, std::unordered_set<std::string>& found)
 {
-	usedDice[parentDice] = true;
-	currentSequence[currentSequencePosition] = dice[parentDice];
-
-	int nextPosition = currentSequencePosition + 1;
-	if ('Q' == dice[parentDice])
+	if (!usedDice[parentDice])
 	{
-		currentSequence[nextPosition++] = 'U';
-	}
+		usedDice[parentDice] = true;
+		currentSequence[currentSequencePosition] = dice[parentDice];
 
-	if (nextPosition > 2 && IsInDictionary(dictionary, currentSequence)) // if we have a word in the dictionary which is at least 3 letters long
-	{
-		found.insert(currentSequence);
-	}
-
-	int row = 0;
-	int col = 0;
-	ToRowAndCol(parentDice, dimension, row, col);
-
-	for (int childRow = row-1; childRow <= row+1; ++childRow)
-	{
-		if (childRow >= 0 && childRow < dimension)
+		int nextPosition = currentSequencePosition + 1;
+		if ('Q' == dice[parentDice])
 		{
-			for (int childCol = col-1; childCol <= col+1; ++childCol)
+			currentSequence[nextPosition++] = 'U';
+		}
+
+		// NOTE: might also want to do this before adding the 'u'
+		if (nextPosition > 2 && IsInDictionary(dictionary, currentSequence)) // if we have a word in the dictionary which is at least 3 letters long
+		{
+			found.insert(currentSequence);
+		}
+
+		int row = 0;
+		int col = 0;
+		ToRowAndCol(parentDice, dimension, row, col);
+
+		for (int childRow = row - 1; childRow <= row + 1; ++childRow)
+		{
+			if (childRow >= 0 && childRow < dimension)
 			{
-				if (!(row == childRow && col == childCol) && childCol >= 0 && childCol < dimension)
+				for (int childCol = col - 1; childCol <= col + 1; ++childCol)
 				{
-					int childIndex = ToIndex(childRow, childCol, dimension);
-					if (!usedDice[childIndex])
+					if (childCol >= 0 && childCol < dimension)
 					{
-						FindWords(dimension, dictionary, childIndex, nextPosition, usedDice, dice, currentSequence, found);
+						int childDice = ToIndex(childRow, childCol, dimension);
+						FindWords(dimension, dictionary, childDice, nextPosition, usedDice, dice, currentSequence, found);
 					}
 				}
 			}
 		}
+		currentSequence[nextPosition - 1] = currentSequence[currentSequencePosition] = '\0';
+		usedDice[parentDice] = false;
 	}
-	currentSequence[nextPosition - 1] = currentSequence[currentSequencePosition] = '\0';
-	usedDice[parentDice] = false;
 }
 
 // IMPROVEMENTS/SIMPLIFICATIONS
