@@ -6,12 +6,14 @@
 
 namespace dijkstra
 {
+	// Dijkstra's finds the optimal route from one node to all other nodes and Floyd-Warshall finds the optimal route for all node pairings.
 	void DijkstraSearch(); // can be used to get the shortest route from the root node to all other nodes
 }
 
 namespace floydwarshall
 {
 	struct GraphData;
+	// Dijkstra's finds the optimal route from one node to all other nodes and Floyd-Warshall finds the optimal route for all node pairings.
 	void FloydWarshallSearch(GraphData& graph); // can be used to get the shortest route from every node to every other node
 }
 

@@ -153,6 +153,8 @@ int FloydWarshallSearchCreatePath(int u, int v, int* next, const GraphData& grap
 
 void FloydWarshallSearch(GraphData& graph)
 {
+	// step 1, record which nodes can be traversed, and the the distance cost of traversing between them
+
 	int* distances = new int[graph.numVirtices*graph.numVirtices];
 	int* next = new int[graph.numVirtices*graph.numVirtices]; // used to construct the paths to the virtices
 
@@ -167,9 +169,11 @@ void FloydWarshallSearch(GraphData& graph)
 				moveTime = graph.GetMoveTime(u, v); // would calculate using some type of adjacency table, returning -1 for none traversable
 			}
 			distances[(u*graph.numVirtices) + v] = moveTime; // moveTime will be -1 if not traversable
-			next[u*graph.numVirtices + v] = (distances[u*graph.numVirtices + v] >= 0) ? v : -1; // -1 for no path
+			next[u*graph.numVirtices + v] = (moveTime >= 0) ? v : -1; // -1 for no path
 		}
 	}
+
+	// step 2, see if it's quicker to go through intermediary nodes rather than going directly between two nodes
 
 	for (int k = 0; k < graph.numVirtices; ++k)
 	{
@@ -190,6 +194,8 @@ void FloydWarshallSearch(GraphData& graph)
 			}
 		}
 	}
+
+	// step 3, record the final paths from node zero to each of the virtices
 
 	int* path = new int[graph.numVirtices];
 	for (int endVirtex = 0; endVirtex < graph.numVirtices; ++endVirtex)

@@ -61,8 +61,9 @@ bool PopStackLinkedList( Element** stackHead, void** data )
 	return true;
 }
 
-// NOTE: if removing one element SPECIFICALLY from the middle of the list (not head or end), you can copy the data from the next to the prev
-// iterativly until you get to the final element, which you delete (this removes the need to iterate the list from the begining)
+// NOTE: if removing one element SPECIFICALLY from the middle of the list (not head or end), and you pass in the Element* to delete, you can 
+// copy the data from the next to the prev iterativly until you get to the final element, which you delete (this removes the need to iterate 
+// the list from the begining)
 void RemoveAllMatchingData(Element** head, Element** end, void* data)
 {
 	if (!head)
@@ -216,7 +217,7 @@ void Flatten_LinkedList(ElementFlatten** head, ElementFlatten** end)
 	}
 
 	ElementFlatten* curr = *head;
-	while (curr)
+	for (; curr; curr = curr->next)
 	{
 		if (curr->child)
 		{
@@ -227,8 +228,7 @@ void Flatten_LinkedList(ElementFlatten** head, ElementFlatten** end)
 				*end = (*end)->next;
 			}
 			// curr->child = NULL; // we DON'T do this so that we can Unflatten the linked list if required
-		}
-		curr = curr->next;
+		}		
 	}
 }
 
@@ -251,7 +251,7 @@ void Unflatten_LinkedListInternal(ElementFlatten* element)
 	}
 }
 
-// this is the method presented in the book, but it seems very bad, sections will be traversed multiple times
+// NORE!!!!: this is the method presented in the book, but it seems very bad, sections will be traversed multiple times
 // see Unflatten_LinkedListBetter for better implementation
 void Unflatten_LinkedList(ElementFlatten** stackHead, ElementFlatten** stackEnd)
 {
