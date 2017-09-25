@@ -203,6 +203,24 @@ void CompressString(std::string& str)
 	str = oss.str();
 }
 
+void RotateImage(int** array, unsigned int N)
+{
+	unsigned int halfN = N / 2;
+	for (unsigned int layer = 0; layer < halfN; ++layer)
+	{
+		unsigned int oppositeLayer = N - layer - 1;
+		for (unsigned int index = layer; index < oppositeLayer; ++index)
+		{
+			int oppositeIndex = N - index - 1;
+			int temp = array[oppositeIndex][layer]; // save left column
+			array[oppositeIndex][layer] = array[oppositeLayer][oppositeIndex]; // left column = bottom row
+			array[oppositeLayer][oppositeIndex] = array[index][oppositeLayer]; // bottom row = right column
+			array[index][oppositeLayer] = array[layer][index]; // right column = top row
+			array[layer][index] = temp; // top row = left column
+		}
+	}
+}
+
 // chapter 2 linked lists ---------------------------------------------------------------------------------------------------
 
 // NOTE: this function assumes the data element in LinkedListElement contains a pointer to an int

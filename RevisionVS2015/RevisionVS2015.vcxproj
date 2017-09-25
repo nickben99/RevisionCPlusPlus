@@ -128,6 +128,7 @@
   <ItemGroup>
     <ClInclude Include="2KSports.h" />
     <ClInclude Include="CMatrix.h" />
+    <ClInclude Include="CPlane.h" />
     <ClInclude Include="CQuaternion.h" />
     <ClInclude Include="CrackingTheCodingInterviewAlgorithms.h" />
     <ClInclude Include="CrackingTheCodingInterviewCPlusPlus.h" />

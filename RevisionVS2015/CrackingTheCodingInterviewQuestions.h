@@ -27,7 +27,7 @@ void ReplaceSubString(char* string, int currentLength, int capacity, char remove
 bool IsPermutationOfAPalindrome(const char* string); // << implement, can the string be rearranged to become a palindrome
 bool AreStringsOneEditDifferenceFromEachOther(const std::string& str1, const std::string& str2); // 1.5, page 91, are the two strings just one insert/remove/edit from each other
 void CompressString(std::string& str); // convert "aaabbccccde" to "a3b2c4de", only perform the compression if the compressed string would be smaller than the original
-void RotateMatrix90Degrees(int* matrix, int dimension); // <<==implement, matrix is dimension*dimension, rotate 90 degrees
+void RotateImage(int** array, unsigned int N); // 1.7, p91
 void ZeroRowsAndColumns(int* matrix, int rows, int cols); // <<==implement, p91, when a zero is found in the matrix, set the entire row and column to zeros
 bool IsStringOneARotationOfStringTwo(const char* stringOne, const char* stringTwo); // <<== implement, p91 "waterbottle" is a rotation of "terbottlewa"
 

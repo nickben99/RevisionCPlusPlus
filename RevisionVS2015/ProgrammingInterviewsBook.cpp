@@ -702,10 +702,12 @@ void PrintAllStringPermutations(const char* pString)
 {
 	int len = (int)strlen(pString); // alternately without using api functions: const char* pIter = pString; while ('\0' != *pIter) { ++pIter;}; len = pIter-pString;
 	bool* pUsed = new bool[len]; // could do without this if pString was none const (could just temporarilly null out chars which are being used)
-	if (pUsed) {
+	if (pUsed) 
+	{
 		memset(pUsed, 0, sizeof(bool)*len);
 		char* pCurrentString = new char[len + 1]; // NOTE: +1 to add '\0' to end of char array
-		if (pCurrentString) {
+		if (pCurrentString) 
+		{
 			memset(pCurrentString, 0, len + 1);
 			PrintAllStringPermutationsInternal(pString, len, pCurrentString, 0, pUsed);
 			delete[] pCurrentString;
@@ -739,7 +741,7 @@ void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this al
 {
 	int len = (int)strlen(pOriginalString);
 	char* currentString = new char[len + 1];
-	memset(currentString, 0, sizeof(char) * (len + 1));
+	memset(currentString, '\0', sizeof(char) * (len + 1));
 	int count = 0;
 	PrintAllStringCombinationsAltInternal(pOriginalString, currentString, 0, 0, len, count);
 	delete[] currentString;
@@ -755,7 +757,7 @@ void PrintAllStringCombinationsAltInternal(const char* pOriginalString, char* cu
 		PrintAllStringCombinationsAltInternal(pOriginalString, currentString, position + 1, insertionPoint, length, count);
 		currentString[insertionPoint] = pOriginalString[position];
 		PrintAllStringCombinationsAltInternal(pOriginalString, currentString, position + 1, insertionPoint + 1, length, count);
-		currentString[insertionPoint] = '\0';
+		currentString[insertionPoint] = '\0';		
 	}
 }
 
@@ -936,4 +938,17 @@ int CountOnesInCharBig01Amortized(char input)
 		}
 	}
 	return onesCountCached[input - CHAR_MIN];
+}
+
+// this version uses a std::unordered_map and caches values as they are requested, rather than all upfront
+int CountOnesInCharBig01Amortized_Alternate(char input)
+{
+	static std::unordered_map<char, char> onesCountCached;
+	auto iter = onesCountCached.find(input);
+	if (onesCountCached.end() == iter) {
+		int result = CountOnesInInt(input);
+		onesCountCached.insert(std::make_pair(input, (char)result)); // result can't be higher than 8
+		return result;
+	}
+	return iter->second;
 }

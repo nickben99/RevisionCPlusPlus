@@ -32,19 +32,13 @@ bool FindNumChangesBetweenWordsBidirectionalBreadthFirstSearch(const std::string
 {
 	enum { fromSearch = 0, toSearch, maxSearch };
 	std::queue<std::string> search[maxSearch];
-	std::unordered_map<std::string, std::string> visited[maxSearch];
+	std::unordered_map<std::string, int> visited[maxSearch];
 
 	search[fromSearch].push(from);
-	visited[fromSearch].insert(std::make_pair(from, ""));
+	visited[fromSearch].insert(std::make_pair(from, 0));
 
 	search[toSearch].push(to);
-	visited[toSearch].insert(std::make_pair(to, ""));
-
-	int currentLayerSize[maxSearch] = { 1, 1 };
-	int nextLayerSize[maxSearch] = { 0, 0 };
-
-	int currentLayerCounter[maxSearch] = { 0, 0 };
-	int layer[maxSearch] = { 0, 0 };
+	visited[toSearch].insert(std::make_pair(to, 0));
 
 	while (!search[fromSearch].empty() && !search[toSearch].empty())
 	{
@@ -53,26 +47,18 @@ bool FindNumChangesBetweenWordsBidirectionalBreadthFirstSearch(const std::string
 			std::string curr = search[i].front();
 			search[i].pop();
 
-			if (visited[(i + 1) % maxSearch].end() != visited[(i + 1) % maxSearch].find(curr)) {
-				res = layer[fromSearch] + layer[toSearch];
+			auto foundInOther = visited[(i + 1) % maxSearch].find(curr);
+			if (visited[(i + 1) % maxSearch].end() != foundInOther) {
+				res = visited[i][curr] + foundInOther->second;
 				return true;
 			}
 
 			GetAllChildren(curr, dict, [&](const std::string& child)->void {
 				if (visited[i].end() == visited[i].find(child)) {
-					++nextLayerSize[i];
-					visited[i].insert(std::make_pair(child, curr));
+					visited[i].insert(std::make_pair(child, visited[i][curr] + 1));
 					search[i].push(child);
 				}
 			});
-
-			if (++currentLayerCounter[i] >= currentLayerSize[i])
-			{
-				currentLayerSize[i] = nextLayerSize[i];
-				nextLayerSize[i] = 0;
-				++layer[i];
-				currentLayerCounter[i] = 0;
-			}
 		}
 	}
 	return false;
@@ -82,6 +68,12 @@ bool FindNumChangesBetweenWordsBidirectionalBreadthFirstSearch(const std::string
 
 struct Node
 {
+	Node(const std::string& inWord, int inSteps, int inHeuristic)
+		: word(inWord)
+		, steps(inSteps)
+		, heuristic(inHeuristic)
+	{}
+
 	int steps = 0;
 	int heuristic = 0;
 
@@ -91,19 +83,15 @@ struct Node
 	}
 
 	std::string word;
-	int openListIndex = -1;
 };
 
 struct MinHeap
 {
-	std::unordered_map<std::string, Node*> nodes;
 	Node** heap = nullptr;
 
 	void Add(int, Node*) {};
 	bool IsEmpty() { return true; }
 	Node* PopLowestTotalCost() { return nullptr; }
-	Node* Contains(const std::string& str) { return nodes[str]; } // <<<< in reality, do nodes.find() to avoid crash
-	void ReSort(int, int) {};
 };
 
 // hamming distance calulates how many differences there are between two strings of equal length
@@ -130,50 +118,34 @@ bool FindNumChangesBetweenWordsAStar(const std::string& from, const std::string&
 	}
 
 	MinHeap openList;
-	std::unordered_set<std::string> closedList;
+	std::unordered_map<std::string, Node*> nodes; // this acts like a closed list, it stops nodes being added to the open list more than once
 
-	Node* startNode = new Node();
-	startNode->word = from;
-	startNode->heuristic = CalculateHammingDistanceHeuristic(from.c_str(), to.c_str(), wordLength);
-
+	Node* startNode = new Node(from, 0, CalculateHammingDistanceHeuristic(from.c_str(), to.c_str(), wordLength));
 	openList.Add(startNode->TotalCost(), startNode);
+	nodes[from] = startNode;
 
+	bool found = false;
 	while (!openList.IsEmpty())
 	{
-		Node* parent = openList.PopLowestTotalCost();
-		closedList.insert(parent->word);
-
-		if (parent->word == to)
+		Node* lowest = openList.PopLowestTotalCost();
+		if (lowest->word == to)
 		{
-			numChanges = parent->steps;
-			return true;
+			numChanges = lowest->steps;
+			found = true;
+			break;
 		}
 
-		GetAllChildren(parent->word, dict, [&](const std::string& child)
-		{
-			if (closedList.end() == closedList.find(child))
+		GetAllChildren(lowest->word, dict, [&](const std::string& child) {
+			auto iter = nodes.find(child);
+			// it has never been added to open list (no need to look for quicker paths to nodes already on the open list, as each edge has equal cost of 1)
+			if (nodes.end() == iter) 
 			{
-				int newSteps = parent->steps + 1;
-				Node* openListNode = openList.Contains(child);
-				if (openListNode)
-				{
-					if (newSteps < openListNode->steps)
-					{
-						openListNode->steps = newSteps;
-						openList.ReSort(openListNode->TotalCost(), openListNode->openListIndex);
-					}
-				}
-				else
-				{
-					Node* newNode = new Node();
-					newNode->word = from;
-					openListNode->steps = newSteps;
-					newNode->heuristic = CalculateHammingDistanceHeuristic(child.c_str(), to.c_str(), wordLength);
-					openList.Add(startNode->TotalCost(), newNode);
-				}
+				Node* newNode = new Node(from, lowest->steps + 1, CalculateHammingDistanceHeuristic(child.c_str(), to.c_str(), wordLength));
+				openList.Add(newNode->TotalCost(), newNode);
+				nodes[child] = newNode;
 			}
 		});
-		delete parent;
 	}
-	return false;
+	for (auto i : nodes) { delete i.second; }
+	return found;
 }

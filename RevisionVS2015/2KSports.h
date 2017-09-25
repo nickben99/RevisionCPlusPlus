@@ -8,6 +8,63 @@ struct Element2KInterview
 	void* mpData;
 };
 
+template<class T> class LinkedList2KInterview
+{
+private:
+	T* head = nullptr;
+
+public:
+	T* Add(T* prev) 
+	{
+		T* newElem = new T();		
+		if (newElem)
+		{
+			newElem->mpPrev = newElem->mpNext = nullptr;
+			if (nullptr == prev)
+			{
+				newElem->mpNext = head;
+				head->mpPrev = newElem;
+				head = newElem;
+			}
+			else
+			{
+				newElem->mpNext = prev->mpNext;
+				newElem->mpPrev = prev;
+				prev->mpNext = newElem;
+				if (newElem->mpNext)
+				{
+					newElem->mpNext->mpPrev = newElem;
+				}
+			}
+		}
+		return newElem;
+	}
+
+	void Remove(T* elem)
+	{
+		if (elem)
+		{
+			if (elem == head)
+			{
+				head = head->mpNext;
+				if (head)
+				{
+					head->mpPrev = nullptr;
+				}
+			}
+			else
+			{
+				elem->mpPrev->mpNext = elem->mpNext;
+				if (elem->mpNext)
+				{
+					elem->mpNext->mpPrev = elem->mpPrev;
+				}
+			}
+			delete elem;
+		}
+	}
+};
+
 // constructor(), insert(), remove(), GetHead()
 template<class T, int N> struct LinkedListNoMemAlloc2KInterview
 {

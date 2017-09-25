@@ -123,13 +123,16 @@ bool LinkedListStackPop(DoubleLinkedListElement** head, DoubleLinkedListElement*
 	return true;
 }
 
-// NOTE: this only supports positive ints. to make it support negative ints:
-// 1. at the top record whether the signs were different, then make both numbers positive
-// 2. at the bottom, if both numbers had different signs, negate the result
+// NOTE: this only supports positive ints.
 int DivideByWithoutMultDivQuot(int numerator, int denominator)
 {	
-	int counter = 0;
+	// to make it support negative numbers
+	//bool numeratorPositive = (numerator > 0);
+	//if (!numeratorPositive) { numerator = -numerator; }
+	//bool denominatorPositive = (denominator > 0);
+	//if (!denominatorPositive) { denominator = -denominator; }
 
+	int counter = 0;
 	if (denominator > 0)
 	{
 		while (numerator >= denominator)
@@ -138,6 +141,10 @@ int DivideByWithoutMultDivQuot(int numerator, int denominator)
 			++counter;
 		}
 	}
+
+	// to make it support negative numbers
+	//if (numeratorPositive != denominatorPositive) { counter = -counter; }
+
 	return counter;
 }
 
