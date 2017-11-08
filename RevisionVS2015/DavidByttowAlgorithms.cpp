@@ -153,7 +153,7 @@ int FloydWarshallSearchCreatePath(int u, int v, int* next, const GraphData& grap
 
 void FloydWarshallSearch(GraphData& graph)
 {
-	// step 1, record which nodes can be traversed, and the the distance cost of traversing between them
+	// step 1, record which nodes can be traversed, and the distance cost of traversing between them
 
 	int* distances = new int[graph.numVirtices*graph.numVirtices];
 	int* next = new int[graph.numVirtices*graph.numVirtices]; // used to construct the paths to the virtices
@@ -221,7 +221,7 @@ void FloydWarshallSearch(GraphData& graph)
 namespace quicksort
 {
 	template<class T> int Partition(T arr[], int left, int right) {
-		int pivot = arr[(left + right) / 2]; // Pick a pivot point. Can be an element		
+		T pivot = arr[(left + right) / 2]; // Pick a pivot point. Can be an element		
 
 		while (left <= right) { // Until we've gone through the whole array
 								// Find element on left that should be on right

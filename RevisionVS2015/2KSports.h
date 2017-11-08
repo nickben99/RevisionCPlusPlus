@@ -8,22 +8,27 @@ struct Element2KInterview
 	void* mpData;
 };
 
+// add(), remove()
 template<class T> class LinkedList2KInterview
 {
 private:
 	T* head = nullptr;
 
 public:
-	T* Add(T* prev) 
+	T* Add(T* prev, void* data) 
 	{
 		T* newElem = new T();		
 		if (newElem)
 		{
+			newElem->data = data;
 			newElem->mpPrev = newElem->mpNext = nullptr;
 			if (nullptr == prev)
 			{
 				newElem->mpNext = head;
-				head->mpPrev = newElem;
+				if (head)
+				{
+					head->mpPrev = newElem;
+				}
 				head = newElem;
 			}
 			else
@@ -66,7 +71,7 @@ public:
 };
 
 // constructor(), insert(), remove(), GetHead()
-template<class T, int N> struct LinkedListNoMemAlloc2KInterview
+template<class T, size_t N> struct LinkedListNoMemAlloc2KInterview
 {
 	LinkedListNoMemAlloc2KInterview()
 	{
@@ -157,7 +162,7 @@ template<class T, int N> struct LinkedListNoMemAlloc2KInterview
 	T* mNextFree = mElements;
 };
 
-template<typename T, int N> struct LinkedListStackNoMemAlloc2KInterview : private LinkedListNoMemAlloc2KInterview<T, N>
+template<typename T, size_t N> struct LinkedListStackNoMemAlloc2KInterview : private LinkedListNoMemAlloc2KInterview<T, N>
 {
 	T* Push(void* pData)
 	{

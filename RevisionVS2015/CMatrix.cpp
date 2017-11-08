@@ -415,9 +415,10 @@ CMatrix CMatrix::GetInverseTransformMatrix()
 
 	// get the inverse eye position (negative eye position) in the local space of the original matrix 
 	// by doting the negativePos with each of the original matrix basis vectors
-	inverseRotationMat.rows.position[0] = right().v3.dotProduct(-getMatrixTranslation().v3);
-	inverseRotationMat.rows.position[1] = up().v3.dotProduct(-getMatrixTranslation().v3);
-	inverseRotationMat.rows.position[2] = forward().v3.dotProduct(-getMatrixTranslation().v3); // NOTE: -eye creates a temp, passing eye is better, then negating the rhs result
+	CVector negativeTranslation = -getMatrixTranslation().v3;
+	inverseRotationMat.rows.position[0] = right().v3.dotProduct(negativeTranslation);
+	inverseRotationMat.rows.position[1] = up().v3.dotProduct(negativeTranslation);
+	inverseRotationMat.rows.position[2] = forward().v3.dotProduct(negativeTranslation);
 	return inverseRotationMat;
 }
 

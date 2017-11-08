@@ -490,9 +490,9 @@ void CVector::crossProduct(CVector* point1, CVector* point2, CVector* point3)
 void CVector::crossProduct(CVector *vector1, CVector *vector2)
 {
 	// get the cross product of the two vector
-	x = ( vector1->getY()*vector2->getZ() ) - ( vector1->getZ()*vector2->getY() );
-	y = ( vector1->getZ()*vector2->getX() ) - ( vector1->getX()*vector2->getZ() );
-	z = ( vector1->getX()*vector2->getY() ) - ( vector1->getY()*vector2->getX() );
+	x = vector1->getY()*vector2->getZ() - vector1->getZ()*vector2->getY();
+	y = vector1->getZ()*vector2->getX() - vector1->getX()*vector2->getZ();
+	z = vector1->getX()*vector2->getY() - vector1->getY()*vector2->getX();
 }
 
 // this vector crossed with another
@@ -522,9 +522,9 @@ void CVector::crossProduct(const CVector& point1, const CVector& point2, const C
 void CVector::crossProduct(const CVector& vector1, const CVector& vector2)
 {
 	// get the cross product of the two vector
-	x = ( vector1.y*vector2.z ) - ( vector1.z*vector2.y );
-	y = ( vector1.z*vector2.x ) - ( vector1.x*vector2.z );
-	z = ( vector1.x*vector2.y ) - ( vector1.y*vector2.x );
+	x = vector1.y*vector2.z - vector1.z*vector2.y;
+	y = vector1.z*vector2.x - vector1.x*vector2.z;
+	z = vector1.x*vector2.y - vector1.y*vector2.x;
 }
 
 bool CVector::CrossProduct(const CVector& vector1, const CVector& vector2, CVector& result)

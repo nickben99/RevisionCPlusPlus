@@ -878,6 +878,9 @@ void ProgrammingInterviewsBook()
 	std::cout << std::endl << binarySearchIterative(array, 0, 6, 7);
 	std::cout << std::endl << binarySearchIterative(array, 0, 6, 2);
 	std::cout << std::endl;
+	std::cout << std::endl << "PrintAllStringPermutions(\"abc\")";
+	PrintAllStringPermutations("abc");
+	std::cout << std::endl << std::endl << "PrintAllStringPermutions(\"abcd\")";
 	PrintAllStringPermutations("abcd");
 	std::cout << std::endl << "PrintAllStringCombinations(\"1234\")" << std::endl;
 	PrintAllStringCombinations("1234");
@@ -997,15 +1000,19 @@ void ImportantAlgorithms()
 
 	std::cout << std::endl;
 	std::cout << std::endl << "SumBinaryNumbers: " << SumBinaryNumbers("1", "1000");
-	std::cout << std::endl << "SumBinaryNumbers: " << BinaryStringToUnsignedInt(SumBinaryNumbers(UnsignedIntToBinaryString(1), UnsignedIntToBinaryString(8)).c_str());
+	unsigned int binaryStringToUnsignedIntResult = 0;
+	BinaryStringToUnsignedInt(SumBinaryNumbers(UnsignedIntToBinaryString(1), UnsignedIntToBinaryString(8)).c_str(), binaryStringToUnsignedIntResult);
+	std::cout << std::endl << "BinaryStringToUnsignedInt: " << binaryStringToUnsignedIntResult;
 
 	std::cout << std::endl;
 	std::cout << std::endl << "SumBinaryNumbers: " << SumBinaryNumbers("1010", "11100");
-	std::cout << std::endl << "SumBinaryNumbers: " << BinaryStringToUnsignedInt(SumBinaryNumbers(UnsignedIntToBinaryString(10), UnsignedIntToBinaryString(28)).c_str());
+	BinaryStringToUnsignedInt(SumBinaryNumbers(UnsignedIntToBinaryString(10), UnsignedIntToBinaryString(28)).c_str(), binaryStringToUnsignedIntResult);
+	std::cout << std::endl << "BinaryStringToUnsignedInt: " << binaryStringToUnsignedIntResult;
 
 	std::cout << std::endl;
 	std::cout << std::endl << "SumBinaryNumbers: " << SumBinaryNumbers("1111010", "1111000");
-	std::cout << std::endl << "SumBinaryNumbers: " << BinaryStringToUnsignedInt(SumBinaryNumbers(UnsignedIntToBinaryString(122), UnsignedIntToBinaryString(120)).c_str());
+	BinaryStringToUnsignedInt(SumBinaryNumbers(UnsignedIntToBinaryString(122), UnsignedIntToBinaryString(120)).c_str(), binaryStringToUnsignedIntResult);
+	std::cout << std::endl << "BinaryStringToUnsignedInt: " << binaryStringToUnsignedIntResult;
 
 	// ---------------tree functions--------------------------------------------------------------
 	BinaryTreeNode* pRoot = NULL;
@@ -1170,15 +1177,24 @@ void CrackingTheCodingInterviewQuestions()
 
 	// chapter 3 stacks and queues
 
-	StackWithMinElement<20> linkedListStackNoMem;
-	int zero = 0;
+	StackWithMinElement<int> minStack;
+	int ten = 10;
+	int eleven = 11;
+	int twelve = 12;
+	int thirteen = 13;
 	int one = 1;
-	int two = 2;
-	int three = 3;
-	linkedListStackNoMem.Push((void*)(&zero));
-	linkedListStackNoMem.Push((void*)(&one));
-	linkedListStackNoMem.Push((void*)(&two));
-	linkedListStackNoMem.Push((void*)(&three));
+	minStack.push(ten);
+	std::cout << std::endl << std::endl << "after minStack.push(ten), top: " << minStack.top() << " min: " << minStack.min();
+	minStack.push(eleven);
+	std::cout << std::endl << "after minStack.push(eleven), top: " << minStack.top() << " min: " << minStack.min();
+	minStack.push(twelve);
+	std::cout << std::endl << "after minStack.push(twelve), top: " << minStack.top() << " min: " << minStack.min();
+	minStack.push(thirteen);
+	std::cout << std::endl << "after minStack.push(thirteen), top: " << minStack.top() << " min: " << minStack.min();
+	minStack.push(one);
+	std::cout << std::endl << "after minStack.push(one), top: " << minStack.top() << " min: " << minStack.min();
+	minStack.pop();
+	std::cout << std::endl << "after minStack.pop(), top: " << minStack.top() << " min: " << minStack.min();
 
 	// chapter 4 trees and graphs -----------------------------------------------------------------------------------------
 

@@ -278,6 +278,37 @@ bool IsPalindromeIterative(LinkedListElement* head)
 	return true;
 }
 
+LinkedListElement* GetNoneLoopedLinkedListsIntersectionNode(LinkedListElement* listZero, LinkedListElement* listOne)
+{
+	if (listZero && listOne)
+	{
+		const int NumLists = 2;
+		LinkedListElement* theLists[NumLists] = { listZero, listOne };
+		int listLength[NumLists] = { 1, 1 };
+		for (int list = 0; list < NumLists; ++list)
+		{
+			for (; theLists[list]->next; theLists[list] = theLists[list]->next)
+			{
+				++listLength[list];
+			}
+		}
+
+		if (theLists[0] == theLists[1]) // lists do convergence onto the same end node
+		{
+			LinkedListElement** longerList = listLength[0] > listLength[1] ? &listZero : &listOne;
+			int lengthDiff = std::abs(listLength[0] - listLength[1]);
+			for (int i = 0; i < lengthDiff; ++i)
+			{
+				*longerList = (*longerList)->next;
+			}
+
+			for (; listZero != listOne; listZero = listZero->next, listOne = listOne->next) {}
+			return listZero; // or listOne would also work
+		}
+	}
+	return nullptr;
+}
+
 // chapter 3 stacks and queues ---------------------------------------------------------------
 
 // this function implements the solution using an insertion sort type algorithm
@@ -351,82 +382,12 @@ BinaryTreeNodeWithParent* FindNextNodeInBinarySearchTree(BinaryTreeNodeWithParen
 
 bool SortDependancies(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes)
 {
-	return TopologicalSort(allInputNodes, nodeDependancies, outputNodes);
-}
-
-struct TopologicalSortNodeAlt
-{
-	TopologicalSortNodeAlt(char inChar)
-		: character(inChar)
-	{}
-
-	char character;
-
-	enum State
-	{
-		idle,
-		processing,
-		processed
-	};
-	State currentState = State::idle;
-	std::vector<TopologicalSortNodeAlt*> outboundEdges;
-};
-
-bool SortDependanciesAltDepthFirstSearchInternal(TopologicalSortNodeAlt* node, std::vector<char>& outputNodes)
-{
-	if (!node || TopologicalSortNodeAlt::processing == node->currentState)
-	{
-		return false;
-	}
-
-	if (TopologicalSortNodeAlt::processed == node->currentState)
-	{
-		return true;
-	}
-
-	node->currentState = TopologicalSortNodeAlt::processing;
-
-	for (auto child : node->outboundEdges)
-	{
-		if (!SortDependanciesAltDepthFirstSearchInternal(child, outputNodes))
-		{
-			return false;
-		}
-	}
-
-	node->currentState = TopologicalSortNodeAlt::processed;
-	outputNodes.insert(outputNodes.begin(), node->character);
-	return true;
+	return TopologicalSortBreadthFirstSearch(allInputNodes, nodeDependancies, outputNodes);
 }
 
 bool SortDependanciesAltDFS(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes)
 {
-	std::unordered_map<char, TopologicalSortNodeAlt*> graph;
-
-	for (char inputNode : allInputNodes)
-	{
-		graph.insert(std::make_pair(inputNode, new TopologicalSortNodeAlt(inputNode)));
-	}
-
-	for (const std::pair<char, char>& link : nodeDependancies)
-	{
-		graph[link.first]->outboundEdges.push_back(graph[link.second]);
-	}
-
-	for (const std::pair<char, TopologicalSortNodeAlt*>& node : graph)
-	{
-		if (TopologicalSortNodeAlt::idle == node.second->currentState && !SortDependanciesAltDepthFirstSearchInternal(node.second, outputNodes))
-		{
-			break;
-		}
-	}
-
-	for (auto node : graph)
-	{
-		delete node.second;
-	}
-
-	return allInputNodes.size() == outputNodes.size();
+	return TopologicalSortDepthFirstSearch(allInputNodes, nodeDependancies, outputNodes);
 }
 
 BinaryTreeNode* FindFirstCommonAnscesterInternal(BinaryTreeNode* root, int nodeOne, int nodeTwo, bool& foundOne, bool& foundTwo)
@@ -621,7 +582,7 @@ int Conversion(int left, int right)
 int PairwiseSwap(int number)
 {
 	int shiftedUp = (number & 0x55555555) << 1;
-	int shiftedDown = (number & 0xaaaaaaaa) >> 1;
+	int shiftedDown = ((number & 0xaaaaaaaa) >> 1) & 0x7fffffff; // & with 0x7fffffff to remove sign bit (not required if number was unsigned)
 	return shiftedUp | shiftedDown;
 }
 

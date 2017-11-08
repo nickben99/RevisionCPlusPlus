@@ -7,6 +7,11 @@
 namespace dijkstra
 {
 	// Dijkstra's finds the optimal route from one node to all other nodes and Floyd-Warshall finds the optimal route for all node pairings.
+
+	// inputs are:
+	// int distancesBetwenNodes[numGraphNodes*numGraphNodes]  // -1 for no path
+	// int startNode = 0;
+	// returns the shortest distance to each node from the start node
 	void DijkstraSearch(); // can be used to get the shortest route from the root node to all other nodes
 }
 

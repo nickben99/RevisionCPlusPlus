@@ -617,7 +617,8 @@ std::string IntToString(int val)
 		numString.push_back('-'); // NOTE: could do a insert(0, "0") here to avoid the string reverse at the bottom of this function
 	}
 	
-	// reversing the string here. // NOTE: could've avoided this string reverse if insert(0, "0") was done previosuly in this function
+	// reversing the string here. 
+	// NOTE: could've avoided this string reverse if insert(0, "0") was done previosuly in this function (but would make algorithm less efficient)
 	int start = 0, end = (int)numString.length()-1;
 	while (end > start)
 	{
@@ -825,14 +826,7 @@ void GenerateTelephoneWordsIterative(const char* pPhoneNum)
 
 	for (int iter = 0; iter < len; ++iter)
 	{
-		if (pPhoneNum[iter] == '-')
-		{
-			pCurrString[iter] = '-';
-		}
-		else
-		{
-			pCurrString[iter] = getChar(pPhoneNum[iter]-'0', 0);
-		}
+		pCurrString[iter] = ('-' != pPhoneNum[iter]) ? getChar(pPhoneNum[iter] - '0', 0) : '-';
 	}
 
 	int count = 0;
@@ -922,6 +916,7 @@ template<class T> int CountOnesInInt(T input)
 
 // doing this function for counting a char's bits set to 1, as doing this with an int would not compile as onesCountCached 
 // is too big, gives error: total size of array must not exceed 0x7fffffff bytes
+// NOTE: Also see below: int CountOnesInCharBig01Amortized_Alternate(char)
 int CountOnesInCharBig01Amortized(char input)
 {
 	static char onesCountCached[UCHAR_MAX + 1] = { -1 };	// each element is a char, as 8 will be highest value
@@ -947,8 +942,7 @@ int CountOnesInCharBig01Amortized_Alternate(char input)
 	auto iter = onesCountCached.find(input);
 	if (onesCountCached.end() == iter) {
 		int result = CountOnesInInt(input);
-		onesCountCached.insert(std::make_pair(input, (char)result)); // result can't be higher than 8
-		return result;
+		iter = onesCountCached.insert(std::make_pair(input, (char)result)).first; // result can't be higher than 8
 	}
 	return iter->second;
 }

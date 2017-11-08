@@ -121,55 +121,132 @@ struct TopologicalSortNode
 		: character(inChar)
 	{}
 
+	enum Status // NOTE!!!! only used in Depth first search topological sort
+	{
+		unexplored = 0,
+		exploring,
+		closed,
+		max
+	};
+	Status status = Status::unexplored;
+
 	char character;
-	int numInboundEdges = 0;
+	int numInboundEdges = 0; // NOTE!!!! only used in Breadth first search topological sort
 	std::vector<TopologicalSortNode*> outboundEdges;
 };
 
-bool TopologicalSort(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes)
+bool CreateGraph(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::unordered_map<char, TopologicalSortNode*>& graph)
 {
-	std::unordered_map<char, TopologicalSortNode*> graph;
-
 	for (auto inputNode : allInputNodes)
 	{
-		graph.insert(std::make_pair(inputNode, new TopologicalSortNode(inputNode)));
+		TopologicalSortNode* newNode = new TopologicalSortNode(inputNode);
+		if (!newNode)
+		{
+			return false;
+		}
+		graph.insert(std::make_pair(inputNode, newNode));
 	}
 
 	for (auto link : nodeDependancies)
 	{
-		++graph[link.second]->numInboundEdges;
+		++graph[link.second]->numInboundEdges; // NOTE! only used in breadth first search topological sort
 		graph[link.first]->outboundEdges.push_back(graph[link.second]);
 	}
+	return true;
+}
 
-	std::queue<TopologicalSortNode*> processNext;
-	for (auto node : graph)
+void DestroyGraph(std::unordered_map<char, TopologicalSortNode*>& graph)
+{
+	for (std::pair<char, TopologicalSortNode*> entry : graph)
 	{
-		if (0 == node.second->numInboundEdges)
+		if (entry.second)
 		{
-			processNext.push(node.second);
+			delete entry.second;
 		}
 	}
+}
 
-	while (!processNext.empty())
+bool TopologicalSortBreadthFirstSearch(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes)
+{
+	bool allGood = false;
+	std::unordered_map<char, TopologicalSortNode*> graph;
+	if (CreateGraph(allInputNodes, nodeDependancies, graph))
 	{
-		TopologicalSortNode* next = processNext.front();
-		processNext.pop();
-
-		for (auto node : next->outboundEdges)
+		std::queue<TopologicalSortNode*> processNext;
+		for (auto node : graph)
 		{
-			--node->numInboundEdges;
-			if (0 == node->numInboundEdges)
+			if (0 == node.second->numInboundEdges)
 			{
-				processNext.push(node);
+				processNext.push(node.second);
 			}
 		}
-		outputNodes.push_back(next->character);
-	}
 
-	for (auto node : graph)
+		while (!processNext.empty())
+		{
+			TopologicalSortNode* next = processNext.front();
+			processNext.pop();
+
+			for (auto node : next->outboundEdges)
+			{
+				--node->numInboundEdges;
+				if (0 == node->numInboundEdges)
+				{
+					processNext.push(node);
+				}
+			}
+			outputNodes.push_back(next->character);
+		}
+		allGood = allInputNodes.size() == outputNodes.size();
+	}
+	DestroyGraph(graph);
+	return allGood;
+}
+
+bool TopologicalSortDepthFirstSearch(TopologicalSortNode* node, std::vector<char>& result)
+{
+	if (!node || TopologicalSortNode::Status::exploring == node->status)
 	{
-		delete node.second;
+		return false;
 	}
 
-	return allInputNodes.size() == outputNodes.size();
+	if (TopologicalSortNode::Status::closed != node->status) // will be unexplored
+	{
+		node->status = TopologicalSortNode::Status::exploring;
+
+		for (TopologicalSortNode* child : node->outboundEdges)
+		{
+			if (!TopologicalSortDepthFirstSearch(child, result))
+			{
+				return false;
+			}
+		}
+		result.push_back(node->character);
+		node->status = TopologicalSortNode::Status::closed;
+	}
+	return true;
+}
+
+bool TopologicalSortDepthFirstSearch(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes)
+{
+	bool allGood = false;
+	std::unordered_map<char, TopologicalSortNode*> graph;
+	if (CreateGraph(allInputNodes, nodeDependancies, graph))
+	{
+		allGood = true;
+		for (std::pair<char, TopologicalSortNode*> entry : graph)
+		{
+			if (!TopologicalSortDepthFirstSearch(entry.second, outputNodes))
+			{
+				allGood = false; // probably don't need this as 'result.size() == inputNodes.size()' (further down) would be false
+				break;
+			}
+		}
+		if (allGood)
+		{
+			std::reverse(outputNodes.begin(), outputNodes.end());
+			allGood = outputNodes.size() == allInputNodes.size();
+		}
+	}
+	DestroyGraph(graph);
+	return allGood;
 }

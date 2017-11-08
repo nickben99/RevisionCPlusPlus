@@ -8,12 +8,13 @@
 
 // header files---------
 #include "CVector.h"
+#include <cmath>
 //----------------------
 
 //defines---------------
 #define SMALL_VAL 0.00001f // a very small value 
 // floating point equality check, within the bounds of a very small differance
-#define FEQUALS(N1, N2) ( fabs(N1 - (N2)) < SMALL_VAL) ? true : false
+#define FEQUALS(N1, N2) ( std::fabs(N1 - (N2)) < SMALL_VAL) ? true : false
 //----------------------
 
 // plane class
@@ -51,7 +52,7 @@ class CPlane
 		// VECTOR, MATRIX, QUAT REVISION
 		CVector CalculatePointOnPlane()
 		{
-			return planeNormal *= -planeConstant;
+			return planeNormal * -planeConstant;
 		}
 
 		// VECTOR, MATRIX, QUAT REVISION
@@ -107,15 +108,15 @@ class CPlane
 
 			if (startDist * endDist <= 0.0f) // start and end of line are on opposite sides of the plane
 			{				
-				CVector unitLine = (endLine - startLine).normalise(); // get the normalalised line vector
-				CVector adjacentSideNormal = startDist > 0.0f ? -planeNormal : planeNormal;
+				CVector unitLine = (endLine - startLine).normalise(); // get the normalised line vector
 
-				// below, think of startDist & adjacentSideNormal and hypotenuseLength & unitLine representing the direction and magnitude of two sides of a triangle. 
-				// cosineOfAngle is the cosine of the angle between those two sides. startDist & adjacentSideNormal would be the adjacent side, dist & unitLine
-				// would be the hypotenuse, therefore hypotenuseLength is calculated through CAH - cosine(angle) = adjacent/hypotenuse, so hypotenuse = adjacent/cosine(angle)
+				// below, think of startDist & planeNormal and hypotenuseLength & unitLine representing the direction and magnitude 
+				// of two sides of a triangle. cosineOfAngle is the cosine of the angle between those two sides. startDist & planeNormal 
+				// would be the adjacent side, hypotenuseLength & unitLine would be the hypotenuse, therefore hypotenuseLength is calculated 
+				// through CAH - cosine(angle) = adjacent/hypotenuse, so hypotenuse = adjacent/cosine(angle)
 
-				float cosineOfAngle = adjacentSideNormal.dotProduct(unitLine); // dot product gives us cosine(angle)
-				float hypotenuseLength = startDist / (0 == cosineOfAngle ? 1.0f : cosineOfAngle); // hypotenuse = adjacent/cosine(angle)
+				float cosineOfAngle = planeNormal.dotProduct(unitLine); // dot product gives us cosine(angle)
+				float hypotenuseLength = -(startDist / (0 == cosineOfAngle ? 1.0f : cosineOfAngle)); // hypotenuse = adjacent/cosine(angle)
 				intersectionPoint = startLine + unitLine * hypotenuseLength; // return the intersection point
 				return true;
 			}

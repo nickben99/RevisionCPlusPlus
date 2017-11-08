@@ -46,6 +46,7 @@ void STLVectorTests()
 	}
 
 	presetints.insert(presetints.end(), 70);
+	//presetints.insert(70); doesn't compile, no std::vector::insert() function takes one parameter
 	//presetints.push_front(70); // doesn't compile
 	std::cout << std::endl << "Displaying all values (after presetints.insert(presetints.end(), 70)): ";
 	for (std::vector<int>::const_iterator i = presetints.begin(); i != presetints.end(); ++i)

@@ -41,7 +41,7 @@ LinkedListElement* SumListsReverse(LinkedListElement* listOne, LinkedListElement
 LinkedListElement* SumListsForward(LinkedListElement* listOne, LinkedListElement* listTwo); // <<== implement, see p95
 bool IsPalindromeIterative(LinkedListElement* head); // <<== 2.6, p95, the linked list is a sentance, is the sentance a palindrome?
 bool IsPalindromeRecursive(LinkedListElement* head); // << implement, p95, the linked list is a sentance, is the sentance a palindrome?
-LinkedListElement* GetLinkedListIntersectionNode(LinkedListElement* listOne, LinkedListElement* listTwo); // << implement this, p95, do lists converge?
+LinkedListElement* GetNoneLoopedLinkedListsIntersectionNode(LinkedListElement* listOne, LinkedListElement* listTwo); // << p95 2.7, do lists converge?
 LinkedListElement* GetLoopNode(LinkedListElement* head); // <<implement this, p95
 
 // chapter 3, stacks and queues
@@ -57,17 +57,41 @@ struct StackData
 	void* mpData;
 };
 
-template <int N> struct StackWithMinElement : private LinkedListStackNoMemAlloc2KInterview<StackData, N> // implement 3.2, p98, min stack based method
+template <class T> struct StackWithMinElement : private std::stack<T> // 3.2, p98, min stack based method
 {
-	LinkedListStackNoMemAlloc2KInterview<StackData, N> minStack;
+	std::stack<T> minStack;
 
-	StackData* Push(void*) // implement 3.2, p98, min stack based method
+	void push(const T& newVal) // name hides std::stack<T>::push()
 	{
-		return nullptr;
+		std::stack<T>::push(newVal); // needs explicit scoping as std::stack<T>::push() is name hidden
+		if (minStack.empty() || newVal <= minStack.top())
+		{
+			minStack.push(newVal);
+		}
 	}
 
-	void Pop(void*&) // implement 3.2, p98, min stack based method
+	void pop() // name hides std::stack<T>::pop()
 	{
+		if (!empty())
+		{
+			T prevTop = std::stack<T>::top(); // needs explicit scoping as std::stack<T>::top() is name hidden
+			std::stack<T>::pop(); // needs explicit scoping as std::stack<T>::pop() is name hidden
+			if (prevTop == minStack.top())
+			{
+				minStack.pop();
+			}		
+		}
+	}
+
+	T min()
+	{
+		return minStack.top();
+	}
+
+	// NOTE: question doesn't require implementing this function - it is just used for debugging
+	T top() // name hides std::stack<T>::push()
+	{
+		return std::stack<T>::top(); // needs explicit scoping as std::stack<T>::top() is name hidden
 	}
 };
 

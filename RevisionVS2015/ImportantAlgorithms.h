@@ -6,6 +6,8 @@
 #include <vector>
 #include "ProgrammingInterviewsBook.h"
 
+struct BinaryTreeNodeWithParent;
+
 // -------------- Linked List
 
 struct LinkedListElement { LinkedListElement* next; void* data; };
@@ -51,7 +53,6 @@ void ReverseStringRecursive(char* pString);
 void RemoveCharFromString(char* pString, char toRemove);
 unsigned int BinaryNumberToUnsignedInt(const char* pBinaryNum);
 std::string SumBinaryNumbers(const std::string& binaryNumOne, const std::string& binaryNumTwo);
-std::string SubtractBinaryNumbers(const std::string& binaryNumOne, const std::string& binaryNumTwo); // <<== implement this http://www.wikihow.com/Subtract-Binary-Numbers
 void RemoveCommonElementsFromStrings(char* pStringOne, char* pStringTwo);
 
 // --------------- tree functions
@@ -63,6 +64,7 @@ bool BinarySearchTreeAddNoDuplicatesIterative(BinaryTreeNode** pRoot, int val); 
 bool BinarySearchTreeAddNoDuplicatesRecurse(BinaryTreeNode** pRoot, int val); // tree where left node is less than parent, right node is higher
 bool BinarySearchTreeRemove(BinaryTreeNode** pRoot, int val);
 int BinaryTreeMaxDepth(BinaryTreeNode* pRoot);
+BinaryTreeNodeWithParent* FindPrevNodeInBinarySearchTree(BinaryTreeNodeWithParent* root);
 
 // graphs ---------------------------------------------------
 
@@ -124,7 +126,7 @@ namespace findLargestEncompassingRectangle
 
 std::string IntToBinaryString(int val);
 std::string UnsignedIntToBinaryString(unsigned int val);
-int BinaryStringToUnsignedInt(const char* string);
+bool BinaryStringToUnsignedInt(const char* string, unsigned int& returnNumber);
 std::string UnsignedIntToHexString(unsigned int num);
 unsigned int HexStringToUnsignedInt(const char* hexString);
 

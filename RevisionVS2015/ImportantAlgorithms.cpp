@@ -1,5 +1,6 @@
 #include "ImportantAlgorithms.h"
 #include "ProgrammingInterviewsBook.h" // for StringToInt()
+#include "CrackingTheCodingInterviewQuestions.h" // for BinaryTreeNodeWithParent
 #include <stdlib.h> // for malloc
 #include <string.h>
 #include <queue>
@@ -316,7 +317,11 @@ void Shuffle(int* arrayToShuffle, int len)
 	{
 		for (int index = 0; index < len; ++index)
 		{
-			int randomSwapPos = rand() % len; // a while loop would make sure randomSwapPos != index to ensure a better shuffle
+			int randomSwapPos = rand() % len;
+			//while (index == randomSwapPos) // a while loop would make sure randomSwapPos != index to ensure a better shuffle
+			//{
+			//	randomSwapPos = rand() % len;
+			//}
 			int temp = arrayToShuffle[index]; // would use std::swap() in reality
 			arrayToShuffle[index] = arrayToShuffle[randomSwapPos];
 			arrayToShuffle[randomSwapPos] = temp;
@@ -351,8 +356,8 @@ void HeapSort(int* array, int len)
 
 		for (int i = len; i > 1; --i)
 		{
-			int lenAfterPop = len;
-			array[len - 1] = MaxHeapPopHead(array, lenAfterPop);
+			int lenAfterPop = i;
+			array[i - 1] = MaxHeapPopHead(array, lenAfterPop);
 		}
 	}
 }
@@ -431,15 +436,11 @@ std::string SumBinaryNumbers(const std::string& binaryNumOne, const std::string&
 		int numTwo = lengthTwoIterator >= 0 ? (binaryNumTwo[lengthTwoIterator] - '0') : 0;
 		int sum = numOne + numTwo + carry;
 	
+		// NOTE!! much better big O is result.push_back(), then at end: std::reverse(result.begin(), result.end())
 		result.insert(0, sum % 2 ? "1" : "0");
 		carry = sum / 2;
 	}
 	return result;
-}
-
-std::string SubtractBinaryNumbers(const std::string&, const std::string&)
-{
-	return std::string();
 }
 
 void RemoveCommonElementsFromStrings(char* pStringOne, char* pStringTwo)
@@ -662,6 +663,30 @@ int BinaryTreeMaxDepth(BinaryTreeNode* pRoot)
 	return (left > right ? left : right) + 1;
 }
 
+BinaryTreeNodeWithParent* FindPrevNodeInBinarySearchTree(BinaryTreeNodeWithParent* node)
+{
+	if (!node)
+	{
+		return nullptr;
+	}
+
+	if (node->left)
+	{
+		BinaryTreeNodeWithParent* prev = node->left;
+		while (prev->right)
+		{
+			prev = prev->right;
+		}
+		return prev;
+	}
+
+	while (node->parent && node->parent->left == node)
+	{
+		node = node->parent;
+	}
+	return node->parent;
+}
+
 // graphs -------------------------------
 
 const GraphNode* GraphDepthFirstSearch(const GraphNode& graph, int val, std::unordered_set<const GraphNode*>& searched);
@@ -742,7 +767,7 @@ const GraphNode* GraphDepthFirstSearchIterative(const GraphNode& graph, int val)
 		}
 		searched.insert(frontNode); // NOTE: different to bfs, for iterative depth first search, this is the correct place to mark visited
 		
-		for (auto childNode = frontNode->children.rbegin(); childNode != frontNode->children.rend(); ++childNode)
+		for (std::vector<GraphNode*>::const_reverse_iterator childNode = frontNode->children.rbegin(); childNode != frontNode->children.rend(); ++childNode)
 		{
 			if (*childNode && searched.end() == searched.find(*childNode)) // O(1) for set.find() (assuming no hashing collisions)
 			{
@@ -792,7 +817,7 @@ void AddToMinHeap(std::vector<PathCell>&, const PathCell&) {};
 void MinHeapReSort(int /*index*/) {};
 int GetItemIndex(const std::vector<PathCell>& aVector, const GridCell& cell) { aVector; cell; return 0; };
 
-// NOTE: this example uses an closed list, see DavidByttowAlgorithms.h/cpp DijkstraSearch() for an example where nodes has an isOpen flag instead
+// NOTE: this example uses a closed list, see DavidByttowAlgorithms.h/cpp DijkstraSearch() for an example where nodes has an isOpen flag instead
 bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const GridCell& end)
 {
 	std::vector<PathCell> openList; // would usually be a minheap
@@ -859,19 +884,20 @@ bool AStar(AStarPath& outPath, const Grid& grid, const GridCell& start, const Gr
 } // AStarSearch AStarSearch AStarSearch AStarSearch AStarSearch AStarSearch
 
 typedef std::unordered_map<const GraphNode*, const GraphNode*> BidirectionalVisited; // node to parent node
-std::vector<const GraphNode*> MakePath(const GraphNode* intersection, BidirectionalVisited& visitedOne, BidirectionalVisited& visitedTwo)
+std::vector<const GraphNode*> MakePath(const GraphNode* intersection, BidirectionalVisited& fromStart, BidirectionalVisited& fromEnd)
 {
 	std::vector<const GraphNode*> result;
-	const GraphNode* iter = intersection;
-	while (iter) { // get the nodes from the start node to the intersection node
-		result.insert(result.begin(), iter);
-		iter = visitedOne[iter]; // get parent
+	// get the nodes from the start node to the intersection node
+	for (const GraphNode* iter = intersection; iter; iter = fromStart[iter])
+	{
+		result.push_back(iter); // O(1), alternately, insert front would be O(N) shuffle down
 	}
+	std::reverse(result.begin(), result.end()); // better than inserting front in the above loop, as that causes an O(N) shuffle down every insert
 
-	iter = visitedTwo[intersection];
-	while (iter) { // get the nodes after the intersection node to the end node
+	// get the nodes after the intersection node to the end node
+	for (const GraphNode* iter = fromEnd[intersection]; iter; iter = fromEnd[iter])
+	{
 		result.push_back(iter);
-		iter = visitedTwo[iter];
 	}
 	return result;
 }
@@ -889,7 +915,7 @@ std::vector<const GraphNode*> GraphBidirectionalBreadthFirstSearch(const GraphNo
 
 	while (!toSearch[fromStart].empty() && !toSearch[fromEnd].empty())
 	{
-		for (int i = 0; i < MaxDirections; ++i) {
+		for (int i = fromStart; i < MaxDirections; ++i) {
 			const GraphNode* curr = toSearch[i].front();
 			toSearch[i].pop();
 
@@ -965,7 +991,7 @@ int FibonacciRecursiveInternal(int FibonacciNumberAtIndex, int count, int recent
 
 int FibonacciRecursive(int FibonacciNumberAtIndex)
 {
-	// see http://stackoverflow.com/questions/1518726/recursive-fibonacci - alternate algo as is slow as is (but could be improved with memoization)
+	// see http://stackoverflow.com/questions/1518726/recursive-fibonacci - alternate algo is slow as is (but could be improved with memoization)
 	if (FibonacciNumberAtIndex < 2)
 	{
 		return FibonacciNumberAtIndex;
@@ -1511,21 +1537,22 @@ std::string UnsignedIntToBinaryString(unsigned int val)
 	do
 	{
 		int figure = val % 2;
-		numString.insert(0, figure ? "1" : "0"); // NOTE: this is doing a push onto the front each time
+		numString.push_back(figure ? '1' : '0');
 		val /= 2;
 	} while (0 != val);
 	
+	std::reverse(numString.begin(), numString.end());
 	return numString;
 }
 
-int BinaryStringToUnsignedInt(const char* string)
+bool BinaryStringToUnsignedInt(const char* string, unsigned int& returnNumber)
 {
 	if (!string || '\0' == *string)
 	{
-		return 0;
+		return false;
 	}
 
-	int returnNumber = 0;
+	returnNumber = 0;
 	while ('\0' != *string)
 	{
 		returnNumber *= 2;
@@ -1535,11 +1562,11 @@ int BinaryStringToUnsignedInt(const char* string)
 		}
 		else
 		{
-			return 0; // error
+			return false; // error
 		}
 		++string;
 	}
-	return returnNumber;
+	return true;
 }
 
 char IntToHexChar(int number)
