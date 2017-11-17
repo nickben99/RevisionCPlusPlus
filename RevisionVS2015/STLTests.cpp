@@ -208,6 +208,12 @@ void STLUnorderedSetTests()
 		std::cout << std::endl << *i;
 	}
 
+	ints.erase(17);
+	std::cout << std::endl << "After ints.erase(17): " << ints.size();
+
+	ints.erase(ints.begin());
+	std::cout << std::endl << "After ints.erase(ints.begin()): " << ints.size();
+
 	std::cout << std::endl << "STLUnorderedSetTests() - End";
 }
 

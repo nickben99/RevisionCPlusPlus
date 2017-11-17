@@ -1123,7 +1123,7 @@ template <class T> void RemoveCommonElementsFromArrays(T* pArrayOne, int& arrayO
 	for (int sourceCount = 0; sourceCount < arrayOneLen; ++sourceCount)
 	{
 		pArrayOne[targetCount] = pArrayOne[sourceCount];
-		// it's not in both, we want to keep it (every array one element has an entry in common)
+		// it's not in both, we want to keep it (every arrayOne element has an entry in common)
 		if ( 2 != common[ pArrayOne[targetCount] ] ) 
 		{
 			++targetCount; // keep it
@@ -1151,7 +1151,7 @@ bool GetNthSmallestElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestEl
 		lenTwo = 0;
 	}
 	
-	if (N >= (lenOne + lenTwo)) {
+	if (N >= lenOne + lenTwo) {
 		return false;
 	}
 
@@ -1160,22 +1160,11 @@ bool GetNthSmallestElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestEl
 	{
 		if ( oneIndex < lenOne && twoIndex < lenTwo ) // both in bounds
 		{
-			if ( arrOne[oneIndex] < arrTwo[twoIndex] )
-			{
-				NthSmallestElement = arrOne[oneIndex++];
-			}
-			else
-			{
-				NthSmallestElement = arrTwo[twoIndex++];
-			}
+			NthSmallestElement = arrOne[oneIndex] < arrTwo[twoIndex] ? arrOne[oneIndex++] : arrTwo[twoIndex++];			
 		}
-		else if ( oneIndex < lenOne ) // one in bounds
+		else // either one or two will be in bounds (not both)
 		{
-			NthSmallestElement = arrOne[oneIndex++];
-		}
-		else if ( twoIndex < lenTwo ) // two in bounds
-		{
-			NthSmallestElement = arrTwo[twoIndex++];
+			NthSmallestElement = oneIndex < lenOne ? arrOne[oneIndex++] : arrTwo[twoIndex++];
 		}
 	}
 	return true;
@@ -1195,29 +1184,19 @@ bool GetNthSmallestElementFromUnionOfSortedArrays(int& NthSmallestElement, int N
 		return false;
 	}
 
-	int oneIndex = 0, twoIndex = 0;	
+	int oneIndex = 0;
+	int twoIndex = 0;	
 	int NthCounter = 0;
 	for (; NthCounter <= N && (oneIndex < lenOne || twoIndex < lenTwo);)
 	{
 		int newValue = 0;
 		if (oneIndex < lenOne && twoIndex < lenTwo) // both in bounds
 		{
-			if (arrOne[oneIndex] < arrTwo[twoIndex])
-			{
-				newValue = arrOne[oneIndex++];
-			}
-			else
-			{
-				newValue = arrTwo[twoIndex++];
-			}
+			newValue = arrOne[oneIndex] < arrTwo[twoIndex] ? arrOne[oneIndex++] : arrTwo[twoIndex++];
 		}
-		else if (oneIndex < lenOne) // one in bounds
+		else // one or two will be in bounds (not both)
 		{
-			newValue = arrOne[oneIndex++];
-		}
-		else if (twoIndex < lenTwo) // two in bounds
-		{
-			newValue = arrTwo[twoIndex++];
+			newValue = oneIndex < lenOne ? arrOne[oneIndex++] : arrTwo[twoIndex++];
 		}
 
 		if (0 == NthCounter || newValue != NthSmallestElement)
@@ -1295,22 +1274,22 @@ void RemoveCommonElementsFromSortedArrays(int* arrOne, int& lenOne, int* arrTwo,
 
 void RemoveCommonIntegers(int* intNumbers, const char** stringNumbers, int& numIntNumbers, int& numStringNumbers)
 {
-	std::unordered_map<int, int> used;
+	std::unordered_map<int, bool> used;
 	for (int intArrayIndex = 0; intArrayIndex < numIntNumbers; ++intArrayIndex)
 	{
-		used.insert(std::make_pair(intNumbers[intArrayIndex], 0));
+		used.insert(std::make_pair(intNumbers[intArrayIndex], false));
 	}
 
 	// IMPORTANT: go over string numbers second so that StringToInt() is only called once for each number
-	std::unordered_map<int, int>::iterator endIter = used.end();
+	std::unordered_map<int, bool>::iterator endIter = used.end();
 	int targetCounter = 0;
 	for (int stringArrayIndex = 0; stringArrayIndex < numStringNumbers; ++stringArrayIndex)
 	{
 		stringNumbers[targetCounter] = stringNumbers[stringArrayIndex];
-		std::unordered_map<int, int>::iterator iter = used.find(StringToInt(stringNumbers[stringArrayIndex])); // in reality std::stoi() would be used instead of StringToInt()
+		std::unordered_map<int, bool>::iterator iter = used.find(StringToInt(stringNumbers[stringArrayIndex])); // in reality std::stoi() would be used instead of StringToInt()
 		if (endIter != iter)
 		{
-			iter->second = 1; // in both
+			iter->second = true; // in both
 		}
 		else // we want to keep it
 		{
@@ -1324,7 +1303,7 @@ void RemoveCommonIntegers(int* intNumbers, const char** stringNumbers, int& numI
 	for (int intArrayIndex = 0; intArrayIndex < numIntNumbers; ++intArrayIndex)
 	{
 		intNumbers[targetCounter] = intNumbers[intArrayIndex];
-		if (0 == used[intNumbers[intArrayIndex]]) // used in only the first list
+		if (!used[intNumbers[intArrayIndex]]) // used in only the first list
 		{
 			++targetCounter; // keep it
 		}
@@ -1348,11 +1327,12 @@ int ToIndex(int row, int col, int columns)
 
 bool IsInDictionary(const std::unordered_set<std::string>& dictionary, const char* word)
 {
-	return dictionary.end() != dictionary.find(std::string(word));
+	return dictionary.end() != dictionary.find(word);
 }
 
-void FindWords(int dimension, const std::unordered_set<std::string>& dictionary, int parentDice, int currentSequencePosition,
-				bool* usedDice, const char* dice, char* currentSequence, std::unordered_set<std::string>& found)
+void FindWords(int, const std::unordered_set<std::string>&, int, int, bool*, const char*, char*, std::unordered_set<std::string>&);
+void FindWordsMain(int dimension, const std::unordered_set<std::string>& dictionary, int parentDice, int currentSequencePosition,
+			bool* usedDice, const char* dice, char* currentSequence, std::unordered_set<std::string>& found, bool altQSequence)
 {
 	if (!usedDice[parentDice])
 	{
@@ -1360,12 +1340,11 @@ void FindWords(int dimension, const std::unordered_set<std::string>& dictionary,
 		currentSequence[currentSequencePosition] = dice[parentDice];
 
 		int nextPosition = currentSequencePosition + 1;
-		if ('Q' == dice[parentDice])
+		if ('Q' == dice[parentDice] && altQSequence)
 		{
 			currentSequence[nextPosition++] = 'U';
 		}
 
-		// NOTE: might also want to do this before adding the 'u'
 		if (nextPosition > 2 && IsInDictionary(dictionary, currentSequence)) // if we have a word in the dictionary which is at least 3 letters long
 		{
 			found.insert(currentSequence);
@@ -1391,6 +1370,17 @@ void FindWords(int dimension, const std::unordered_set<std::string>& dictionary,
 		}
 		currentSequence[nextPosition - 1] = currentSequence[currentSequencePosition] = '\0';
 		usedDice[parentDice] = false;
+	}
+}
+
+//NOTE!!!! this accounts for two paths, one where we insert a 'u' after a 'q', and one where we do not - ask an interviewer if they care about this
+void FindWords(int dimension, const std::unordered_set<std::string>& dictionary, int parentDice, int currentSequencePosition,
+				bool* usedDice, const char* dice, char* currentSequence, std::unordered_set<std::string>& found)
+{
+	FindWordsMain(dimension, dictionary, parentDice, currentSequencePosition, usedDice, dice, currentSequence, found, false); // 'u' not inseted after
+	if ('Q' == dice[parentDice])
+	{
+		FindWordsMain(dimension, dictionary, parentDice, currentSequencePosition, usedDice, dice, currentSequence, found, true); // 'u' inserted after
 	}
 }
 
@@ -1459,47 +1449,28 @@ int FindLargestEncompassingRectangleOfZeros(char* array, int numRows, int numCol
 	int* freeColumnHeights = new int[numRows*numColumns]; // NOTE: instead of allocating this, we could overwrite array (if clobbering array is ok)
 
 	// go over columns recording height of 0's at each slot
-	for (int col = 0; col < numColumns; ++col)
+	int largestArea = 0;
+	for (int row = 0; row < numRows; ++row)	
 	{
-		for (int row = 0; row < numRows; ++row)
+		std::list<std::pair<int, int>> activeRectangles; // using list as AddRectangleColumn() deletes from the middle (O(1) operation for list)
+		for (int col = 0; col < numColumns; ++col)
 		{
 			int arrayIndex = boggle::ToIndex(row, col, numColumns);
 			if (0 != array[arrayIndex]) // it's not a zero
 			{
 				freeColumnHeights[arrayIndex] = 0;
-			}
-			else if (row - 1 >= 0) // there are rows beneath
-			{
-				freeColumnHeights[arrayIndex] = freeColumnHeights[boggle::ToIndex(row - 1, col, numColumns)] + 1;
-			}
-			else // bottom row
-			{
-				freeColumnHeights[arrayIndex] = 1;
-			}
-		}
-	}
-
-	int largestEncompassingRectangleOfZeros = 0;
-	// go over all the rows
-	for (int row = numRows - 1; row >= 0; --row)
-	{
-		std::list<std::pair<int, int>> activeRectangles; // using list as AddRectangleColumn() deletes from the middle (O(1) operation for list)
-		for (int col = 0; col < numColumns; ++col)
-		{
-			int freeColumnHeight = freeColumnHeights[boggle::ToIndex(row, col, numColumns)];
-			if (0 == freeColumnHeight)
-			{
 				activeRectangles.clear();
 			}
 			else
 			{
-				largestEncompassingRectangleOfZeros = AddRectangleColumn(activeRectangles, freeColumnHeight, largestEncompassingRectangleOfZeros);
+				freeColumnHeights[arrayIndex] = 1 + (row > 0 ? freeColumnHeights[boggle::ToIndex(row - 1, col, numColumns)] : 0);
+				largestArea = AddRectangleColumn(activeRectangles, freeColumnHeights[arrayIndex], largestArea);
 			}
 		}
-	}	
+	}
 
 	delete[] freeColumnHeights;
-	return largestEncompassingRectangleOfZeros;
+	return largestArea;
 }
 
 } // findLargestEncompassingRectangle
@@ -1514,16 +1485,13 @@ std::string IntToBinaryString(int input)
 	int numBits = sizeof(int) * 8;
 
 	std::string numString;
-
-	bool hasNumberStarted = false;
 	for (int bit = numBits - 1; bit >= 0; --bit)
 	{
 		unsigned int result = (1 << bit) & input;
 
-		if (result || hasNumberStarted)
+		if (result || !numString.empty())
 		{
 			numString.push_back(result ? '1' : '0');
-			hasNumberStarted = true;
 		}
 	}
 	return numString;

@@ -159,6 +159,17 @@ bool RemoveHead_LinkedList(Element** head)
 	return true;
 }
 
+void RemoveElementFromMiddle_LinkedList(Element* deleteMe)
+{
+	if (deleteMe && deleteMe->next) // must be true as we are deleting from the middle (not head or end)
+	{
+		Element* next = deleteMe->next;
+		deleteMe->data = next->data;
+		deleteMe->next = next->next;
+		delete next;
+	}
+}
+
 bool GetNthToLastElement_LinkedList(Element** out, Element** head, int n)
 {
 	if (!head || !*head)
@@ -676,59 +687,66 @@ int binarySearchIterative(char* arrayOfValues, int lowerIndex, int upperIndex, c
 	return -1;		
 }
 
-void PrintAllStringPermutationsInternal(const char* pOriginalString, int len, char* pCurrentString, int position, bool* pUsed)
+void PrintAllStringPermutations(std::unordered_map<char, int>& used, size_t inputLen, size_t caret, char* curr)
 {
-	for (int index = 0; index < len; ++index)
+	if (caret >= inputLen)
 	{
-		if (true == pUsed[index])
-		{
-			continue;
-		}
-		pCurrentString[position] = pOriginalString[index];
-		pUsed[index] = true; // if pOriginalString was none const, we could do without pUsed, and null out spots in pOriginalString here temporarilly
-		if (position+1 < len)
-		{
-			PrintAllStringPermutationsInternal(pOriginalString, len, pCurrentString, position+1, pUsed);
-		}
-		else
-		{
-			std::cout << std::endl << pCurrentString;
-		}
-		pUsed[index] = false;
-		// pCurrentString[position] = ' \0'; // NOTE: this is not required as all printed strings are the same length so all pCurrentString slots will always be occuppied
-	}	
-}
-
-void PrintAllStringPermutations(const char* pString)
-{
-	int len = (int)strlen(pString); // alternately without using api functions: const char* pIter = pString; while ('\0' != *pIter) { ++pIter;}; len = pIter-pString;
-	bool* pUsed = new bool[len]; // could do without this if pString was none const (could just temporarilly null out chars which are being used)
-	if (pUsed) 
+		std::cout << std::endl << curr;
+	}
+	else
 	{
-		memset(pUsed, 0, sizeof(bool)*len);
-		char* pCurrentString = new char[len + 1]; // NOTE: +1 to add '\0' to end of char array
-		if (pCurrentString) 
+		for (std::unordered_map<char, int>::iterator iter = used.begin(); iter != used.end(); ++iter)
 		{
-			memset(pCurrentString, 0, len + 1);
-			PrintAllStringPermutationsInternal(pString, len, pCurrentString, 0, pUsed);
-			delete[] pCurrentString;
+			if (iter->second > 0)
+			{
+				--iter->second;
+				curr[caret] = iter->first;
+				PrintAllStringPermutations(used, inputLen, caret + 1, curr);
+				++iter->second;
+			}
 		}
-		delete[] pUsed;
 	}
 }
 
-void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 32 characters long, but is big O(numCombos*len)
+void PrintAllStringPermutations(const std::string& input)
 {
-	int len = (int)strlen(pString);
-	if (len >= 0)
+	if (input.length() > 0)
 	{
-		unsigned int numCombos = 1 << len;
-		for (unsigned int combo = 0; combo < numCombos; ++combo)
+		// unordered_map is used in-case input has duplicate characters, to avoid duplicate printed strings
+		// if we don't care about duplicate output, then an array of bools equal in length to input to mark used indecis would work
+		std::unordered_map<char, int> used;
+		for (char letter : input)
+		{
+			std::unordered_map<char, int>::iterator found = used.find(letter);
+			if (used.end() == found)
+			{
+				found = used.insert(std::make_pair(letter, 0)).first;
+			}
+			++found->second;
+		}
+
+		char* curr = new char[input.size() + 1];
+		if (curr)
+		{
+			memset(curr, '\0', sizeof(char)*(input.size() + 1));
+			PrintAllStringPermutations(used, input.length(), 0, curr);
+			delete[] curr;
+		}
+	}
+}
+
+void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 8*sizeof(size_t) characters long, but is big O(numCombos*len)
+{
+	size_t len = pString ? (size_t)strlen(pString) : 0;
+	if (len > 0 && len < 8*sizeof(size_t))
+	{
+		size_t numCombos = 1LL << len; // LL allows a 64 bit shift (long long is 64 bits, long is 32 bits)
+		for (size_t combo = 0; combo < numCombos; ++combo)
 		{
 			std::cout << std::endl << combo << ". ";
-			for (int pos = 0; pos < len; ++pos)
+			for (size_t pos = 0; pos < len; ++pos)
 			{
-				if ((1 << pos) & combo)
+				if ((1LL << pos) & combo)
 				{
 					std::cout << pString[pos];
 				}

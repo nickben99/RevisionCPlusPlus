@@ -1283,29 +1283,37 @@ void CrackingTheCodingInterviewQuestions()
 	std::cout << std::endl << IntToBinaryString(numToSwap);
 	std::cout << std::endl << IntToBinaryString(PairwiseSwap(numToSwap));
 
-	char pixels[12]; // 4bytes * 3 bytes
-	memset(pixels, 0, sizeof(char) * 12);
-	std::cout << std::endl << "DrawLine(pixels, 4 * 8, 12, 17, 1) BEFORE : " << std::endl;
+	int DrawLineRows = 3;
+	int DrawLineCols = 4;
+	std::vector<char> pixels(DrawLineRows*DrawLineCols, 0);
+	std::cout << std::endl << "DrawLine() BEFORE : " << std::endl;
 
 	std::function<void (void)> PrintFunc = [&]() 
 	{
-		for (int byte = 0; byte < 12; ++byte)
+		for (int row = 0; row < DrawLineRows; ++row)
 		{
-			for (int bit = 0; bit < 8; ++bit)
+			for (int col = 0; col < DrawLineCols; ++col)
 			{
-				std::cout << (((1 << bit) & pixels[byte]) ? "1" : "0");
-			}
-			std::cout << " ";
+				for (int bit = 7; bit >= 0; --bit)
+				{
+					std::cout << (((1 << bit) & pixels[row*DrawLineCols+col]) ? "1" : "0");
+				}
 
-			if (0 == ((byte + 1) % 4))
-			{
-				std::cout << std::endl;
+				if (col + 1 < DrawLineCols)
+				{
+					std::cout << ",";
+				}
 			}
+			std::cout << std::endl;
 		}
 	};
 	PrintFunc();
-	DrawLine(pixels, 4 * 8, 12, 17, 1);
-	std::cout << std::endl << "DrawLine(pixels, 4 * 8, 12, 17, 1) AFTER : " << std::endl;
+	DrawLine(pixels, DrawLineCols * 8, 12, 17, 1);
+	std::cout << std::endl << "DrawLine(pixels, DrawLineCols * 8, 12, 17, 1) AFTER : " << std::endl;
+	PrintFunc();
+
+	DrawLine(pixels, DrawLineCols * 8, 9, 27, 2);
+	std::cout << std::endl << "DrawLine(pixels, DrawLineCols * 8, 9, 27, 2) AFTER : " << std::endl;
 	PrintFunc();
 
 	// chapter 7

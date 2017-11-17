@@ -274,16 +274,9 @@ namespace mergesort
 		int helperLeft = low;
 		int helperRight = middle + 1;
 		int current = low;
-		for (; helperLeft <= middle && helperRight <= high;)
+		for (; helperLeft <= middle && helperRight <= high; ++current)
 		{
-			if (helper[helperLeft] <= helper[helperRight])
-			{
-				array[current++] = helper[helperLeft++];
-			}
-			else
-			{
-				array[current++] = helper[helperRight++];
-			}
+			array[current] = helper[helperLeft] <= helper[helperRight] ? helper[helperLeft++] : helper[helperRight++];
 		}
 
 		int remaining = middle - helperLeft; // only need to copy remaining left side (right side will already be there)

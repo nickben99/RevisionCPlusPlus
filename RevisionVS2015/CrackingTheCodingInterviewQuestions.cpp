@@ -221,6 +221,79 @@ void RotateImage(int** array, unsigned int N)
 	}
 }
 
+void ZeroCol(int** mat, int rows, int col)
+{
+	for (int row = 0; row < rows; ++row)
+	{
+		mat[row][col] = 0;
+	}
+}
+
+void ZeroRow(int** mat, int cols, int row)
+{
+	for (int col = 0; col < cols; ++col)
+	{
+		mat[row][col] = 0;
+	}
+}
+
+void ZeroMatrix(int** mat, int rows, int cols)
+{
+	if (rows > 0 && cols > 0)
+	{
+		bool zeroTopRow = false;
+		for (int col = 0; col < cols; ++col)
+		{
+			if (0 == mat[0][col]) {
+				zeroTopRow = true;
+				break;
+			}
+		}
+
+		bool zeroLeftCol = false;
+		for (int row = 0; row < rows; ++row)
+		{
+			if (0 == mat[row][0]) {
+				zeroLeftCol = true;
+				break;
+			}
+		}
+
+		for (int col = 1; col < cols; ++col)
+		{
+			for (int row = 1; row < rows; ++row)
+			{
+				if (0 == mat[row][col])
+				{
+					mat[0][col] = mat[row][0] = 0;
+				}
+			}
+		}
+
+		for (int col = 0; col < cols; ++col)
+		{
+			if (mat[0][col]) {
+				ZeroCol(mat, rows, col);
+			}
+		}
+
+		for (int row = 0; row < rows; ++row)
+		{
+			if (mat[row][0]) {
+				ZeroRow(mat, cols, row);
+			}
+		}
+
+		if (zeroTopRow) {
+			ZeroRow(mat, cols, 0);
+		}
+
+		if (zeroLeftCol) {
+			ZeroCol(mat, rows, 0);
+		}
+	}
+}
+
 // chapter 2 linked lists ---------------------------------------------------------------------------------------------------
 
 // NOTE: this function assumes the data element in LinkedListElement contains a pointer to an int
@@ -394,26 +467,19 @@ BinaryTreeNode* FindFirstCommonAnscesterInternal(BinaryTreeNode* root, int nodeO
 {
 	if (root)
 	{
-		bool zeroFound = !foundOne && !foundTwo;
-		if (root->left)
+		bool zeroFound = !foundOne && !foundTwo;	
+		BinaryTreeNode* node = FindFirstCommonAnscesterInternal(root->left, nodeOne, nodeTwo, foundOne, foundTwo);
+		if (node)
 		{
-			BinaryTreeNode* node = FindFirstCommonAnscesterInternal(root->left, nodeOne, nodeTwo, foundOne, foundTwo);
-			if (node)
-			{
-				return node;
-			}
+			return node;
 		}
-
-		bool oneFound = foundOne || foundTwo;
-
-		if (root->right)
+		
+		bool oneFound = foundOne || foundTwo;		
+		node = FindFirstCommonAnscesterInternal(root->right, nodeOne, nodeTwo, foundOne, foundTwo);
+		if (node)
 		{
-			BinaryTreeNode* node = FindFirstCommonAnscesterInternal(root->right, nodeOne, nodeTwo, foundOne, foundTwo);
-			if (node)
-			{
-				return node;
-			}
-		}
+			return node;
+		}		
 
 		foundOne = nodeOne == root->val ? true : foundOne;
 		foundTwo = nodeTwo == root->val ? true : foundTwo;
@@ -586,36 +652,34 @@ int PairwiseSwap(int number)
 	return shiftedUp | shiftedDown;
 }
 
-// NOTE: this code would draw the line from x1 to x2 INCLUSIVE (although the question was not clear about whether x2 is inclusive/ exclusive)
-// NOTE: we assume the points are in the range of the array
-void DrawLine(char screen[], int widthInBits, int x1Bit, int x2Bit, int y)
+// NOTE: this code would draw the line from x1 to x2 INCLUSIVE (although the question was not clear about whether x2 is inclusive/exclusive)
+void DrawLine(std::vector<char>& screen, int widthInBits, int x1Bit, int x2Bit, int y)
 {
 	if (0 == widthInBits || x1Bit > x2Bit || x1Bit < 0 || x1Bit >= widthInBits || x2Bit < 0 || x2Bit >= widthInBits)
 	{
 		return;
 	}
 
-	int startBit = y*widthInBits + x1Bit;
-	int startByte = startBit / 8;
-	int endBit = y*widthInBits + x2Bit;
-	int endByte = endBit / 8;
-
-	while (true)
+	int numCharBits = sizeof(char) * 8;
+	int numRows = int((screen.size()*numCharBits) / widthInBits);
+	if (y < 0 && y >= numRows)
 	{
-		int startBitOffset = startBit % 8;
-		if (startByte == endByte)
-		{
-			int endBitOffset = endBit % 8;
-			int numBits = (endBitOffset - startBitOffset) + 1; // NOTE: + 1 here to make sure the toBit is included  
-			screen[startByte] |= (((1 << numBits) - 1) << startBitOffset);
-			break;
-		}
-		else // different bytes
-		{
-			screen[startByte] |= (~0 << startBitOffset);
-			++startByte;
-			startBit = startByte * 8;
-		}
+		return;
+	}
+	
+	int startBit = y*widthInBits + x1Bit;
+	int startByte = startBit / numCharBits;
+	int endBit = y*widthInBits + x2Bit;
+	int endByte = endBit / numCharBits;
+
+	for (int iter = startByte; iter <= endByte; ++iter)
+	{
+		int startOffsetBit = (iter == startByte) ? startBit%numCharBits : 0;
+		int endOffsetBit = (iter == endByte) ? endBit%numCharBits : (numCharBits - 1);
+		unsigned char mask = (unsigned char)~0;
+		mask >>= startOffsetBit;
+		mask &= ~((1 << ((numCharBits - 1) - endOffsetBit)) - 1);
+		screen[iter] |= mask;
 	}
 }
 
@@ -677,56 +741,79 @@ unsigned int RecursiveUnsignedIntMultiply(unsigned int numberOne, unsigned int n
 
 void PrintAllPermutations(const char* string)
 {
-	PrintAllStringPermutations(string);
+	PrintAllStringPermutations(string); // PrintAllStringPermutations() handles strings of unique and none unqique characters
 }
 
-std::vector<std::string> GeneratePermutationsInternal(const std::string& input, std::unordered_set<char>& used)
+std::vector<std::string> GetAllPermutations(const std::string& input, int index, const std::vector<std::string>& inputStrings)
 {
-	std::vector<std::string> returnStrings;
-	if (0 == input.size())
+	if (index < input.length())
 	{
-		returnStrings.push_back("");
-	}
-	else if (1 == input.size())
-	{
-		if (used.end() == used.find(input[0])) // as this is the first characters, this if is not really required
+		std::vector<std::string> outputStrings;
+		for (std::string inputStr : inputStrings)
 		{
-			char arr[] = "a";
-			arr[0] = input[0];
-			returnStrings.push_back(arr);
-			used.insert(input[0]);
+			for (int pos = 0; pos <= inputStr.length(); ++pos)
+			{
+				std::string cpy = inputStr;
+				cpy.insert(inputStr.begin() + pos, input[index]);
+				outputStrings.push_back(cpy);
+			}
 		}
+		return GetAllPermutations(input, index + 1, outputStrings);
+	}
+	return inputStrings;
+}
+
+std::vector<std::string> GetAllPermutations(const std::string& input)
+{
+	return GetAllPermutations(input, 0, { "" });
+}
+
+void GenerateAllPermutationsNoDups(std::unordered_map<char, int>& used, size_t inputLen, size_t caret, char* curr, std::vector<std::string>& found)
+{
+	if (caret >= inputLen)
+	{
+		found.push_back(curr);
 	}
 	else
 	{
-		std::vector<std::string> temp = GeneratePermutationsInternal(input.substr(1), used);
-		if (used.end() == used.find(input[0]))
+		for (std::unordered_map<char, int>::iterator iter = used.begin(); iter != used.end(); ++iter)
 		{
-			for (auto tempString : temp)
+			if (iter->second > 0)
 			{
-				for (unsigned int pos = 0; pos <= tempString.size(); ++pos)
-				{
-					char arr[] = "a";
-					arr[0] = input[0];
-					std::string copy = tempString;
-					copy.insert(pos, arr);
-					returnStrings.push_back(copy);
-				}
+				--iter->second;
+				curr[caret] = iter->first;
+				GenerateAllPermutationsNoDups(used, inputLen, caret + 1, curr, found);
+				++iter->second;
 			}
-			used.insert(input[0]);
-		}
-		else
-		{
-			returnStrings = temp;
 		}
 	}
-	return returnStrings;
 }
 
 std::vector<std::string> GenerateAllPermutationsNoDups(const std::string& input)
 {
-	std::unordered_set<char> used;
-	return GeneratePermutationsInternal(input, used);
+	std::vector<std::string> results;
+	if (input.length() > 0)
+	{
+		std::unordered_map<char, int> used;
+		for (char letter : input)
+		{
+			std::unordered_map<char, int>::iterator found = used.find(letter);
+			if (used.end() == found)
+			{
+				found = used.insert(std::make_pair(letter, 0)).first;
+			}
+			++found->second;
+		}
+
+		char* curr = new char[input.size() + 1];
+		if (curr)
+		{
+			memset(curr, '\0', sizeof(char)*(input.size() + 1));
+			GenerateAllPermutationsNoDups(used, input.length(), 0, curr, results);
+			delete[] curr;
+		}
+	}
+	return results;
 }
 
 //void GeneratePermutationsInternalAlt(const std::string& input, unsigned int position, int& dupeCount, std::string& current, 

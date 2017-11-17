@@ -17,6 +17,7 @@ bool PopStackLinkedList( Element** stackHead, void** data ); // write the pop fu
 void RemoveAllMatchingData(Element** head, Element** end, void* data); // remove all from the linked list which have the matching data
 bool InsertAfter_LinkedList(Element* after, void* data, Element** stackHead, Element** stackEnd);
 bool RemoveHead_LinkedList(Element** head);
+void RemoveElementFromMiddle_LinkedList(Element* deleteMe); // not head or end (no end pointer tracking)
 bool GetNthToLastElement_LinkedList(Element** out, Element** head, int n);
 
 // see chapter 4, figure 4-3, kindle location 1125 (approx)
@@ -79,7 +80,7 @@ std::string IntToString(int val);
 // chapter 7 recursion --------------------------------------------------------------------------------------------------
 int binarySearchRecursive(char* arrayOfValues, int lowerIndex, int upperIndex, char targetValue); // the chars in arrayOfValues are ordered smallest to largest
 int binarySearchIterative(char* arrayOfValues, int lowerIndex, int upperIndex, char targetValue);
-void PrintAllStringPermutations(const char* pString); // this may be badly named, we don't care about order, repeating is not allowed, have every different order
+void PrintAllStringPermutations(const std::string& input); // this may be badly named, we don't care about order, repeating is not allowed, have every different order
 void PrintAllStringCombinations(const char* pString); // this may be badly named, we DO care about order, repeating is not allowed
 void PrintAllStringCombinationsAlt(const char* pString); // NOTE: BETTER VERSION, solves same problem as above, but this version works for any number of characters
 void GenerateTelephoneWords(const char* pPhoneNum); // generate all the different possible telephone words for the telephone number

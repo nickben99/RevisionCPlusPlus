@@ -118,11 +118,11 @@ bool FindNumChangesBetweenWordsAStar(const std::string& from, const std::string&
 	}
 
 	MinHeap openList;
-	std::unordered_map<std::string, Node*> nodes; // this acts like a closed list, it stops nodes being added to the open list more than once
+	std::unordered_map<std::string, Node*> nodesStatus; // this acts like a closed list, it stops nodesStatus being added to the open list more than once
 
 	Node* startNode = new Node(from, 0, CalculateHammingDistanceHeuristic(from.c_str(), to.c_str(), wordLength));
 	openList.Add(startNode->TotalCost(), startNode);
-	nodes[from] = startNode;
+	nodesStatus[from] = startNode;
 
 	bool found = false;
 	while (!openList.IsEmpty())
@@ -136,16 +136,16 @@ bool FindNumChangesBetweenWordsAStar(const std::string& from, const std::string&
 		}
 
 		GetAllChildren(lowest->word, dict, [&](const std::string& child) {
-			auto iter = nodes.find(child);
-			// it has never been added to open list (no need to look for quicker paths to nodes already on the open list, as each edge has equal cost of 1)
-			if (nodes.end() == iter) 
+			auto iter = nodesStatus.find(child);
+			// it has never been added to open list (no need to look for quicker paths to nodesStatus already on the open list, as each edge has equal cost of 1)
+			if (nodesStatus.end() == iter) 
 			{
 				Node* newNode = new Node(from, lowest->steps + 1, CalculateHammingDistanceHeuristic(child.c_str(), to.c_str(), wordLength));
 				openList.Add(newNode->TotalCost(), newNode);
-				nodes[child] = newNode;
+				nodesStatus[child] = newNode;
 			}
 		});
 	}
-	for (auto i : nodes) { delete i.second; }
+	for (auto i : nodesStatus) { delete i.second; }
 	return found;
 }

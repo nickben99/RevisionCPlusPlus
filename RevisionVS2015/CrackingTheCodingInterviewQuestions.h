@@ -28,7 +28,7 @@ bool IsPermutationOfAPalindrome(const char* string); // << implement, can the st
 bool AreStringsOneEditDifferenceFromEachOther(const std::string& str1, const std::string& str2); // 1.5, page 91, are the two strings just one insert/remove/edit from each other
 void CompressString(std::string& str); // convert "aaabbccccde" to "a3b2c4de", only perform the compression if the compressed string would be smaller than the original
 void RotateImage(int** array, unsigned int N); // 1.7, p91
-void ZeroRowsAndColumns(int* matrix, int rows, int cols); // <<==implement, p91, when a zero is found in the matrix, set the entire row and column to zeros
+void ZeroMatrix(int** mat, int rows, int cols); // <<==1.8, p91, when a zero is found in the matrix, set the entire row and column to zeros
 bool IsStringOneARotationOfStringTwo(const char* stringOne, const char* stringTwo); // <<== implement, p91 "waterbottle" is a rotation of "terbottlewa"
 
 // chapter 2, linked lists
@@ -96,9 +96,50 @@ template <class T> struct StackWithMinElement : private std::stack<T> // 3.2, p9
 };
 
 // p99 3.3
-class StackOfPlates // <<== implement
+template<class T, size_t N> class StackOfPlates
 {
+private:
+	std::vector<std::vector<T>> stacks; // each stack represented by a vector so top and bottom can be accessed in PopAt() function
 
+	void Push(const T& newEntry)
+	{
+		if (stacks.size() == 0 || stacks[stacks.size() - 1].size() == N)
+		{
+			stacks.push_back(std::vector<T>());
+		}
+		stacks[stacks.size() - 1].push_back(newEntry); // end of vector is the top of the stack
+	}
+
+	void Pop(T& outVal)
+	{
+		if (stacks.size() > 0)
+		{
+			std::vector<T>& laststack = stacks[stacks.size() - 1];
+			outVal = *(laststack.end()-1); // end of vector is the top of the stack
+			laststack.erase(laststack.end()-1);
+			if (laststack.empty())
+			{
+				stacks.erase(stacks.end() - 1);
+			}
+		}
+	}
+
+	void PopAt(T& outVal, size_t index)
+	{
+		if (index < stacks.size())
+		{
+			outVal = *(stacks[index].end()-1);
+			stacks[index].erase(stacks[index].end() - 1);
+			for (++index; index < stacks.size(); ++index)
+			{
+				stacks[index - 1].push_back(stacks[index][0]);
+				stacks[index].erase(stacks[index].begin());
+			}
+			if (stacks[stacks.size() - 1].empty()) {
+				stacks.erase(stacks.end() - 1);
+			}
+		}
+	}
 };
 
 // p99 3.4
@@ -141,7 +182,7 @@ int FlipBitToWin(int number); //<<== implement p116
 void PrintNextAndPreviousNumberWithSameAmountOfOnes(unsigned int number); //<<== p116, 5.4
 int Conversion(int left, int right); // p116
 int PairwiseSwap(int number);
-void DrawLine(char screen[], int widthInBits, int x1Bit, int x2Bit, int y);
+void DrawLine(std::vector<char>& screen, int widthInBits, int x1Bit, int x2Bit, int y); // 5.8
 
 // chapter 6
 
@@ -221,8 +262,9 @@ int MagicIndex(int array[], int length); // <<== implement, p135
 void GenerateAllSubSets(const std::vector<int>& input, std::vector<std::vector<int>>& output); // p135
 unsigned int RecursiveUnsignedIntMultiply(unsigned int numberOne, unsigned int numberTwo); //p135, 8.5
 bool TowersOfHanoi(); //<<=== implement p135
-void PrintAllPermutations(const char* string); // 135 
-std::vector<std::string> GenerateAllPermutationsNoDups(const std::string& input); // (p135) output strings have no dupes, input string may do
+void PrintAllPermutations(const char* string); // 135, 8.7
+std::vector<std::string> GetAllPermutations(const std::string& input); // 135, 8.7
+std::vector<std::string> GenerateAllPermutationsNoDups(const std::string& input); // p135, 8.8 output strings have no dupes, input string may do
 //std::vector<std::string> GenerateAllPermutationsNoDupsAlt(const std::string& input); // (p135) output strings have no dupes, input string may do
 std::unordered_set<std::string> GenerateParens(int numParanthesis); // p136
 void PaintFloodFill(CVector4 screen[1024][1024], int clickRow, int clickCol, const CVector4& newColor);

@@ -448,7 +448,7 @@ float CVector::getAngleBetween(CVector* otherVector) const
 	float angle = (float)( acos( dotProduct ) );
 
 	if( _isnan(angle) ){ // avoids -1.#IND0000000 NaN problems
-	return( 0.0f );} // dotProduct will be practically 1 so return an acos of 0 angle
+		return( 0.0f );} // dotProduct will be practically 1 so return an acos of 0 angle
 
 	return( angle );
 }

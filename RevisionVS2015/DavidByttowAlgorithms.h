@@ -167,12 +167,11 @@ private:
 	struct LinkedListElement
 	{
 		LinkedListElement(const Identifier& id, const Data& inputData)
-			: next(nullptr)
-			, identifier(id)
+			: identifier(id)
 			, data(inputData)
 			{}
 
-		LinkedListElement* next;
+		LinkedListElement* next = nullptr;
 		Identifier identifier;
 		Data data;
 	};
