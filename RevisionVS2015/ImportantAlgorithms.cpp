@@ -1172,13 +1172,8 @@ bool GetNthSmallestElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestEl
 
 bool GetNthSmallestElementFromUnionOfSortedArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo)
 {
-	if (!arrOne) {
-		lenOne = 0;
-	}
-
-	if (!arrTwo) {
-		lenTwo = 0;
-	}
+	lenOne = arrOne ? lenOne : 0;
+	lenTwo = arrTwo ? lenTwo : 0;
 
 	if (N >= (lenOne + lenTwo)) {
 		return false;

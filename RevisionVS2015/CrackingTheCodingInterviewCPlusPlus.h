@@ -154,14 +154,21 @@ void* AlignedMalloc(int size, size_t alignment)
 		return nullptr;
 	}
 
-	void* alignedReturn = (char*)allocated + beginPointerSize;
-	size_t remainder = (size_t)alignedReturn % alignment;
-	if (remainder != 0) {
-		alignedReturn = (char*)alignedReturn + (alignment - remainder);
+	void* alignedReturn = nullptr;
+	static bool alwaysPowerOf2Method = false;
+	if (!alwaysPowerOf2Method)
+	{
+		alignedReturn = (char*)allocated + beginPointerSize;
+		size_t remainder = (size_t)alignedReturn % alignment;
+		if (remainder != 0) {
+			alignedReturn = (char*)alignedReturn + (alignment - remainder);
+		}
 	}
-	// NOTE: if alignment is always a power of 2, the following two lines could be used in place of the above five lines to calculate alignedReturn
-	//size_t possibleAligned = (size_t)allocated + beginPointerSize + padding;
-	//void* alignedReturn = (void*)(possibleAligned & ~padding); // results in all bits less significant being removed
+	else
+	{	// NOTE: if alignment is always a power of 2, the following two lines could be used in place of the above five lines to calculate alignedReturn
+		size_t possibleAligned = (size_t)allocated + beginPointerSize + padding;
+		alignedReturn = (void*)(possibleAligned & ~padding); // results in all bits less significant being removed
+	}
 
 	((void**)alignedReturn)[-1] = allocated;
 	return alignedReturn;

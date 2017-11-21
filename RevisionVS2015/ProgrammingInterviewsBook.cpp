@@ -735,7 +735,7 @@ void PrintAllStringPermutations(const std::string& input)
 	}
 }
 
-void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 8*sizeof(size_t) characters long, but is big O(numCombos*len)
+void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 8*sizeof(size_t) characters long, and is big O((2^len)*len)
 {
 	size_t len = pString ? (size_t)strlen(pString) : 0;
 	if (len > 0 && len < 8*sizeof(size_t))
@@ -756,7 +756,7 @@ void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm wil
 }
 
 void PrintAllStringCombinationsAltInternal(const char*, char*, int, int, int, int&);
-void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this algorithm will work regarldless of character length, but is big O(2^len)
+void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this algorithm will work regarldless of character length, and is big O(2^len)
 {
 	int len = (int)strlen(pOriginalString);
 	char* currentString = new char[len + 1];

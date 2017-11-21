@@ -1,7 +1,7 @@
 #ifndef _MyVector_h_
 #define _MyVector_h_
 
-// this class is only partially implemented, it uses std::allocator with allocate(), construct(), destroy(), and deallocate() which is the C++ way to do things
+// this class is only partially implemented, it uses std::allocator with allocate(), deallocate(), construct(), destroy(), which is the C++ way to do things
 // further down this file MyVectorImplementation1 uses old C style malloc(), memmove, and realloc, which should not be used with C++ classes
 template<class T> class MyVectorImplementation2
 {
