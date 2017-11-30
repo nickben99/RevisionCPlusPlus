@@ -29,11 +29,12 @@ bool AreStringsOneEditDifferenceFromEachOther(const std::string& str1, const std
 void CompressString(std::string& str); // convert "aaabbccccde" to "a3b2c4de", only perform the compression if the compressed string would be smaller than the original
 void RotateImage(int** array, unsigned int N); // 1.7, p91
 void ZeroMatrix(int** mat, int rows, int cols); // <<==1.8, p91, when a zero is found in the matrix, set the entire row and column to zeros
-bool IsStringOneARotationOfStringTwo(const char* stringOne, const char* stringTwo); // <<== implement, p91 "waterbottle" is a rotation of "terbottlewa"
+bool IsStringOneARotationOfStringTwo(const char* stringOne, const char* stringTwo); // 1.9, p91 "waterbottle" is a rotation of "terbottlewa"
 
 // chapter 2, linked lists
 
-void RemoveDuplicatesFromUnsortedLinkedList(LinkedListElement** head); // <<== implement
+void RemoveDuplicatesFromUnsortedLinkedList(LinkedListElement** head); // 2.1
+void RemoveDuplicatesFromUnsortedLinkedListO1Space(LinkedListElement** head); // 2.1 follow-up
 void DeleteNode(LinkedListElement* nodeToDelete); // <<== implement, p94, the passed in node is not the head, it is a node in the middle of the linked list, it cannot be the head or end
 void PartitionLinkedList(LinkedListElement** head, int partitionVal); // <== implement, everything less than partition must be put before everything greater or equal to partition
 
@@ -143,9 +144,29 @@ private:
 };
 
 // p99 3.4
-class QueueWith2Stacks // <<== implement
+template<class T> class QueueWith2Stacks
 {
+	std::stack<T> newest;
+	std::stack<T> oldest;
 
+	void Push(const T& add)
+	{
+		newest.push(add);
+	}
+
+	void Pop(T& result)
+	{
+		if (oldest.empty())
+		{
+			while (!newest.empty())
+			{
+				olest.push(newest.top());
+				newest.pop();
+			}
+		}
+		result = oldest.top();
+		oldest.pop();
+	}
 };
 
 void SortStackUsingOneTemporaryStack(std::stack<int>& toSort); // 3.5, p99
@@ -176,7 +197,7 @@ bool IsSubTreeAltMethod(BinaryTreeNode* mainTree, BinaryTreeNode* potentialSubTr
 
 // chapter 5 bit manipulation
 
-void InsertSourceInTarget(int source, int sourceStartIndex, int sourceEndIndex, int& targetIndex); // implement, p115
+void updateInt(int& n, int m, int i, int j); // p115, 5.1
 std::string PrintBinary(float num); //<<== implement p116
 int FlipBitToWin(int number); //<<== implement p116
 void PrintNextAndPreviousNumberWithSameAmountOfOnes(unsigned int number); //<<== p116, 5.4
@@ -194,7 +215,7 @@ template<class T, int capacity> struct CircularArray
 	int start = 0;
 	int numElements = 0;
 
-	template<class T> struct Iterator
+	struct Iterator
 	{
 		CircularArray<T, capacity>* array = nullptr;
 		int index = 0;
@@ -234,7 +255,7 @@ template<class T, int capacity> struct CircularArray
 		if (numElements < capacity)
 		{
 			array[(start + numElements) % capacity] = newElement;
-			numElements = ++numElements;
+			++numElements;
 		}		
 		else
 		{
@@ -243,14 +264,14 @@ template<class T, int capacity> struct CircularArray
 		}
 	}
 
-	Iterator<T> begin()
+	Iterator begin()
 	{
-		return Iterator<T>(this, start);
+		return Iterator(this, start);
 	}
 
-	Iterator<T> end()
+	Iterator end()
 	{
-		return Iterator<T>(this, start+numElements);
+		return Iterator(this, start+numElements);
 	}
 };
 
@@ -292,8 +313,9 @@ template<class T> struct vector_no_size : std::vector<T>
 		return std::vector<T>::operator[](index);
 	}
 };
-bool SortedSearchNoSize(const vector_no_size<int>& input, int searchFor, int& foundIndex); // p150
-void SortedMatrixSearch(); //<<< implement p152
+bool SortedSearchNoSize(const vector_no_size<int>& input, int searchFor, int& foundIndex); // p150, 10.4
+void PrintDuplicates(const std::vector<int>& nums);
+void SortedMatrixSearch(); //<<< implement p151, 10.9
 
 class RankFromStream // p151 10.10
 {

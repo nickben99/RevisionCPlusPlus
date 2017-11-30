@@ -59,6 +59,11 @@ void LinkedListReverse(LinkedListElement** head)
 
 bool LinkedListAddToEnd(DoubleLinkedListElement** head, DoubleLinkedListElement** end, void* data)
 {
+	if (!head || !end)
+	{
+		return false;
+	}
+
 	DoubleLinkedListElement* newNode = new DoubleLinkedListElement();
 	if (!newNode)
 	{
@@ -124,14 +129,13 @@ bool LinkedListStackPop(DoubleLinkedListElement** head, DoubleLinkedListElement*
 	return true;
 }
 
-// NOTE: this only supports positive ints.
 int DivideByWithoutMultDivQuot(int numerator, int denominator)
 {	
 	// to make it support negative numbers
-	//bool numeratorPositive = (numerator > 0);
-	//if (!numeratorPositive) { numerator = -numerator; }
-	//bool denominatorPositive = (denominator > 0);
-	//if (!denominatorPositive) { denominator = -denominator; }
+	bool numeratorPositive = (numerator > 0);
+	if (!numeratorPositive) { numerator = -numerator; }
+	bool denominatorPositive = (denominator > 0);
+	if (!denominatorPositive) { denominator = -denominator; }
 
 	int counter = 0;
 	if (denominator > 0)
@@ -142,11 +146,7 @@ int DivideByWithoutMultDivQuot(int numerator, int denominator)
 			++counter;
 		}
 	}
-
-	// to make it support negative numbers
-	//if (numeratorPositive != denominatorPositive) { counter = -counter; }
-
-	return counter;
+	return numeratorPositive == denominatorPositive ? counter : -counter; // to make it support negative numbers
 }
 
 // --------------------------- min heap
@@ -293,21 +293,21 @@ void BubbleSort(int* array, int length)
 {
 	for (int iterateTo = length-1; iterateTo > 0; --iterateTo)
 	{
-		//bool swaps = false; // NOTE: this is an optimized bubble sort so that if the array is sorted, we can exit, meaning a best case big O(n)
+		bool swaps = false; // NOTE: this is an optimized bubble sort so that if the array is sorted, we can exit, meaning a best case big O(n)
 		for (int index = 0; index < iterateTo; ++index)
 		{
 			if (array[index] > array[index + 1]) // this will end with low values at low indecis
 			{
-				//swaps = true;
+				swaps = true; // NOTE: this is an optimized bubble sort so that if the array is sorted, we can exit, meaning a best case big O(n)
 				int temp = array[index];
 				array[index] = array[index + 1];
 				array[index + 1] = temp;
 			}
 		}
 
-		//if (!swaps) {
-		//	return;
-		//}
+		if (!swaps) { // NOTE: this is an optimized bubble sort so that if the array is sorted, we can exit, meaning a best case big O(n)
+			return;
+		}
 	}
 }
 
@@ -318,7 +318,10 @@ void Shuffle(int* arrayToShuffle, int len)
 		for (int index = 0; index < len; ++index)
 		{
 			int randomSwapPos = rand() % len;
-			//while (index == randomSwapPos) // a while loop would make sure randomSwapPos != index to ensure a better shuffle
+			// a while loop would make sure randomSwapPos != index to ensure a better shuffle
+			// NOTE: checking for len > 2 as without this check, when len == 1, it would cause an infinite loop, and when
+			// len == 2, the order would never change
+			//while (len > 2 && index == randomSwapPos)
 			//{
 			//	randomSwapPos = rand() % len;
 			//}
@@ -344,20 +347,22 @@ void InsertionSort(int array[], int length)
 }
 
 void MaxHeapBubbleUp(int* /* array */, int /* indexToBubble */, int /* numElements */) {}; // do a max heap bubble up
-int MaxHeapPopHead(int* /* array */, int& /* numElements */) { return 0; }; // pop max heap head (max element)
+int MaxHeapPopHead(int* /* array */, int& /* numElements */) { return 0; }; // pop max heap head (max element), the int reference numElements would be decremented
 void HeapSort(int* array, int len) 
 {
 	if (array && len > 1) 
 	{
 		for (int i = 1; i < len; ++i) 
 		{
-			MaxHeapBubbleUp(array, i, i + 1);
+			int indexToBubble = i;
+			int numElements = indexToBubble + 1;
+			MaxHeapBubbleUp(array, indexToBubble, numElements);
 		}
 
 		for (int i = len; i > 1; --i)
 		{
 			int lenAfterPop = i;
-			array[i - 1] = MaxHeapPopHead(array, lenAfterPop);
+			array[i - 1] = MaxHeapPopHead(array, lenAfterPop); // MaxHeapPopHead would decrement lenAfterPop
 		}
 	}
 }
@@ -1143,19 +1148,15 @@ void MakeRemoveCommonElementsFromArraysLink()
 // will return nth smallest element if the input arrays are sorted
 bool GetNthSmallestElementFromUnionOfSortedNoDuplicatesArrays(int& NthSmallestElement, int N, int* arrOne, int lenOne, int* arrTwo, int lenTwo)
 {
-	if (!arrOne) {
-		lenOne = 0;
-	}
-
-	if (!arrTwo) {
-		lenTwo = 0;
-	}
+	lenOne = arrOne ? lenOne : 0;
+	lenTwo = arrTwo ? lenTwo : 0;
 	
 	if (N >= lenOne + lenTwo) {
 		return false;
 	}
 
-	int oneIndex = 0, twoIndex = 0;
+	int oneIndex = 0;
+	int twoIndex = 0;
 	for (;oneIndex+twoIndex <= N;)
 	{
 		if ( oneIndex < lenOne && twoIndex < lenTwo ) // both in bounds
@@ -1325,24 +1326,27 @@ bool IsInDictionary(const std::unordered_set<std::string>& dictionary, const cha
 	return dictionary.end() != dictionary.find(word);
 }
 
-void FindWords(int, const std::unordered_set<std::string>&, int, int, bool*, const char*, char*, std::unordered_set<std::string>&);
-void FindWordsMain(int dimension, const std::unordered_set<std::string>& dictionary, int parentDice, int currentSequencePosition,
-			bool* usedDice, const char* dice, char* currentSequence, std::unordered_set<std::string>& found, bool altQSequence)
+void FindWords(int dimension, const std::unordered_set<std::string>& dictionary, int parentDice, int currentSequencePosition,
+			bool* usedDice, const char* dice, char* currentSequence, std::unordered_set<std::string>& found)
 {
 	if (!usedDice[parentDice])
 	{
 		usedDice[parentDice] = true;
 		currentSequence[currentSequencePosition] = dice[parentDice];
 
-		int nextPosition = currentSequencePosition + 1;
-		if ('Q' == dice[parentDice] && altQSequence)
-		{
-			currentSequence[nextPosition++] = 'U';
-		}
-
-		if (nextPosition > 2 && IsInDictionary(dictionary, currentSequence)) // if we have a word in the dictionary which is at least 3 letters long
+		if (currentSequencePosition >= 2 && IsInDictionary(dictionary, currentSequence)) // if we have a word in the dictionary which is at least 3 letters long
 		{
 			found.insert(currentSequence);
+		}
+
+		if ('Q' == dice[parentDice])
+		{
+			currentSequence[currentSequencePosition+1] = 'U';
+			if (currentSequencePosition+1 >= 2 && IsInDictionary(dictionary, currentSequence)) // if we have a word in the dictionary which is at least 3 letters long
+			{
+				found.insert(currentSequence);
+			}
+			currentSequence[currentSequencePosition+1] = '\0';
 		}
 
 		int row = 0;
@@ -1358,24 +1362,19 @@ void FindWordsMain(int dimension, const std::unordered_set<std::string>& diction
 					if (childCol >= 0 && childCol < dimension)
 					{
 						int childDice = ToIndex(childRow, childCol, dimension);
-						FindWords(dimension, dictionary, childDice, nextPosition, usedDice, dice, currentSequence, found);
+						FindWords(dimension, dictionary, childDice, currentSequencePosition+1, usedDice, dice, currentSequence, found);
+						if (currentSequence[currentSequencePosition] == 'Q')
+						{
+							currentSequence[currentSequencePosition+1] = 'U';
+							FindWords(dimension, dictionary, childDice, currentSequencePosition + 2, usedDice, dice, currentSequence, found);
+							currentSequence[currentSequencePosition+1] = '\0';
+						}
 					}
 				}
 			}
 		}
-		currentSequence[nextPosition - 1] = currentSequence[currentSequencePosition] = '\0';
+		currentSequence[currentSequencePosition] = '\0';
 		usedDice[parentDice] = false;
-	}
-}
-
-//NOTE!!!! this accounts for two paths, one where we insert a 'u' after a 'q', and one where we do not - ask an interviewer if they care about this
-void FindWords(int dimension, const std::unordered_set<std::string>& dictionary, int parentDice, int currentSequencePosition,
-				bool* usedDice, const char* dice, char* currentSequence, std::unordered_set<std::string>& found)
-{
-	FindWordsMain(dimension, dictionary, parentDice, currentSequencePosition, usedDice, dice, currentSequence, found, false); // 'u' not inseted after
-	if ('Q' == dice[parentDice])
-	{
-		FindWordsMain(dimension, dictionary, parentDice, currentSequencePosition, usedDice, dice, currentSequence, found, true); // 'u' inserted after
 	}
 }
 
@@ -1390,10 +1389,10 @@ void Boggle(const std::unordered_set<std::string>& dictionary, const char* dice,
 	if (usedDice) 
 	{
 		memset(usedDice, 0, sizeof(bool) * diceLength);
-		char* currentSequence = new char[diceLength * 2 + 1]; // worst case scenario
+		char* currentSequence = new char[diceLength*2 + 1]; // worst case scenario
 		if (currentSequence) 
 		{
-			memset(currentSequence, '\0', sizeof(char)*(diceLength * 2 + 1));
+			memset(currentSequence, '\0', sizeof(char)*(diceLength*2 + 1));
 
 			for (int index = 0; index < diceLength; ++index)
 			{

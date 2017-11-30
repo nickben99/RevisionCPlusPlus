@@ -15,12 +15,11 @@ private:
 	T* head = nullptr;
 
 public:
-	T* Add(T* prev, void* data) 
+	T* Add(T* prev)
 	{
 		T* newElem = new T();		
 		if (newElem)
 		{
-			newElem->data = data;
 			newElem->mpPrev = newElem->mpNext = nullptr;
 			if (nullptr == prev)
 			{
@@ -152,7 +151,7 @@ template<class T, size_t N> struct LinkedListNoMemAlloc2KInterview
 		mNextFree = remove;
 	}
 
-	T* GetHead()
+	T* GetHead() const
 	{
 		return mHead;
 	}

@@ -545,7 +545,13 @@ void removeChars(std::string& str, const std::string& remove)
 void ReverseStringInternal(char* pStringStart, char* pStringEnd); // prototype
 void ReverseString(char* pString)
 {
-	char* pLastStringChar = pString + std::max<int>(0, (const int)strlen(pString) - 1);
+	char* pLastStringChar = pString; // alternately:  pString+std::max<int>(0, (const int)strlen(pString) - 1);
+	while (*pLastStringChar)
+	{
+		++pLastStringChar;
+	}
+	--pLastStringChar;
+
 	ReverseStringInternal(pString, pLastStringChar);
 }
 
@@ -934,11 +940,11 @@ template<class T> int CountOnesInInt(T input)
 
 // doing this function for counting a char's bits set to 1, as doing this with an int would not compile as onesCountCached 
 // is too big, gives error: total size of array must not exceed 0x7fffffff bytes
-// NOTE: Also see below: int CountOnesInCharBig01Amortized_Alternate(char)
+// NOTE: Also see below: int CountOnesInIntBig01Amortized() as an alternative which will work for all types of ints
 int CountOnesInCharBig01Amortized(char input)
 {
 	static char onesCountCached[UCHAR_MAX + 1] = { -1 };	// each element is a char, as 8 will be highest value
-															// UCHAR_MAX + 1, as -128 to 127 gives 256 entries, which is (UCHAR_MAX == 255) 
+															// UCHAR_MAX + 1, as -128 to 127 gives 256 entries (UCHAR_MAX == 255) 
 	if (-1 == onesCountCached[0]) // not been initialized
 	{
 		for (char count = CHAR_MIN; ; ++count)
@@ -954,13 +960,15 @@ int CountOnesInCharBig01Amortized(char input)
 }
 
 // this version uses a std::unordered_map and caches values as they are requested, rather than all upfront
-int CountOnesInCharBig01Amortized_Alternate(char input)
+template<class T> int CountOnesInIntBig01Amortized(T input)
 {
-	static std::unordered_map<char, char> onesCountCached;
+	// NOTE: each instantiated version of this function for each data type will have an individual version of this map (as is always the case for
+	// static variables in templated functions, not just because the static variable itself also takes template arguments in this case)
+	static std::unordered_map<T, int> onesCountCached; // int is probably too big, unsigned char would give us max 255, and a long long is only 64 bits
 	auto iter = onesCountCached.find(input);
 	if (onesCountCached.end() == iter) {
 		int result = CountOnesInInt(input);
-		iter = onesCountCached.insert(std::make_pair(input, (char)result)).first; // result can't be higher than 8
+		iter = onesCountCached.insert(std::make_pair(input, result)).first; // result can't be higher than 8
 	}
 	return iter->second;
 }

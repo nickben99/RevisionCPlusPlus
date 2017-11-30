@@ -98,7 +98,7 @@ public:
 	{
 		if (this->ptr != sPtr.ptr)
 		{
-			DecrementRef();
+			ReleaseRef();
 
 			ptr = sPtr.ptr;
 			count = sPtr.count;
@@ -113,7 +113,7 @@ public:
 
 	~SmartPointer()
 	{
-		DecrementRef();
+		ReleaseRef();
 	}
 
 	// allows smartPtrInst->FunctionOnT() see drill down explanation here: https://stackoverflow.com/questions/8777845/overloading-member-access-operators-c
@@ -128,16 +128,15 @@ public:
 	}
 
 private:
-	void DecrementRef()
+	void ReleaseRef()
 	{
 		if (ptr && 0 == --*count)
 		{
 			delete ptr;
 			delete count;
-
-			ptr = nullptr;
-			count = nullptr;
 		}
+		ptr = nullptr;
+		count = nullptr;
 	}
 
 	T* ptr = nullptr;

@@ -140,7 +140,7 @@ bool FindNumChangesBetweenWordsAStar(const std::string& from, const std::string&
 			// it has never been added to open list (no need to look for quicker paths to nodesStatus already on the open list, as each edge has equal cost of 1)
 			if (nodesStatus.end() == iter) 
 			{
-				Node* newNode = new Node(from, lowest->steps + 1, CalculateHammingDistanceHeuristic(child.c_str(), to.c_str(), wordLength));
+				Node* newNode = new Node(child, lowest->steps + 1, CalculateHammingDistanceHeuristic(child.c_str(), to.c_str(), wordLength));
 				openList.Add(newNode->TotalCost(), newNode);
 				nodesStatus[child] = newNode;
 			}

@@ -1129,10 +1129,10 @@ void ImportantAlgorithms()
 	int stringNumbersLength = 8;
 	RemoveCommonIntegers(numbers, stringNumbers, numbersLength, stringNumbersLength);
 
-	std::unordered_set<std::string> dictionary = { "GEEKS", "FOR", "QUIZ", "SEE", "GO" };
-	char boggle[] = {	'G','I','Z',
-						'U','E','K',
-						'Q','S','E' };
+	std::unordered_set<std::string> dictionary = { "ZEES", "FOR", "QUE", "SEE", "GO", "QUIZ", "QUID" };
+	char boggle[] = {	'E','Z','D',
+						'U','E','I',
+						'Q','S','Q' };
 	std::unordered_set<std::string> found;
 	boggle::Boggle(dictionary, boggle, 3, found);
 	std::cout << std::endl << "Boggle";
@@ -1330,7 +1330,7 @@ void CrackingTheCodingInterviewQuestions()
 	}
 
 	std::cout << std::endl;
-	for (CircularArray<int, 3>::Iterator<int> iter = myArray.begin(); iter != myArray.end(); ++iter)
+	for (CircularArray<int, 3>::Iterator iter = myArray.begin(); iter != myArray.end(); ++iter)
 	{
 		int val = *iter;
 		std::cout << val << " ";
@@ -1700,15 +1700,15 @@ void CrackingTheCodingInterviewCPlusPlus()
 	node->right = new CCINode();
 	node->right->left = node;
 
-	CCINode* theCopy = CopyCCINode(node);
+CCINode* theCopy = CopyCCINode(node);
 
-	delete node->left;
-	delete node->right;
-	delete node;
+delete node->left;
+delete node->right;
+delete node;
 
-	delete theCopy->left;
-	delete theCopy->right;
-	delete theCopy;
+delete theCopy->left;
+delete theCopy->right;
+delete theCopy;
 }
 
 void TwoKSports() {

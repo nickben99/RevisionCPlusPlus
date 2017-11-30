@@ -294,7 +294,71 @@ void ZeroMatrix(int** mat, int rows, int cols)
 	}
 }
 
+bool IsStringOneARotationOfStringTwo(const char* stringOne, const char* stringTwo)
+{
+	size_t lenOne = strlen(stringOne);
+	if (lenOne > 0 && lenOne == strlen(stringTwo))
+	{
+		std::string findIn(stringOne);
+		findIn += stringOne; // now StringOneStringOne
+		return findIn.find(stringTwo) >= 0;
+	}
+	return false;
+}
+
 // chapter 2 linked lists ---------------------------------------------------------------------------------------------------
+
+void RemoveDuplicatesFromUnsortedLinkedList(LinkedListElement** head)
+{
+	if (head && *head)
+	{
+		std::unordered_set<void*> dupes;
+		LinkedListElement* prev = *head;
+		LinkedListElement* iter = (*head)->next;
+		dupes.insert((*head)->data);
+
+		while (iter)
+		{
+			LinkedListElement* next = iter->next;
+			if (dupes.end() != dupes.find(iter->data))
+			{
+				prev->next = next; // NOTE: prev will never be null
+				delete iter;
+			}
+			else
+			{
+				dupes.insert(iter->data);
+				prev = iter;
+			}
+			iter = next;
+		}
+	}
+}
+
+void RemoveDuplicatesFromUnsortedLinkedListO1Space(LinkedListElement** head)
+{
+	if (head)
+	{
+		for (LinkedListElement* outer = *head; outer; outer = outer->next)
+		{
+			LinkedListElement* prev = outer;
+			for (LinkedListElement* inner = outer->next; inner;)
+			{
+				LinkedListElement* next = inner->next;
+				if (outer->data == inner->data)
+				{
+					prev->next = next;
+					delete inner;
+				}
+				else
+				{
+					prev = inner;
+				}
+				inner = next;
+			}
+		}
+	}
+}
 
 // NOTE: this function assumes the data element in LinkedListElement contains a pointer to an int
 LinkedListElement* SumListsReverse(LinkedListElement* listOne, LinkedListElement* listTwo) 
@@ -558,6 +622,18 @@ bool IsSubTreeAltMethod(BinaryTreeNode* mainTree, BinaryTreeNode* potentialSubTr
 }
 
 // chapter 5 bit manipulation --------------------------------------------------------------------
+void updateInt(int& n, int m, int i, int j)
+{
+	if (i >= 0 && i <= j && j < sizeof(int)*8)
+	{
+		int left = ~0 << (j + 1);
+		int right = (1 << i) - 1;
+		int mask = left | right;
+
+		n &= mask;
+		n |= ((m << i) & ~mask);
+	}
+}
 
 std::string PrintBinary(float num)
 {
@@ -927,35 +1003,6 @@ void PaintFloodFill(CVector4 screen[1024][1024], int clickRow, int clickCol, con
 }
 
 // chapter 10 sorting and searching ----------------------------------------------------------------------
-// using a vector, but assuming it would give -1 for an out of bounds
-bool SortedSearchNoSize(const vector_no_size<int>& input, int searchFor, int& foundIndex)
-{
-	int highIndex = 1;
-	for (; input[highIndex] != -1 && input[highIndex] < searchFor; highIndex *= 2)
-	{
-	}
-	int lowIndex = highIndex / 2;
-
-	while (lowIndex <= highIndex)
-	{
-		int centralIndex = (lowIndex + highIndex) / 2;
-		int centralValue = input[centralIndex];
-		if (centralValue == searchFor)
-		{
-			foundIndex = centralIndex;
-			return true;
-		}
-		else if (centralValue == -1 || searchFor < centralValue)
-		{
-			highIndex = centralIndex - 1;
-		}
-		else
-		{
-			lowIndex = centralIndex + 1;
-		}
-	}
-	return false;
-}
 
 int SearchInSparseArrayInternal(const std::vector<std::string>& strings, const std::string& searchFor, int lowIndex, int highIndex)
 {
@@ -1006,6 +1053,49 @@ int SearchInSparseArray(const std::vector<std::string>& strings, std::string sea
 		return -1;
 	}
 	return SearchInSparseArrayInternal(strings, searchFor, 0, (int)strings.size() - 1);
+}
+
+// using a vector, but assuming it would give -1 for an out of bounds
+bool SortedSearchNoSize(const vector_no_size<int>& input, int searchFor, int& foundIndex)
+{
+	int highIndex = 1;
+	for (; input[highIndex] != -1 && input[highIndex] < searchFor; highIndex *= 2)
+	{
+	}
+	int lowIndex = highIndex / 2;
+
+	while (lowIndex <= highIndex)
+	{
+		int centralIndex = (lowIndex + highIndex) / 2;
+		int centralValue = input[centralIndex];
+		if (centralValue == searchFor)
+		{
+			foundIndex = centralIndex;
+			return true;
+		}
+		else if (centralValue == -1 || searchFor < centralValue)
+		{
+			highIndex = centralIndex - 1;
+		}
+		else
+		{
+			lowIndex = centralIndex + 1;
+		}
+	}
+	return false;
+}
+
+void PrintDuplicates(const std::vector<int>& nums)
+{
+	std::bitset<32000> hashtable;
+	for (int entry : nums)
+	{
+		if (hashtable[entry - 1])
+		{
+			std::cout << std::endl << entry;
+		}
+		hashtable[entry - 1] = true;
+	}
 }
 
 void RankFromStream::Track(int x)
