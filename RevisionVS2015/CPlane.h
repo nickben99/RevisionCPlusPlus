@@ -106,7 +106,7 @@ class CPlane
 			// using the plane equation: Ax + By + Cz + D = 0, get the distance the end of the line is from the plane
 			float endDist = planeNormal.dotProduct(endLine) + planeConstant;
 
-			if (startDist * endDist <= 0.0f) // start and end of line are on opposite sides of the plane
+			if (startDist * endDist <= 0.0f) // start and end of line are on opposite sides of the plane (or one or both is on the plane)
 			{				
 				CVector unitLine = (endLine - startLine).normalise(); // get the normalised line vector
 

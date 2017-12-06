@@ -199,6 +199,11 @@ class CVector4
 			return v3.x == rhs.v3.x && v3.y == rhs.v3.y && v3.z == rhs.v3.z && w == rhs.w;
 		}
 
+		bool operator!=(const CVector4& rhs) const
+		{
+			return !operator==(rhs);
+		}
+
 		CVector v3;
 		float w;
 };

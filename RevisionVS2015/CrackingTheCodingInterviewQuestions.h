@@ -35,6 +35,7 @@ bool IsStringOneARotationOfStringTwo(const char* stringOne, const char* stringTw
 
 void RemoveDuplicatesFromUnsortedLinkedList(LinkedListElement** head); // 2.1
 void RemoveDuplicatesFromUnsortedLinkedListO1Space(LinkedListElement** head); // 2.1 follow-up
+LinkedListElement* GetKthToLastElement(LinkedListElement* ptr, int k); // 2.2
 void DeleteNode(LinkedListElement* nodeToDelete); // <<== implement, p94, the passed in node is not the head, it is a node in the middle of the linked list, it cannot be the head or end
 void PartitionLinkedList(LinkedListElement** head, int partitionVal); // <== implement, everything less than partition must be put before everything greater or equal to partition
 
@@ -288,7 +289,7 @@ std::vector<std::string> GetAllPermutations(const std::string& input); // 135, 8
 std::vector<std::string> GenerateAllPermutationsNoDups(const std::string& input); // p135, 8.8 output strings have no dupes, input string may do
 //std::vector<std::string> GenerateAllPermutationsNoDupsAlt(const std::string& input); // (p135) output strings have no dupes, input string may do
 std::unordered_set<std::string> GenerateParens(int numParanthesis); // p136
-void PaintFloodFill(CVector4 screen[1024][1024], int clickRow, int clickCol, const CVector4& newColor);
+void PaintFloodFill(CVector4 screen[1024][1024], int clickRow, int clickCol, const CVector4& newColor); // 8.10
 void Coins(); //<<<<===== implement p362, 8.11
 void Queens(); // <<<<==== implement p364, 8.12
 

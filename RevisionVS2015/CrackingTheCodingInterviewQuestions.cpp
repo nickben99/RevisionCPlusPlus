@@ -360,6 +360,37 @@ void RemoveDuplicatesFromUnsortedLinkedListO1Space(LinkedListElement** head)
 	}
 }
 
+LinkedListElement* GetKthToLastElement(LinkedListElement* ptr, int k, int& i)
+{
+	if (ptr)
+	{
+		if (ptr->next)
+		{
+			LinkedListElement* res = GetKthToLastElement(ptr->next, k, i);
+			if (nullptr == res && k == ++i)
+			{
+				return ptr;
+			}
+			return res;
+		}
+		else if (k == i)
+		{
+			return ptr;
+		}
+	}
+	return nullptr;
+}
+
+LinkedListElement* GetKthToLastElement(LinkedListElement* ptr, int k)
+{
+	if (ptr)
+	{
+		int i = 0;
+		return GetKthToLastElement(ptr, k, i);
+	}
+	return nullptr;
+}
+
 // NOTE: this function assumes the data element in LinkedListElement contains a pointer to an int
 LinkedListElement* SumListsReverse(LinkedListElement* listOne, LinkedListElement* listTwo) 
 {
@@ -586,9 +617,7 @@ bool IsSubTree(BinaryTreeNode* mainTree, BinaryTreeNode* potentialSubTree)
 	}
 	if (mainTree)
 	{
-		if (mainTree->val == potentialSubTree->val &&
-			CheckAllChildren(mainTree->left, potentialSubTree->left) &&
-			CheckAllChildren(mainTree->right, potentialSubTree->right))
+		if (CheckAllChildren(mainTree, potentialSubTree))
 		{
 			return true;
 		}
@@ -981,25 +1010,29 @@ std::unordered_set<std::string> GenerateParens(int numParanthesis)
 
 void PaintFloodFillInternal(CVector4 screen[1024][1024], int row, int col, const CVector4& clickPointColor, const CVector4& newColor)
 {
-	if (row >= 0 && row < 1024 && col >= 0 && col < 1024 && clickPointColor == screen[row][col])
+	screen[row][col] = newColor;
+	for (int childRow = row-1; childRow <= row+1; ++row)
 	{
-		screen[row][col] = newColor;
-
-		PaintFloodFillInternal(screen, row - 1, col - 1, clickPointColor, newColor); // top left
-		PaintFloodFillInternal(screen, row - 1, col, clickPointColor, newColor); // top top
-		PaintFloodFillInternal(screen, row - 1, col + 1, clickPointColor, newColor); // top right
-		PaintFloodFillInternal(screen, row, col - 1, clickPointColor, newColor); // left
-		PaintFloodFillInternal(screen, row, col + 1, clickPointColor, newColor); // right
-		PaintFloodFillInternal(screen, row + 1, col - 1, clickPointColor, newColor); // bottom left
-		PaintFloodFillInternal(screen, row + 1, col, clickPointColor, newColor); // bottom bottom
-		PaintFloodFillInternal(screen, row + 1, col + 1, clickPointColor, newColor); // bottom right
-	}
+		if (row >= 0 && row < 1024)
+		{
+			for (int childCol = col-1; childCol <= col+1; ++col)
+			{
+				if (col >= 0 && col < 1024 && clickPointColor == screen[childRow][childCol])
+				{
+					PaintFloodFillInternal(screen, childRow, childCol, clickPointColor, newColor);
+				}
+			}
+		}
+	}	
 }
 
 void PaintFloodFill(CVector4 screen[1024][1024], int clickRow, int clickCol, const CVector4& newColor)
 {
-	CVector4 clickPointColor = screen[clickRow][clickCol];
-	PaintFloodFillInternal(screen, clickRow, clickCol, clickPointColor, newColor);
+	if (clickRow >= 0 && clickRow < 1024 && clickCol >= 0 && clickCol < 1024 && screen[clickRow][clickCol] != newColor)
+	{
+		CVector4 clickPointColor = screen[clickRow][clickCol];
+		PaintFloodFillInternal(screen, clickRow, clickCol, clickPointColor, newColor);
+	}
 }
 
 // chapter 10 sorting and searching ----------------------------------------------------------------------

@@ -18,7 +18,7 @@ struct Node
 {
 	int cost = -1;
 	Node* parent = nullptr;
-	int nodeIndex = 0;
+	int nodeIndex = -1;
 
 	enum State { unexplored = 0, open, closed };
 	State state = State::unexplored;
@@ -31,59 +31,58 @@ struct MinHeap // stubbed out class
 	Node* PopLowestCostNode() { return nullptr; }
 	void Add(int /*priority*/, Node* /*node*/) {};
 	bool Contains(Node* /*node*/) { return true; }
-	void ChangePriority(int /*newPriority*/, Node* /*existingNode*/) {}
+	void ChangePriority(int /*newPriority*/, int /*openListIndex*/) {}
 };
 
 void DijkstraSearch(int* graph, int startNode, std::vector<int>& shortestDistanceToNodes, int numGraphNodes)
 {
 	Node* nodes = new Node[numGraphNodes];
-
-	for (int index = 0; index < numGraphNodes; ++index)
+	if (nodes)
 	{
-		nodes[index].nodeIndex = index;
-	}
+		nodes[startNode].cost = 0;
+		nodes[startNode].state = Node::State::open;
+		nodes[startNode].nodeIndex = startNode;
+		MinHeap openList;
+		openList.Add(nodes[startNode].cost, &nodes[startNode]);
 
-	nodes[startNode].cost = 0;
-	nodes[startNode].state = Node::State::open;
-	MinHeap openList;
-	openList.Add(nodes[startNode].cost, &nodes[startNode]);
-	
-	while (!openList.IsEmpty())
-	{
-		Node* lowestCostOpenNode = openList.PopLowestCostNode();
-		lowestCostOpenNode->state = Node::State::closed;
-
-		for (int link = 0; link < numGraphNodes; ++link)
+		while (!openList.IsEmpty())
 		{
-			if (Node::State::closed != nodes[link].state &&
-				graph[ToIndex(lowestCostOpenNode->nodeIndex, link, numGraphNodes)] >= 0)
-			{
-				int newCost = lowestCostOpenNode->cost + graph[ToIndex(lowestCostOpenNode->nodeIndex, link, numGraphNodes)];
-				if (Node::State::unexplored == nodes[link].state || newCost < nodes[link].cost)
-				{
-					nodes[link].cost = newCost;
-					nodes[link].parent = lowestCostOpenNode;
+			Node* lowestCostOpenNode = openList.PopLowestCostNode();
+			lowestCostOpenNode->state = Node::State::closed;
 
-					if (Node::State::open == nodes[link].state)
+			for (int link = 0; link < numGraphNodes; ++link)
+			{
+				if (Node::State::closed != nodes[link].state &&
+					graph[ToIndex(lowestCostOpenNode->nodeIndex, link, numGraphNodes)] >= 0)
+				{
+					int newCost = lowestCostOpenNode->cost + graph[ToIndex(lowestCostOpenNode->nodeIndex, link, numGraphNodes)];
+					if (Node::State::unexplored == nodes[link].state || newCost < nodes[link].cost)
 					{
-						openList.ChangePriority(nodes[link].cost, &nodes[link]); // bubble down as cost is now lower
-					}
-					else
-					{
-						nodes[link].state = Node::State::open;
-						openList.Add(nodes[link].cost, &nodes[link]);
+						nodes[link].cost = newCost;
+						nodes[link].parent = lowestCostOpenNode;
+						nodes[link].nodeIndex = link;
+
+						if (Node::State::open == nodes[link].state)
+						{
+							openList.ChangePriority(nodes[link].cost, nodes[link].openListIndex); // bubble down as cost is now lower
+						}
+						else
+						{
+							nodes[link].state = Node::State::open;
+							openList.Add(nodes[link].cost, &nodes[link]);
+						}
 					}
 				}
 			}
 		}
-	}
 
-	for (int index = 0; index < numGraphNodes; ++index)
-	{
-		shortestDistanceToNodes[index] = nodes[index].cost;
-	}
+		for (int index = 0; index < numGraphNodes; ++index)
+		{
+			shortestDistanceToNodes[index] = nodes[index].cost;
+		}
 
-	delete[] nodes;
+		delete[] nodes;
+	}
 }
 
 void DijkstraSearch()
@@ -226,19 +225,19 @@ namespace quicksort
 		while (left <= right) { // Until we've gone through the whole array
 								// Find element on left that should be on right
 			while (arr[left] < pivot) {
-				left++;
+				++left;
 			}
 
 			// Find element on right that should be on left
 			while (arr[right] > pivot) {
-				right--;
+				--right;
 			}
 
 			// Swap elements, and move left and right indices
 			if (left <= right) {
 				std::swap(arr[left], arr[right]);
-				left++;
-				right--;
+				++left;
+				--right;
 			}
 		}
 		return left;

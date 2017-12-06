@@ -135,9 +135,9 @@ struct TopologicalSortNode
 	std::vector<TopologicalSortNode*> outboundEdges;
 };
 
-bool CreateGraph(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::unordered_map<char, TopologicalSortNode*>& graph)
+bool CreateGraph(const std::vector<char>& input, const std::vector<std::pair<char, char>>& depend, std::unordered_map<char, TopologicalSortNode*>& graph)
 {
-	for (auto inputNode : allInputNodes)
+	for (auto inputNode : input)
 	{
 		TopologicalSortNode* newNode = new TopologicalSortNode(inputNode);
 		if (!newNode)
@@ -147,7 +147,7 @@ bool CreateGraph(const std::vector<char>& allInputNodes, const std::vector<std::
 		graph.insert(std::make_pair(inputNode, newNode));
 	}
 
-	for (auto link : nodeDependancies)
+	for (auto link : depend)
 	{
 		++graph[link.second]->numInboundEdges; // NOTE! only used in breadth first search topological sort
 		graph[link.first]->outboundEdges.push_back(graph[link.second]);
@@ -166,11 +166,11 @@ void DestroyGraph(std::unordered_map<char, TopologicalSortNode*>& graph)
 	}
 }
 
-bool TopologicalSortBreadthFirstSearch(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes)
+bool TopologicalSortBreadthFirstSearch(const std::vector<char>& input, const std::vector<std::pair<char, char>>& depend, std::vector<char>& output)
 {
 	bool allGood = false;
 	std::unordered_map<char, TopologicalSortNode*> graph;
-	if (CreateGraph(allInputNodes, nodeDependancies, graph))
+	if (CreateGraph(input, depend, graph))
 	{
 		std::queue<TopologicalSortNode*> processNext;
 		for (auto node : graph)
@@ -194,9 +194,9 @@ bool TopologicalSortBreadthFirstSearch(const std::vector<char>& allInputNodes, c
 					processNext.push(node);
 				}
 			}
-			outputNodes.push_back(next->character);
+			output.push_back(next->character);
 		}
-		allGood = allInputNodes.size() == outputNodes.size();
+		allGood = input.size() == output.size();
 	}
 	DestroyGraph(graph);
 	return allGood;
@@ -226,16 +226,16 @@ bool TopologicalSortDepthFirstSearch(TopologicalSortNode* node, std::vector<char
 	return true;
 }
 
-bool TopologicalSortDepthFirstSearch(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes)
+bool TopologicalSortDepthFirstSearch(const std::vector<char>& input, const std::vector<std::pair<char, char>>& depend, std::vector<char>& output)
 {
 	bool allGood = false;
 	std::unordered_map<char, TopologicalSortNode*> graph;
-	if (CreateGraph(allInputNodes, nodeDependancies, graph))
+	if (CreateGraph(input, depend, graph))
 	{
 		allGood = true;
 		for (std::pair<char, TopologicalSortNode*> entry : graph)
 		{
-			if (!TopologicalSortDepthFirstSearch(entry.second, outputNodes))
+			if (!TopologicalSortDepthFirstSearch(entry.second, output))
 			{
 				allGood = false; // probably don't need this as 'result.size() == inputNodes.size()' (further down) would be false
 				break;
@@ -243,8 +243,8 @@ bool TopologicalSortDepthFirstSearch(const std::vector<char>& allInputNodes, con
 		}
 		if (allGood)
 		{
-			std::reverse(outputNodes.begin(), outputNodes.end());
-			allGood = outputNodes.size() == allInputNodes.size();
+			std::reverse(output.begin(), output.end());
+			allGood = output.size() == input.size();
 		}
 	}
 	DestroyGraph(graph);

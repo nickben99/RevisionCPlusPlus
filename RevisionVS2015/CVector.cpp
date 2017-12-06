@@ -437,13 +437,13 @@ float CVector::dotProduct(const CVector& productWith) const
 // VECTOR, MATRIX, QUAT REVISION
 float CVector::getAngleBetween(CVector* otherVector) const
 {
-	CVector thisVector	=	*this,
-			otherVect	=	*otherVector;
+	CVector thisNormalized	=	*this,
+			otherNormalized	=	*otherVector;
 
-	thisVector.normalise();
-	otherVect.normalise();
+	thisNormalized.normalise();
+	otherNormalized.normalise();
 	
-	float dotProduct = thisVector.dotProduct(&otherVect);
+	float dotProduct = thisNormalized.dotProduct(&otherNormalized);
 
 	float angle = (float)( acos( dotProduct ) );
 
@@ -451,6 +451,9 @@ float CVector::getAngleBetween(CVector* otherVector) const
 		return( 0.0f );} // dotProduct will be practically 1 so return an acos of 0 angle
 
 	return( angle );
+
+	// NOTE: alt method
+	// return acos( this->dotProduct(*otherVector) / (this->getMagnitude()*otherVector->getMagnitude()) );
 }
 
 // get the angle between this and another vector

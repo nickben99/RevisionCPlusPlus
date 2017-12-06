@@ -29,8 +29,8 @@ private:
 // page 632 Topological Sort
 // sort the allInputNodes so each appears in the outputNodes after the nodes it depends on
 // nodeDependancies->right depends on nodeDependancies->left, meaning left has an edge pointing to right
-bool TopologicalSortBreadthFirstSearch(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes);
+bool TopologicalSortBreadthFirstSearch(const std::vector<char>& input, const std::vector<std::pair<char, char>>& depend, std::vector<char>& output);
 
-bool TopologicalSortDepthFirstSearch(const std::vector<char>& allInputNodes, const std::vector<std::pair<char, char>>& nodeDependancies, std::vector<char>& outputNodes);
+bool TopologicalSortDepthFirstSearch(const std::vector<char>& input, const std::vector<std::pair<char, char>>& depend, std::vector<char>& output);
 
 #endif

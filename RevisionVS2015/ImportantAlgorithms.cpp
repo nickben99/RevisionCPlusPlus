@@ -752,6 +752,8 @@ const GraphNode* GraphBreadthFirstSearch(const GraphNode& graph, int val)
 }
 
 // NOTE: very similar to GraphBreadthFirstSearch (differences marked)
+// NOTE: to understand why this algorithm works, imagine doing an iterative depth first flood fill algorithm 
+// for a paint program, e.g iteratively doing PaintFloodFill() in CrackingTheCodingInterviewQuestions.h/cpp
 const GraphNode* GraphDepthFirstSearchIterative(const GraphNode& graph, int val)
 {
 	std::unordered_set<const GraphNode*> searched; // NOTE: alternate to a searched list is flaging each searched node (std::queue CANNOT be searched, but would be O(n) anyway)
@@ -762,7 +764,7 @@ const GraphNode* GraphDepthFirstSearchIterative(const GraphNode& graph, int val)
 		const GraphNode* frontNode = nodes.top();
 		nodes.pop();
 
-		if (searched.end() != searched.find(frontNode)) { // already searched, NOTE: different to bfs
+		if (searched.end() != searched.find(frontNode)) { // already searched, NOTE: different to bfs (was already checked when added further down a branch)
 			continue;
 		}
 
@@ -772,11 +774,12 @@ const GraphNode* GraphDepthFirstSearchIterative(const GraphNode& graph, int val)
 		}
 		searched.insert(frontNode); // NOTE: different to bfs, for iterative depth first search, this is the correct place to mark visited
 		
+		// NOTE: different to bfs, going over the children in reverse order
 		for (std::vector<GraphNode*>::const_reverse_iterator childNode = frontNode->children.rbegin(); childNode != frontNode->children.rend(); ++childNode)
 		{
 			if (*childNode && searched.end() == searched.find(*childNode)) // O(1) for set.find() (assuming no hashing collisions)
 			{
-				// NOTE: different to bfs, NOT added to searched here
+				// NOTE: different to bfs, NOT added to searched here (this is so they can be added again if found further down a branch)
 				nodes.push(*childNode);
 			}
 		}		
@@ -1593,4 +1596,58 @@ unsigned int HexStringToUnsignedInt(const char* hexString)
 		}
 	}
 	return returnNumber;
+}
+
+// NOTE: this technique of recursively checking a sub sequence, and saving the things to add/remove or remove/add
+ // in each recursive call is very important to many solutions (this is back tracking, saving state in each recursive call)
+bool CheckSequence(std::unordered_map<char, int>& counts, const std::string& longString, int iter, size_t max, int& missingCharacterPos)
+{
+	if (iter >= max)
+	{
+		return true;
+	}
+	std::unordered_map<char, int>::iterator found = counts.find(longString[iter]);
+	if (counts.end() == found || 0 == found->second)
+	{
+		missingCharacterPos = counts.end() == found ? iter : missingCharacterPos; // allows us to jump past the bad character
+		return false;
+	}
+	--found->second; // NOTE: important technique: remove in this recursive call
+	bool result = CheckSequence(counts, longString, iter + 1, max, missingCharacterPos);
+	++found->second; // NOTE: important technique: add back again after next recursive calls have returned
+	return result;
+}
+
+// NOTE: see CheckSequence() this technique is very important for back tracking (saving state in each recursive call)
+std::vector<int> FindPermutationStartPoints(const std::string& shortString, const std::string& longString)
+{
+	std::vector<int> result;
+	if (shortString.length() > 0 && longString.length() > shortString.length())
+	{
+		std::unordered_map<char, int> counts;
+		for (char character : shortString)
+		{
+			std::unordered_map<char, int>::iterator found = counts.find(character);
+			if (counts.end() == found) {
+				found = counts.insert(std::make_pair(character, 0)).first;
+			}
+			++found->second;
+		}
+
+		for (int iter = 0; iter + shortString.length() <= longString.length(); ++iter)
+		{
+			int missingCharacterPos = -1;
+			if (CheckSequence(counts, longString, iter, iter + shortString.length(), missingCharacterPos)) {
+				result.push_back(iter);
+				// check if the character lost at iter will be replaced by the same character
+				while (iter + shortString.length() < longString.length() && longString[iter] == longString[iter + shortString.length()]) {
+					result.push_back(++iter);
+				}
+			}
+			else if (missingCharacterPos >= 0) {
+				iter = missingCharacterPos;
+			}
+		}
+	}
+	return result;
 }
