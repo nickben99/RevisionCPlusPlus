@@ -58,7 +58,9 @@ bool IsCyclic_LinkedList(Element* pHead);
 
 struct BinaryTreeNode 
 { 
-	int val; BinaryTreeNode* left = nullptr; BinaryTreeNode* right = nullptr;
+	int val; 
+	BinaryTreeNode* left = nullptr; 
+	BinaryTreeNode* right = nullptr;
 };
 
 BinaryTreeNode* BinaryTreePreOrderSearchRecursive(BinaryTreeNode* root, int val); // do pre order search of nodes (not a binary search tree)
@@ -94,5 +96,6 @@ bool RectangleOverlap(const Rectangle& rectOne, const Rectangle& rectTwo);
 bool IsMachineLittleEndian();
 template<class T> int CountOnesInInt(T input); // templatized on type of int, count the 1's in the binary representation
 int CountOnesInCharBig01Amortized(char input);
+template<class T> int CountOnesInIntBig01Amortized(T input);
 
 #endif

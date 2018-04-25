@@ -226,14 +226,13 @@ void Flatten_LinkedList(ElementFlatten** head, ElementFlatten** end)
 	{
 		return;
 	}
-
-	ElementFlatten* curr = *head;
-	for (; curr; curr = curr->next)
+	
+	for (ElementFlatten* curr = *head; curr; curr = curr->next)
 	{
 		if (curr->child)
 		{
 			(*end)->next = curr->child;
-			curr->child->prev = (*end);
+			curr->child->prev = *end;
 			while ((*end)->next)
 			{
 				*end = (*end)->next;
@@ -262,7 +261,7 @@ void Unflatten_LinkedListInternal(ElementFlatten* element)
 	}
 }
 
-// NORE!!!!: this is the method presented in the book, but it seems very bad, sections will be traversed multiple times
+// NOTE!!!!: this is the method presented in the book, but it seems very bad, sections will be traversed multiple times
 // see Unflatten_LinkedListBetter for better implementation
 void Unflatten_LinkedList(ElementFlatten** stackHead, ElementFlatten** stackEnd)
 {
@@ -528,16 +527,14 @@ void removeChars(std::string& str, const std::string& remove)
 		toRemove[*charPtr] = true;
 	}
 
-	const char* sourceCounter = str.c_str();
 	int targetCounter = 0;
-	while (*sourceCounter != '\0')
+	for (int sourceCounter = 0; sourceCounter < str.length(); ++sourceCounter)
 	{
-		str[targetCounter] = *sourceCounter;		
-		if (!toRemove[ *sourceCounter ])
+		str[targetCounter] = str[sourceCounter];		
+		if (!toRemove[str[sourceCounter]])
 		{
 			++targetCounter;
 		}
-		++sourceCounter;
 	}
 	str.resize(targetCounter);
 }
@@ -614,37 +611,28 @@ int StringToInt(const char* string)
 
 std::string IntToString(int val)
 {
-	bool wasLessThanZero = false;
-	if ( val < 0 )
-	{
+	bool wasLessThanZero = val < 0;
+	if ( val < 0 ) {
 		val *= -1; // this is so that val%10 (in do loop below) always returns a positive number, a negative number would cause a bug when doing char('0' + figure)
-		wasLessThanZero = true;
 	}
 
 	std::string numString; // if you want to use a char array, then below loop must be done twice, first time just to get char array length
 	do
 	{
 		int figure = val%10;
-		numString.push_back(char('0' + figure)); // NOTE: could do an insert(0, "0") here to avoid the string reverse at the bottom of this function
+		// NOTE: could do an insert(numString.begin(), char('0' + figure)) here to avoid the string reverse at the bottom of this function (but MUCH less efficiant)
+		numString.push_back(char('0' + figure)); // push_back() is O(1) amortized
 		val/=10;
 	}while (0 != val);
 
 	if (wasLessThanZero)
-	{
-		numString.push_back('-'); // NOTE: could do a insert(0, "0") here to avoid the string reverse at the bottom of this function
+	{	// NOTE: could do a insert(numString.begin(), "-") here to avoid the string reverse at the bottom of this function (but MUCH less efficient)
+		numString.push_back('-'); 
 	}
 	
-	// reversing the string here. 
-	// NOTE: could've avoided this string reverse if insert(0, "0") was done previosuly in this function (but would make algorithm less efficient)
-	int start = 0, end = (int)numString.length()-1;
-	while (end > start)
-	{
-		char temp = numString[start];
-		numString[start] = numString[end];
-		numString[end] = temp;
-		++start;
-		--end;
-	}
+	// reversing the string here. NOTE: could've avoided this string reverse if insert(numString.begin(), char) was done previously in this 
+	// function (but would make algorithm MUCH less efficient, as every insert() is O(n) requiring all current elements to be shifted down to make space)
+	std::reverse(numString.begin(), numString.end());
 	return numString;
 }
 
@@ -741,7 +729,8 @@ void PrintAllStringPermutations(const std::string& input)
 	}
 }
 
-void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm will only work if strings are less than 8*sizeof(size_t) characters long, and is big O((2^len)*len)
+// NOTE: this algorithm will only work if strings are less than 8*sizeof(size_t) characters long. it is big O((2^len)*len)
+void PrintAllStringCombinations(const char* pString)
 {
 	size_t len = pString ? (size_t)strlen(pString) : 0;
 	if (len > 0 && len < 8*sizeof(size_t))
@@ -762,7 +751,7 @@ void PrintAllStringCombinations(const char* pString) // NOTE: this algorithm wil
 }
 
 void PrintAllStringCombinationsAltInternal(const char*, char*, int, int, int, int&);
-void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this algorithm will work regarldless of character length, and is big O(2^len)
+void PrintAllStringCombinationsAlt(const char* pOriginalString) // NOTE: this algo is better, will work regarldless of character length, and is big O(2^len)
 {
 	int len = (int)strlen(pOriginalString);
 	char* currentString = new char[len + 1];
@@ -885,9 +874,9 @@ void GenerateTelephoneWordsIterative(const char* pPhoneNum)
 
 // chaper 11 other programming topics ----------------------------------------------------------------------------------
 
-void setPixel(int xCoord, int yCoord)
+void DrawLine(int xFromCoord, int yFromCoord, int xToCoord, int yToCoord)
 {
-	std::cout << std::endl << "xPos: " << xCoord << " yPos: " << yCoord;
+	std::cout << std::endl << "xFromCoord: " << xFromCoord << ", yFromCoord: " << yFromCoord << ", xToCoord: " << xToCoord << ", yToCoord: " << yToCoord;
 }
 
 void drawEighthOfCircle(int radius)
@@ -896,12 +885,17 @@ void drawEighthOfCircle(int radius)
 	const float kEighthOfCircleAngle = kPI*0.25f; // eighth of a circle is a quarter of half a circle
 	const int kNumSteps = 20;
 
-	for (int count = 0; count <= kNumSteps; ++count)
+	int prevX = 0;
+	int prevY = radius;
+
+	for (int count = 1; count <= kNumSteps; ++count)
 	{
 		float angle = ((float)count/kNumSteps)*kEighthOfCircleAngle;
-		int y = (int)(std::cos(angle)*radius); // cos is -1 to 1, this assumes radius is large (much higher than 1), else result after int casting will always be zero
 		int x = (int)(std::sin(angle)*radius); // sine is -1 to 1, this assumes radius is large (much higher than 1), else result after int casting will always be zero
-		setPixel(x, y);
+		int y = (int)(std::cos(angle)*radius); // cos is -1 to 1, this assumes radius is large (much higher than 1), else result after int casting will always be zero		
+		DrawLine(prevX, prevY, x, y);
+		prevX = x;
+		prevY = y;
 	}
 }
 
